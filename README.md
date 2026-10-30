@@ -39,6 +39,15 @@ See [`Brewfile`](Brewfile) for a one-line description of each package.
 
 Language runtimes (Node.js, Python, Go, ...) are not installed by Homebrew. They are managed per project with [`mise`](https://mise.jdx.dev).
 
+## Supported Macs
+
+| Mac | Status |
+| --- | --- |
+| Apple Silicon (M1 and later) | Fully supported: every formula has a prebuilt bottle |
+| Intel | Works, but slower: Homebrew [no longer builds new Intel bottles](https://docs.brew.sh/Support-Tiers), so most formulae compile from source on first install. Homebrew plans to drop Intel Macs entirely in or after September 2027. |
+
+Every app (cask) in the `Brewfile` has an Apple Silicon and an Intel build. Run `install.sh` from a native terminal; on Apple Silicon it stops if the terminal runs under Rosetta, which would otherwise set up the Intel version of Homebrew.
+
 ## Usage
 
 Sign in to the Mac App Store first (needed for the App Store apps), then run:

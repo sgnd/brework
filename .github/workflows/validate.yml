@@ -13,8 +13,12 @@ permissions:
 
 jobs:
   brewfile:
-    name: Brewfile packages exist
-    runs-on: macos-latest
+    name: Brewfile packages exist (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, macos-15-intel] # Apple Silicon, Intel
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - run: scripts/validate-brewfile.sh Brewfile

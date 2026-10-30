@@ -31,8 +31,14 @@ EOF
 log() { printf '\033[1;34m==>\033[0m %s\n' "$*"; }
 die() { printf '\033[1;31mError:\033[0m %s\n' "$*" >&2; exit 1; }
 
+# Apple Silicon and Intel Macs use different Homebrew prefixes. Ask the
+# hardware rather than `uname -m`, which says x86_64 under Rosetta.
+is_apple_silicon() {
+  [ "$(sysctl -n hw.optional.arm64 2>/dev/null)" = "1" ]
+}
+
 brew_bin() {
-  if [ "$(uname -m)" = "arm64" ]; then
+  if is_apple_silicon; then
     echo /opt/homebrew/bin/brew
   else
     echo /usr/local/bin/brew
@@ -131,6 +137,9 @@ main() {
   done
 
   [ "$(uname -s)" = "Darwin" ] || die "This script only supports macOS"
+  if [ "$(sysctl -n sysctl.proc_translated 2>/dev/null)" = "1" ]; then
+    die "This terminal runs under Rosetta; open a native (Apple Silicon) terminal and run again"
+  fi
 
   if [ "$check_only" -eq 0 ]; then
     install_homebrew
