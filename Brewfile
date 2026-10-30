@@ -1,52 +1,73 @@
-# Simple, modern, secure file encryption
-brew "age"
-# Automate deployment, configuration, and upgrading
-brew "ansible"
-# Checks ansible playbooks for practices and behaviour
-brew "ansible-lint"
-# Official Amazon AWS command-line interface
-brew "awscli"
-# Command-line tool for DigitalOcean
-brew "doctl"
-# GitHub command-line tool
-brew "gh"
-# Distributed revision control system
-brew "git"
-# Audit git repos for secrets
-brew "gitleaks"
-# Kubernetes package manager
-brew "helm"
-# Lightweight and flexible command-line JSON processor
-brew "jq"
-# Tool that can switch between kubectl contexts easily and create aliases
-brew "kubectx"
-# Template-free customization of Kubernetes YAML manifests
-brew "kustomize"
-# Polyglot runtime manager (asdf rust clone)
-brew "mise"
-# Deep clean and optimize your Mac
-brew "mole"
-# Drop-in replacement for Terraform. Infrastructure as Code Tool
-brew "opentofu"
-# Framework for managing multi-language pre-commit hooks
-brew "pre-commit"
-# Static analysis and lint tool, for (ba)sh scripts
-brew "shellcheck"
-# Editor of encrypted files
-brew "sops"
-# Tail multiple Kubernetes pods & their containers
-brew "stern"
-# Postgres development platform
-brew "supabase"
-# Vulnerability scanner for container images, file systems, and Git repos
-brew "trivy"
-# Executes a program periodically, showing output fullscreen
-brew "watch"
-# Internet file retriever
-brew "wget"
-# Process YAML, JSON, XML, CSV and properties documents from the CLI
-brew "yq"
-# Shell extension to navigate your filesystem faster
-brew "zoxide"
-# Brings the power of Copilot coding agent directly to your terminal
-cask "copilot-cli"
+# Brewfile — macOS workstation setup
+# Install everything with: brew bundle install
+# https://github.com/Homebrew/homebrew-bundle
+
+# ----------------------------------------------------------------------------
+# Version control
+# ----------------------------------------------------------------------------
+brew "git"                # Distributed revision control system
+brew "gh"                 # GitHub command-line tool
+
+# ----------------------------------------------------------------------------
+# Code quality & Git hooks
+# ----------------------------------------------------------------------------
+brew "pre-commit"         # Framework for managing multi-language pre-commit hooks
+brew "shellcheck"         # Static analysis and lint tool for (ba)sh scripts
+
+# ----------------------------------------------------------------------------
+# Security & secrets
+# ----------------------------------------------------------------------------
+brew "age"                # Simple, modern, secure file encryption
+brew "sops"               # Editor of encrypted files
+brew "gitleaks"           # Audit git repos for secrets
+brew "trivy"              # Vulnerability scanner for images, file systems and repos
+
+# ----------------------------------------------------------------------------
+# Cloud CLIs
+# ----------------------------------------------------------------------------
+brew "awscli"             # Official Amazon AWS command-line interface
+brew "doctl"              # DigitalOcean command-line tool
+brew "supabase"           # Supabase (Postgres development platform) CLI
+
+# ----------------------------------------------------------------------------
+# Infrastructure as Code & configuration management
+# ----------------------------------------------------------------------------
+brew "opentofu"           # Open-source drop-in replacement for Terraform
+brew "ansible"            # Automate deployment, configuration and upgrades
+brew "ansible-lint"       # Best-practice checker for Ansible playbooks
+
+# ----------------------------------------------------------------------------
+# Kubernetes
+# ----------------------------------------------------------------------------
+brew "helm"               # Kubernetes package manager
+brew "kustomize"          # Template-free customization of Kubernetes YAML
+brew "kubectx"            # Switch between kubectl contexts and namespaces
+brew "stern"              # Tail logs from multiple pods and containers
+
+# ----------------------------------------------------------------------------
+# Data processing (JSON / YAML)
+# ----------------------------------------------------------------------------
+brew "jq"                 # Command-line JSON processor
+brew "yq"                 # Process YAML, JSON, XML, CSV and properties files
+
+# ----------------------------------------------------------------------------
+# Runtime & version management
+# ----------------------------------------------------------------------------
+brew "mise"               # Polyglot runtime manager (asdf alternative in Rust)
+
+# ----------------------------------------------------------------------------
+# Shell & CLI utilities
+# ----------------------------------------------------------------------------
+brew "zoxide"             # Smarter cd that learns your most-used directories
+brew "watch"              # Run a program periodically, showing output fullscreen
+brew "wget"               # Internet file retriever
+
+# ----------------------------------------------------------------------------
+# System maintenance
+# ----------------------------------------------------------------------------
+brew "mole"               # Deep clean and optimize your Mac
+
+# ----------------------------------------------------------------------------
+# AI assistants
+# ----------------------------------------------------------------------------
+cask "copilot-cli"        # GitHub Copilot coding agent in the terminal
