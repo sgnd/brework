@@ -102,7 +102,6 @@ brew "mas"                # Mac App Store command-line interface
 cask "visual-studio-code" # Code editor
 cask "cursor"             # AI-first code editor
 cask "warp"               # Modern terminal
-cask "termius"            # SSH client
 
 # ----------------------------------------------------------------------------
 # AI assistants
@@ -123,13 +122,6 @@ cask "openvpn-connect"    # OpenVPN client
 cask "google-chrome"      # Web browser
 
 # ----------------------------------------------------------------------------
-# Communication
-# ----------------------------------------------------------------------------
-cask "telegram"           # Messaging app
-cask "whatsapp"           # Messaging app
-cask "wechat"             # Messaging app
-
-# ----------------------------------------------------------------------------
 # Fonts
 # ----------------------------------------------------------------------------
 cask "font-jetbrains-mono-nerd-font" # Programming font with Nerd Font icons
@@ -137,4 +129,8 @@ cask "font-jetbrains-mono-nerd-font" # Programming font with Nerd Font icons
 # ============================================================================
 # Mac App Store (requires signing in to the App Store first)
 # ============================================================================
-mas "Xcode", id: 497799835
+mas "Xcode", id: 497799835                       # Apple developer tools
+mas "Termius", id: 1176074088                    # SSH client
+mas "Telegram", id: 747648890                    # Messaging app
+mas "WhatsApp Messenger", id: 310633997          # Messaging app
+mas "WeChat", id: 836500024                      # Messaging app

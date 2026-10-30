@@ -28,13 +28,12 @@ Each name links to the project's official site, where you can also download it w
 
 | Category | Apps |
 | --- | --- |
-| Editors & terminals | [Visual Studio Code](https://code.visualstudio.com/download), [Cursor](https://cursor.com/downloads), [Warp](https://www.warp.dev/download), [Termius](https://termius.com/download/macos) |
+| Editors & terminals | [Visual Studio Code](https://code.visualstudio.com/download), [Cursor](https://cursor.com/downloads), [Warp](https://www.warp.dev/download) |
 | AI assistants | [Claude](https://claude.com/download), [ChatGPT](https://openai.com/chatgpt/download/), [GitHub Copilot CLI](https://github.com/github/copilot-cli/releases) |
 | Networking & VPN | [Cloudflare WARP](https://one.one.one.one), [OpenVPN Connect](https://openvpn.net/client/) |
 | Browsers | [Google Chrome](https://www.google.com/chrome/) |
-| Communication | [Telegram](https://macos.telegram.org), [WhatsApp](https://www.whatsapp.com/download), [WeChat](https://mac.weixin.qq.com) |
 | Fonts | [JetBrains Mono Nerd Font](https://www.nerdfonts.com/font-downloads) |
-| Mac App Store | [Xcode](https://apps.apple.com/app/xcode/id497799835) |
+| Mac App Store | [Xcode](https://apps.apple.com/app/xcode/id497799835), [Termius](https://apps.apple.com/app/id1176074088), [Telegram](https://apps.apple.com/app/id747648890), [WhatsApp](https://apps.apple.com/app/id310633997), [WeChat](https://apps.apple.com/app/id836500024) |
 
 See [`Brewfile`](Brewfile) for a one-line description of each package.
 
@@ -42,7 +41,7 @@ Language runtimes (Node.js, Python, Go, ...) are not installed by Homebrew. They
 
 ## Usage
 
-Sign in to the Mac App Store first (needed for Xcode), then run:
+Sign in to the Mac App Store first (needed for the App Store apps), then run:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/sgnd/brew/main/install.sh | bash
