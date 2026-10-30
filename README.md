@@ -1,12 +1,15 @@
 # brew
 
 [![Validate](https://github.com/sgnd/brew/actions/workflows/validate.yml/badge.svg)](https://github.com/sgnd/brew/actions/workflows/validate.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-A [Homebrew](https://brew.sh) `Brewfile` for setting up a macOS workstation for Dev & Ops in one command.
+Set up a Mac for Dev & Ops work with one command.
+
+This repo has a [Homebrew](https://brew.sh) `Brewfile`: a list of the tools and apps to install.
 
 ## What's inside
 
-Each name links to the project's official site, where you can also download it without Homebrew.
+Click a name to open its official website. You can also download it from there without Homebrew.
 
 ### CLI tools
 
@@ -19,8 +22,8 @@ Each name links to the project's official site, where you can also download it w
 | Infrastructure as Code | [opentofu](https://opentofu.org), [ansible](https://www.ansible.com), [ansible-lint](https://docs.ansible.com/projects/lint/) |
 | Containers | [colima](https://github.com/abiosoft/colima), [docker](https://docs.docker.com/engine/install/binaries/), [docker-compose](https://github.com/docker/compose), [docker-buildx](https://github.com/docker/buildx) |
 | Kubernetes | [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-macos/), [helm](https://helm.sh), [kustomize](https://github.com/kubernetes-sigs/kustomize), [kubectx](https://github.com/ahmetb/kubectx), [stern](https://github.com/stern/stern) |
-| Data processing & HTTP | [jq](https://jqlang.github.io/jq/), [yq](https://github.com/mikefarah/yq), [httpie](https://httpie.io) |
-| Runtime & environment | [mise](https://mise.jdx.dev), [direnv](https://direnv.net) |
+| JSON, YAML & HTTP | [jq](https://jqlang.github.io/jq/), [yq](https://github.com/mikefarah/yq), [httpie](https://httpie.io) |
+| Languages & environment | [mise](https://mise.jdx.dev), [direnv](https://direnv.net) |
 | Shell & CLI utilities | [zoxide](https://github.com/ajeetdsouza/zoxide), [fzf](https://junegunn.github.io/fzf/), [ripgrep](https://github.com/BurntSushi/ripgrep), [fd](https://github.com/sharkdp/fd), [bat](https://github.com/sharkdp/bat), [eza](https://eza.rocks), [tree](https://oldmanprogrammer.net/source.php?dir=projects/tree), [tlrc](https://tldr.sh/tlrc/), [watch](https://gitlab.com/procps-ng/procps), [wget](https://www.gnu.org/software/wget/), [rsync](https://rsync.samba.org) |
 | System maintenance | [mole](https://mole.fit), [mas](https://github.com/mas-cli/mas) |
 
@@ -35,43 +38,54 @@ Each name links to the project's official site, where you can also download it w
 | Fonts | [JetBrains Mono Nerd Font](https://www.nerdfonts.com/font-downloads) |
 | Mac App Store | [Xcode](https://apps.apple.com/app/xcode/id497799835), [Termius](https://apps.apple.com/app/id1176074088), [Telegram](https://apps.apple.com/app/id747648890), [WhatsApp](https://apps.apple.com/app/id310633997), [WeChat](https://apps.apple.com/app/id836500024) |
 
-See [`Brewfile`](Brewfile) for a one-line description of each package.
+See the [`Brewfile`](Brewfile) for a short description of each one.
 
-Language runtimes (Node.js, Python, Go, ...) are not installed by Homebrew. They are managed per project with [`mise`](https://mise.jdx.dev).
+Programming languages (Node.js, Python, Go, ...) are not in this list. Install them per project with [`mise`](https://mise.jdx.dev).
 
 ## Supported Macs
 
 | Mac | Status |
 | --- | --- |
-| Apple Silicon (M1 and later) | Fully supported: every formula has a prebuilt bottle |
-| Intel | Works, but slower: Homebrew [no longer builds new Intel bottles](https://docs.brew.sh/Support-Tiers), so most formulae compile from source on first install. Homebrew plans to drop Intel Macs entirely in or after September 2027. |
+| Apple Silicon (M1 and newer) | Fully supported. Everything installs fast. |
+| Intel | Works, but slower. Homebrew [stopped making ready-made Intel packages](https://docs.brew.sh/Support-Tiers), so most tools are built on your Mac the first time. Homebrew plans to stop supporting Intel Macs in or after September 2027. |
 
-Every app (cask) in the `Brewfile` has an Apple Silicon and an Intel build. Run `install.sh` from a native terminal; on Apple Silicon it stops if the terminal runs under Rosetta, which would otherwise set up the Intel version of Homebrew.
+All apps in the list have both an Apple Silicon and an Intel version.
 
-## Usage
+On Apple Silicon, do not run `install.sh` in a Rosetta (Intel mode) terminal. The script checks this and stops.
 
-Sign in to the Mac App Store first (needed for the App Store apps), then run:
+## Install
 
-```bash
-curl -fsSL https://raw.githubusercontent.com/sgnd/brew/main/install.sh | bash
-```
+1. Sign in to the Mac App Store. This is needed for the App Store apps.
+2. Run:
 
-[`install.sh`](install.sh) installs Homebrew if it is missing, adds it to your `PATH` in `~/.zprofile`, clones this repository to `~/brew` (change it with `BREW_REPO_DIR`) runs `brew bundle install` and registers the Homebrew `docker compose` / `docker buildx` plugins in `~/.docker/config.json`. It is safe to run again: everything already installed is skipped.
+   ```bash
+   curl -fsSL https://raw.githubusercontent.com/sgnd/brew/main/install.sh | bash
+   ```
 
-From a clone of this repository you can run it directly:
+[`install.sh`](install.sh) does this for you:
+
+- Installs Homebrew, if you don't have it yet
+- Adds Homebrew to your `PATH` (in `~/.zprofile`)
+- Downloads this repo to `~/brew` (set `BREW_REPO_DIR` to use another folder)
+- Installs everything in the `Brewfile`
+- Sets up `docker compose` and `docker buildx`
+
+You can run it again at any time. It skips what is already installed.
+
+If you already downloaded this repo, run the script from there:
 
 ```bash
 ./install.sh           # install everything
-./install.sh --check   # only list what is missing
+./install.sh --check   # only show what is missing
 ```
 
-Start the Docker engine (add `--kubernetes` for a local cluster):
+Then start Docker:
 
 ```bash
-colima start
+colima start                # add --kubernetes for a local Kubernetes cluster
 ```
 
-### Manual install
+### Install without the script
 
 1. Install [Homebrew](https://brew.sh):
 
@@ -79,7 +93,7 @@ colima start
    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
    ```
 
-2. Clone this repository and install everything:
+2. Download this repo and install everything:
 
    ```bash
    git clone https://github.com/sgnd/brew.git
@@ -87,38 +101,38 @@ colima start
    brew bundle install
    ```
 
-### Apps already installed outside Homebrew
+### "It seems there is already an App"
 
-If an app was installed by dragging it into `/Applications`, `brew bundle install` stops with an "It seems there is already an App" error. Let Homebrew take over the existing app instead of reinstalling it:
+You see this error when an app was installed without Homebrew (for example, dragged into `/Applications`). Let Homebrew take over the app instead of installing it again. It asks for your password:
 
 ```bash
 brew install --cask --adopt visual-studio-code
 ```
 
-## Keeping it up to date
+## Update the list
 
-The `Brewfile` is curated by hand and grouped by category, so edit it directly instead of regenerating it with `brew bundle dump` (which would discard the grouping and comments). Add new packages under the matching section.
+Edit the `Brewfile` by hand. Put each new package in the right section, with a short comment.
 
-To list packages installed on your machine that are not in the `Brewfile`:
+Do not use `brew bundle dump`. It rewrites the file and removes the sections and comments.
+
+To see what is installed on your Mac but missing from the `Brewfile`:
 
 ```bash
-brew bundle cleanup
+brew bundle cleanup         # only shows the list, removes nothing
 ```
 
-Without `--force` this only prints the list; it does not uninstall anything.
-
-Before opening a pull request, check that every package still exists in Homebrew:
+To check that every package in the `Brewfile` still exists in Homebrew:
 
 ```bash
 scripts/validate-brewfile.sh
 ```
 
-The same check runs in [GitHub Actions](.github/workflows/validate.yml) on every push and pull request, and every Monday to catch packages that were renamed, deprecated or removed upstream. The workflow also runs ShellCheck and checks the links in this README.
+[GitHub Actions](.github/workflows/validate.yml) runs this check on every push, on every pull request and every Monday, on both Apple Silicon and Intel. It also checks the shell scripts and the links in this README.
 
 ## Contributing
 
-Suggestions are welcome. Open an issue or pull request, and keep each package in the right category with a short comment describing it.
+Ideas are welcome. Open an issue or a pull request.
 
 ## License
 
-[MIT](LICENSE)
+[MIT](LICENSE). You can use, copy and change this project freely.

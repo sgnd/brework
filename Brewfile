@@ -1,6 +1,6 @@
-# Brewfile — macOS workstation setup for Dev & Ops
+# Brewfile: tools and apps for a Dev & Ops Mac
 # Install everything with: brew bundle install
-# https://github.com/Homebrew/homebrew-bundle
+# Docs: https://docs.brew.sh/Brew-Bundle-and-Brewfile
 
 # ============================================================================
 # CLI tools
@@ -9,89 +9,89 @@
 # ----------------------------------------------------------------------------
 # Version control
 # ----------------------------------------------------------------------------
-brew "git"                # Distributed revision control system
-brew "gh"                 # GitHub command-line tool
-brew "git-delta"          # Syntax-highlighting pager for git and diff output
+brew "git"                # Version control
+brew "gh"                 # GitHub from the terminal
+brew "git-delta"          # Colored, easy-to-read git diffs
 
 # ----------------------------------------------------------------------------
 # Code quality & Git hooks
 # ----------------------------------------------------------------------------
-brew "pre-commit"         # Framework for managing multi-language pre-commit hooks
-brew "shellcheck"         # Static analysis and lint tool for (ba)sh scripts
-brew "hadolint"           # Dockerfile linter
+brew "pre-commit"         # Run checks before each git commit
+brew "shellcheck"         # Find bugs in shell scripts
+brew "hadolint"           # Find mistakes in Dockerfiles
 
 # ----------------------------------------------------------------------------
 # Security & secrets
 # ----------------------------------------------------------------------------
-brew "age"                # Simple, modern, secure file encryption
-brew "sops"               # Editor of encrypted files
-brew "gitleaks"           # Audit git repos for secrets
-brew "trivy"              # Vulnerability scanner for images, file systems and repos
+brew "age"                # Simple file encryption
+brew "sops"               # Keep secrets encrypted in git
+brew "gitleaks"           # Find leaked passwords and keys in git
+brew "trivy"              # Find security issues in images and code
 
 # ----------------------------------------------------------------------------
 # Cloud CLIs
 # ----------------------------------------------------------------------------
-brew "awscli"             # Official Amazon AWS command-line interface
-brew "doctl"              # DigitalOcean command-line tool
-brew "supabase"           # Supabase (Postgres development platform) CLI
+brew "awscli"             # AWS from the terminal
+brew "doctl"              # DigitalOcean from the terminal
+brew "supabase"           # Supabase from the terminal
 
 # ----------------------------------------------------------------------------
-# Infrastructure as Code & configuration management
+# Infrastructure as Code & server setup
 # ----------------------------------------------------------------------------
-brew "opentofu"           # Open-source drop-in replacement for Terraform
-brew "ansible"            # Automate deployment, configuration and upgrades
-brew "ansible-lint"       # Best-practice checker for Ansible playbooks
+brew "opentofu"           # Open-source Terraform
+brew "ansible"            # Set up and update servers automatically
+brew "ansible-lint"       # Find mistakes in Ansible playbooks
 
 # ----------------------------------------------------------------------------
 # Containers
 # ----------------------------------------------------------------------------
-brew "colima"             # Lightweight container runtime (Docker engine in a VM)
-brew "docker"             # Docker CLI
-brew "docker-compose"     # Multi-container apps (`docker compose`)
-brew "docker-buildx"      # BuildKit builder (`docker buildx`)
+brew "colima"             # Runs the Docker engine on your Mac
+brew "docker"             # Docker commands
+brew "docker-compose"     # Run multi-container apps (docker compose)
+brew "docker-buildx"      # Build images (docker buildx)
 
 # ----------------------------------------------------------------------------
 # Kubernetes
 # ----------------------------------------------------------------------------
-brew "kubernetes-cli"     # kubectl
-brew "helm"               # Kubernetes package manager
-brew "kustomize"          # Template-free customization of Kubernetes YAML
-brew "kubectx"            # Switch between kubectl contexts and namespaces
-brew "stern"              # Tail logs from multiple pods and containers
+brew "kubernetes-cli"     # Kubernetes from the terminal (kubectl)
+brew "helm"               # Install apps on Kubernetes
+brew "kustomize"          # Change Kubernetes YAML without templates
+brew "kubectx"            # Switch Kubernetes clusters and namespaces
+brew "stern"              # Follow logs from many pods at once
 
 # ----------------------------------------------------------------------------
-# Data processing & HTTP
+# JSON, YAML & HTTP
 # ----------------------------------------------------------------------------
-brew "jq"                 # Command-line JSON processor
-brew "yq"                 # Process YAML, JSON, XML, CSV and properties files
-brew "httpie"             # User-friendly command-line HTTP client
+brew "jq"                 # Read and edit JSON
+brew "yq"                 # Read and edit YAML
+brew "httpie"             # Simple HTTP requests
 
 # ----------------------------------------------------------------------------
-# Runtime & environment management
+# Languages & environment
 # ----------------------------------------------------------------------------
-brew "mise"               # Polyglot runtime manager (Node, Python, Go, ...)
-brew "direnv"             # Load/unload environment variables per directory
+brew "mise"               # Install Node, Python, Go, ... per project
+brew "direnv"             # Load env variables per folder
 
 # ----------------------------------------------------------------------------
 # Shell & CLI utilities
 # ----------------------------------------------------------------------------
-brew "zoxide"             # Smarter cd that learns your most-used directories
-brew "fzf"                # Command-line fuzzy finder
-brew "ripgrep"            # Fast recursive search (rg)
-brew "fd"                 # Simple, fast alternative to find
-brew "bat"                # cat with syntax highlighting and Git integration
-brew "eza"                # Modern replacement for ls
-brew "tree"               # Display directories as trees
-brew "tlrc"               # tldr client: simplified, example-based man pages
-brew "watch"              # Run a program periodically, showing output fullscreen
-brew "wget"               # Internet file retriever
-brew "rsync"              # Fast incremental file transfer (macOS ships openrsync)
+brew "zoxide"             # Smarter cd: jump to folders you use often
+brew "fzf"                # Search lists as you type
+brew "ripgrep"            # Fast text search in files (rg)
+brew "fd"                 # Fast file search
+brew "bat"                # cat with colors
+brew "eza"                # ls with colors and icons
+brew "tree"               # Show folders as a tree
+brew "tlrc"               # Short help with examples (tldr)
+brew "watch"              # Run a command every few seconds
+brew "wget"               # Download files
+brew "rsync"              # Copy and sync files (newer than the macOS one)
 
 # ----------------------------------------------------------------------------
 # System maintenance
 # ----------------------------------------------------------------------------
-brew "mole"               # Deep clean and optimize your Mac
-brew "mas"                # Mac App Store command-line interface
+brew "mole"               # Clean up your Mac
+brew "mas"                # Install App Store apps from the terminal
 
 # ============================================================================
 # Apps
@@ -101,21 +101,21 @@ brew "mas"                # Mac App Store command-line interface
 # Editors & terminals
 # ----------------------------------------------------------------------------
 cask "visual-studio-code" # Code editor
-cask "cursor"             # AI-first code editor
-cask "warp"               # Modern terminal
+cask "cursor"             # AI code editor
+cask "warp"               # Terminal
 
 # ----------------------------------------------------------------------------
 # AI assistants
 # ----------------------------------------------------------------------------
 cask "claude"             # Claude desktop app
 cask "chatgpt"            # ChatGPT desktop app
-cask "copilot-cli"        # GitHub Copilot coding agent in the terminal
+cask "copilot-cli"        # GitHub Copilot in the terminal
 
 # ----------------------------------------------------------------------------
 # Networking & VPN
 # ----------------------------------------------------------------------------
-cask "cloudflare-warp"    # Cloudflare WARP client
-cask "openvpn-connect"    # OpenVPN client
+cask "cloudflare-warp"    # Cloudflare VPN
+cask "openvpn-connect"    # OpenVPN
 
 # ----------------------------------------------------------------------------
 # Browsers
@@ -125,10 +125,10 @@ cask "google-chrome"      # Web browser
 # ----------------------------------------------------------------------------
 # Fonts
 # ----------------------------------------------------------------------------
-cask "font-jetbrains-mono-nerd-font" # Programming font with Nerd Font icons
+cask "font-jetbrains-mono-nerd-font" # Coding font with icons
 
 # ============================================================================
-# Mac App Store (requires signing in to the App Store first)
+# Mac App Store (sign in to the App Store first)
 # ============================================================================
 mas "Xcode", id: 497799835                       # Apple developer tools
 mas "Termius", id: 1176074088                    # SSH client
