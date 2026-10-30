@@ -4,34 +4,36 @@ A [Homebrew](https://brew.sh) `Brewfile` for setting up a macOS workstation for 
 
 ## What's inside
 
+Each name links to the project's official site, where you can also download it without Homebrew.
+
 ### CLI tools
 
 | Category | Packages |
 | --- | --- |
-| Version control | `git`, `gh`, `git-delta`, `lazygit` |
-| Code quality & Git hooks | `pre-commit`, `shellcheck`, `hadolint` |
-| Security & secrets | `age`, `sops`, `gitleaks`, `trivy` |
-| Cloud CLIs | `awscli`, `doctl`, `supabase` |
-| Infrastructure as Code | `opentofu`, `ansible`, `ansible-lint` |
-| Containers | `dive` (`docker` and `kubectl` come with OrbStack) |
-| Kubernetes | `helm`, `kustomize`, `kubectx`, `k9s`, `stern` |
-| Data processing & HTTP | `jq`, `yq`, `httpie` |
-| Runtime & environment | `mise`, `direnv` |
-| Shell & CLI utilities | `zoxide`, `fzf`, `ripgrep`, `fd`, `bat`, `eza`, `tree`, `btop`, `tlrc`, `watch`, `wget` |
-| System maintenance | `mole`, `mas` |
+| Version control | [git](https://git-scm.com), [gh](https://cli.github.com), [git-delta](https://dandavison.github.io/delta/), [lazygit](https://github.com/jesseduffield/lazygit) |
+| Code quality & Git hooks | [pre-commit](https://pre-commit.com), [shellcheck](https://www.shellcheck.net), [hadolint](https://github.com/hadolint/hadolint) |
+| Security & secrets | [age](https://github.com/FiloSottile/age), [sops](https://getsops.io), [gitleaks](https://gitleaks.io), [trivy](https://trivy.dev) |
+| Cloud CLIs | [awscli](https://aws.amazon.com/cli/), [doctl](https://docs.digitalocean.com/reference/doctl/), [supabase](https://supabase.com/docs/reference/cli/about) |
+| Infrastructure as Code | [opentofu](https://opentofu.org), [ansible](https://www.ansible.com), [ansible-lint](https://docs.ansible.com/projects/lint/) |
+| Containers | [dive](https://github.com/wagoodman/dive) (`docker` and `kubectl` come with OrbStack) |
+| Kubernetes | [helm](https://helm.sh), [kustomize](https://github.com/kubernetes-sigs/kustomize), [kubectx](https://github.com/ahmetb/kubectx), [k9s](https://k9scli.io), [stern](https://github.com/stern/stern) |
+| Data processing & HTTP | [jq](https://jqlang.github.io/jq/), [yq](https://github.com/mikefarah/yq), [httpie](https://httpie.io) |
+| Runtime & environment | [mise](https://mise.jdx.dev), [direnv](https://direnv.net) |
+| Shell & CLI utilities | [zoxide](https://github.com/ajeetdsouza/zoxide), [fzf](https://junegunn.github.io/fzf/), [ripgrep](https://github.com/BurntSushi/ripgrep), [fd](https://github.com/sharkdp/fd), [bat](https://github.com/sharkdp/bat), [eza](https://eza.rocks), [tree](https://oldmanprogrammer.net/source.php?dir=projects/tree), [btop](https://github.com/aristocratos/btop), [tlrc](https://tldr.sh/tlrc/), [watch](https://gitlab.com/procps-ng/procps), [wget](https://www.gnu.org/software/wget/) |
+| System maintenance | [mole](https://mole.fit), [mas](https://github.com/mas-cli/mas) |
 
 ### Apps
 
 | Category | Apps |
 | --- | --- |
-| Editors & terminals | Visual Studio Code, Cursor, Warp, Termius |
-| Containers & virtualization | OrbStack |
-| AI assistants | Claude, ChatGPT, GitHub Copilot CLI |
-| Networking & VPN | Cloudflare WARP, OpenVPN Connect |
-| Browsers | Google Chrome |
-| Communication | Telegram, WhatsApp, WeChat |
-| Fonts | JetBrains Mono Nerd Font |
-| Mac App Store | Xcode |
+| Editors & terminals | [Visual Studio Code](https://code.visualstudio.com/download), [Cursor](https://cursor.com/downloads), [Warp](https://www.warp.dev/download), [Termius](https://termius.com/download/macos) |
+| Containers & virtualization | [OrbStack](https://orbstack.dev/download) |
+| AI assistants | [Claude](https://claude.com/download), [ChatGPT](https://openai.com/chatgpt/download/), [GitHub Copilot CLI](https://github.com/github/copilot-cli/releases) |
+| Networking & VPN | [Cloudflare WARP](https://one.one.one.one), [OpenVPN Connect](https://openvpn.net/client/) |
+| Browsers | [Google Chrome](https://www.google.com/chrome/) |
+| Communication | [Telegram](https://macos.telegram.org), [WhatsApp](https://www.whatsapp.com/download), [WeChat](https://mac.weixin.qq.com) |
+| Fonts | [JetBrains Mono Nerd Font](https://www.nerdfonts.com/font-downloads) |
+| Mac App Store | [Xcode](https://apps.apple.com/app/xcode/id497799835) |
 
 See [`Brewfile`](Brewfile) for a one-line description of each package.
 
