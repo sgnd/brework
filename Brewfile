@@ -1,4 +1,4 @@
-# Brewfile — macOS workstation setup for DevOps and development
+# Brewfile — macOS workstation setup for Dev & Ops
 # Install everything with: brew bundle install
 # https://github.com/Homebrew/homebrew-bundle
 

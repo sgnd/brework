@@ -1,6 +1,6 @@
 # brew
 
-A [Homebrew](https://brew.sh) `Brewfile` for setting up a macOS workstation for DevOps and development in one command.
+A [Homebrew](https://brew.sh) `Brewfile` for setting up a macOS workstation for Dev & Ops in one command.
 
 ## What's inside
 
