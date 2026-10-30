@@ -12,7 +12,6 @@
 brew "git"                # Distributed revision control system
 brew "gh"                 # GitHub command-line tool
 brew "git-delta"          # Syntax-highlighting pager for git and diff output
-brew "lazygit"            # Simple terminal UI for git commands
 
 # ----------------------------------------------------------------------------
 # Code quality & Git hooks
@@ -46,16 +45,18 @@ brew "ansible-lint"       # Best-practice checker for Ansible playbooks
 # ----------------------------------------------------------------------------
 # Containers
 # ----------------------------------------------------------------------------
-# docker and kubectl come with OrbStack (see Apps below)
-brew "dive"               # Explore each layer of a Docker image
+brew "colima"             # Lightweight container runtime (Docker engine in a VM)
+brew "docker"             # Docker CLI
+brew "docker-compose"     # Multi-container apps (`docker compose`)
+brew "docker-buildx"      # BuildKit builder (`docker buildx`)
 
 # ----------------------------------------------------------------------------
 # Kubernetes
 # ----------------------------------------------------------------------------
+brew "kubernetes-cli"     # kubectl
 brew "helm"               # Kubernetes package manager
 brew "kustomize"          # Template-free customization of Kubernetes YAML
 brew "kubectx"            # Switch between kubectl contexts and namespaces
-brew "k9s"                # Terminal UI to manage Kubernetes clusters
 brew "stern"              # Tail logs from multiple pods and containers
 
 # ----------------------------------------------------------------------------
@@ -81,7 +82,6 @@ brew "fd"                 # Simple, fast alternative to find
 brew "bat"                # cat with syntax highlighting and Git integration
 brew "eza"                # Modern replacement for ls
 brew "tree"               # Display directories as trees
-brew "btop"               # Resource monitor
 brew "tlrc"               # tldr client: simplified, example-based man pages
 brew "watch"              # Run a program periodically, showing output fullscreen
 brew "wget"               # Internet file retriever
@@ -103,11 +103,6 @@ cask "visual-studio-code" # Code editor
 cask "cursor"             # AI-first code editor
 cask "warp"               # Modern terminal
 cask "termius"            # SSH client
-
-# ----------------------------------------------------------------------------
-# Containers & virtualization
-# ----------------------------------------------------------------------------
-cask "orbstack"           # Docker containers, Kubernetes and Linux VMs
 
 # ----------------------------------------------------------------------------
 # AI assistants

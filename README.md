@@ -12,16 +12,16 @@ Each name links to the project's official site, where you can also download it w
 
 | Category | Packages |
 | --- | --- |
-| Version control | [git](https://git-scm.com), [gh](https://cli.github.com), [git-delta](https://dandavison.github.io/delta/), [lazygit](https://github.com/jesseduffield/lazygit) |
+| Version control | [git](https://git-scm.com), [gh](https://cli.github.com), [git-delta](https://dandavison.github.io/delta/) |
 | Code quality & Git hooks | [pre-commit](https://pre-commit.com), [shellcheck](https://www.shellcheck.net), [hadolint](https://github.com/hadolint/hadolint) |
 | Security & secrets | [age](https://github.com/FiloSottile/age), [sops](https://getsops.io), [gitleaks](https://gitleaks.io), [trivy](https://trivy.dev) |
 | Cloud CLIs | [awscli](https://aws.amazon.com/cli/), [doctl](https://docs.digitalocean.com/reference/doctl/), [supabase](https://supabase.com/docs/reference/cli/about) |
 | Infrastructure as Code | [opentofu](https://opentofu.org), [ansible](https://www.ansible.com), [ansible-lint](https://docs.ansible.com/projects/lint/) |
-| Containers | [dive](https://github.com/wagoodman/dive) (`docker` and `kubectl` come with OrbStack) |
-| Kubernetes | [helm](https://helm.sh), [kustomize](https://github.com/kubernetes-sigs/kustomize), [kubectx](https://github.com/ahmetb/kubectx), [k9s](https://k9scli.io), [stern](https://github.com/stern/stern) |
+| Containers | [colima](https://github.com/abiosoft/colima), [docker](https://docs.docker.com/engine/install/binaries/), [docker-compose](https://github.com/docker/compose), [docker-buildx](https://github.com/docker/buildx) |
+| Kubernetes | [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-macos/), [helm](https://helm.sh), [kustomize](https://github.com/kubernetes-sigs/kustomize), [kubectx](https://github.com/ahmetb/kubectx), [stern](https://github.com/stern/stern) |
 | Data processing & HTTP | [jq](https://jqlang.github.io/jq/), [yq](https://github.com/mikefarah/yq), [httpie](https://httpie.io) |
 | Runtime & environment | [mise](https://mise.jdx.dev), [direnv](https://direnv.net) |
-| Shell & CLI utilities | [zoxide](https://github.com/ajeetdsouza/zoxide), [fzf](https://junegunn.github.io/fzf/), [ripgrep](https://github.com/BurntSushi/ripgrep), [fd](https://github.com/sharkdp/fd), [bat](https://github.com/sharkdp/bat), [eza](https://eza.rocks), [tree](https://oldmanprogrammer.net/source.php?dir=projects/tree), [btop](https://github.com/aristocratos/btop), [tlrc](https://tldr.sh/tlrc/), [watch](https://gitlab.com/procps-ng/procps), [wget](https://www.gnu.org/software/wget/) |
+| Shell & CLI utilities | [zoxide](https://github.com/ajeetdsouza/zoxide), [fzf](https://junegunn.github.io/fzf/), [ripgrep](https://github.com/BurntSushi/ripgrep), [fd](https://github.com/sharkdp/fd), [bat](https://github.com/sharkdp/bat), [eza](https://eza.rocks), [tree](https://oldmanprogrammer.net/source.php?dir=projects/tree), [tlrc](https://tldr.sh/tlrc/), [watch](https://gitlab.com/procps-ng/procps), [wget](https://www.gnu.org/software/wget/) |
 | System maintenance | [mole](https://mole.fit), [mas](https://github.com/mas-cli/mas) |
 
 ### Apps
@@ -29,7 +29,6 @@ Each name links to the project's official site, where you can also download it w
 | Category | Apps |
 | --- | --- |
 | Editors & terminals | [Visual Studio Code](https://code.visualstudio.com/download), [Cursor](https://cursor.com/downloads), [Warp](https://www.warp.dev/download), [Termius](https://termius.com/download/macos) |
-| Containers & virtualization | [OrbStack](https://orbstack.dev/download) |
 | AI assistants | [Claude](https://claude.com/download), [ChatGPT](https://openai.com/chatgpt/download/), [GitHub Copilot CLI](https://github.com/github/copilot-cli/releases) |
 | Networking & VPN | [Cloudflare WARP](https://one.one.one.one), [OpenVPN Connect](https://openvpn.net/client/) |
 | Browsers | [Google Chrome](https://www.google.com/chrome/) |
@@ -49,13 +48,19 @@ Sign in to the Mac App Store first (needed for Xcode), then run:
 curl -fsSL https://raw.githubusercontent.com/sgnd/brew/main/install.sh | bash
 ```
 
-[`install.sh`](install.sh) installs Homebrew if it is missing, adds it to your `PATH` in `~/.zprofile`, clones this repository to `~/brew` (change it with `BREW_REPO_DIR`) and runs `brew bundle install`. It is safe to run again: everything already installed is skipped.
+[`install.sh`](install.sh) installs Homebrew if it is missing, adds it to your `PATH` in `~/.zprofile`, clones this repository to `~/brew` (change it with `BREW_REPO_DIR`) runs `brew bundle install` and registers the Homebrew `docker compose` / `docker buildx` plugins in `~/.docker/config.json`. It is safe to run again: everything already installed is skipped.
 
 From a clone of this repository you can run it directly:
 
 ```bash
 ./install.sh           # install everything
 ./install.sh --check   # only list what is missing
+```
+
+Start the Docker engine (add `--kubernetes` for a local cluster):
+
+```bash
+colima start
 ```
 
 ### Manual install

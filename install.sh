@@ -74,6 +74,26 @@ persist_shellenv() {
   printf '\neval "$(%s shellenv)"\n' "$(brew_bin)" >>"$zprofile"
 }
 
+# Homebrew's docker-compose and docker-buildx are CLI plugins that docker only
+# finds once their directory is listed in ~/.docker/config.json.
+configure_docker_plugins() {
+  local plugins_dir config="$HOME/.docker/config.json" tmp
+  plugins_dir="$(brew --prefix)/lib/docker/cli-plugins"
+  [ -d "$plugins_dir" ] || return 0
+  if [ -f "$config" ] &&
+    jq -e --arg dir "$plugins_dir" '.cliPluginsExtraDirs // [] | index($dir)' "$config" >/dev/null; then
+    return
+  fi
+
+  log "Registering Docker CLI plugins in $config"
+  mkdir -p "$(dirname "$config")"
+  [ -f "$config" ] || echo '{}' >"$config"
+  tmp="$(mktemp)"
+  jq --arg dir "$plugins_dir" '.cliPluginsExtraDirs = ((.cliPluginsExtraDirs // []) + [$dir])' \
+    "$config" >"$tmp"
+  mv "$tmp" "$config"
+}
+
 # Sets REPO_DIR to the checkout that holds the Brewfile, cloning it if needed.
 find_repo() {
   local script_path="${BASH_SOURCE[0]:-}"
@@ -134,7 +154,9 @@ main() {
   fi
   log "Installing packages from $brewfile"
   brew bundle install --file="$brewfile"
+  configure_docker_plugins
   log "Done. Open a new terminal to pick up the updated PATH."
+  log "Start the Docker engine with: colima start"
 }
 
 # Everything runs from main so that `curl | bash` only starts once the whole
