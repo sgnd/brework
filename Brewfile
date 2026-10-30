@@ -1,5 +1,13 @@
 # Brewfile: tools and apps for a Dev & Ops Mac
 # Install everything with: brew bundle install
+#
+# How to add something:
+#   CLI tool:       brew "name"            find the name with: brew search name
+#   App:            cask "name"            find the name with: brew search --cask name
+#   App Store app:  mas "Name", id: 123    the id is the number in the App Store link
+#
+# Put it in the right section below, with a short comment.
+# To remove something, delete its line.
 # Docs: https://docs.brew.sh/Brew-Bundle-and-Brewfile
 
 # ============================================================================

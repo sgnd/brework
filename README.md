@@ -64,19 +64,24 @@ On Apple Silicon, do not run `install.sh` in a Rosetta (Intel mode) terminal. Th
 
 [`install.sh`](install.sh) does this for you:
 
-- Installs Homebrew, if you don't have it yet
-- Adds Homebrew to your `PATH` (in `~/.zprofile`)
-- Downloads this repo to `~/masbrew` (set `BREW_REPO_DIR` to use another folder)
-- Installs everything in the `Brewfile`
-- Sets up `docker compose` and `docker buildx`
+1. Installs Homebrew, if you don't have it yet
+2. Adds Homebrew to your `PATH` (in `~/.zprofile`)
+3. Downloads this repo to `~/masbrew`
+4. Installs everything in the `Brewfile`
+5. Sets up `docker compose` and `docker buildx`
 
 You can run it again at any time. It skips what is already installed.
 
 If you already downloaded this repo, run the script from there:
 
 ```bash
-./install.sh           # install everything
-./install.sh --check   # only show what is missing
+./install.sh
+```
+
+To see what is still missing, without installing anything:
+
+```bash
+brew bundle check --verbose
 ```
 
 Then start Docker:
@@ -109,9 +114,16 @@ You see this error when an app was installed without Homebrew (for example, drag
 brew install --cask --adopt visual-studio-code
 ```
 
-## Update the list
+## Change the list
 
-Edit the `Brewfile` by hand. Put each new package in the right section, with a short comment.
+1. Open the [`Brewfile`](Brewfile). The top of the file shows how to add a tool or an app.
+2. Add a line in the right section, or delete a line.
+3. Check your change:
+
+   ```bash
+   scripts/validate-brewfile.sh   # does every package still exist?
+   brew bundle install            # install what you added
+   ```
 
 Do not use `brew bundle dump`. It rewrites the file and removes the sections and comments.
 
@@ -121,13 +133,16 @@ To see what is installed on your Mac but missing from the `Brewfile`:
 brew bundle cleanup         # only shows the list, removes nothing
 ```
 
-To check that every package in the `Brewfile` still exists in Homebrew:
+[GitHub Actions](.github/workflows/validate.yml) runs `validate-brewfile.sh` on every push, every pull request and every Monday, on both Apple Silicon and Intel. It also checks the shell scripts and the links in this README.
 
-```bash
-scripts/validate-brewfile.sh
-```
+## Project files
 
-[GitHub Actions](.github/workflows/validate.yml) runs this check on every push, on every pull request and every Monday, on both Apple Silicon and Intel. It also checks the shell scripts and the links in this README.
+| File | What it does |
+| --- | --- |
+| [`Brewfile`](Brewfile) | The list of tools and apps |
+| [`install.sh`](install.sh) | Sets up a Mac in one command |
+| [`scripts/validate-brewfile.sh`](scripts/validate-brewfile.sh) | Checks that every package in the list still exists |
+| [`.github/workflows/validate.yml`](.github/workflows/validate.yml) | Runs the checks on GitHub |
 
 ## Contributing
 

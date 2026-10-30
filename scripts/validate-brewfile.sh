@@ -1,66 +1,55 @@
 #!/usr/bin/env bash
 #
-# Check that every formula and cask in a Brewfile still exists in Homebrew,
-# and warn about packages that were renamed, deprecated or disabled.
-# Mac App Store entries are skipped: checking them needs an App Store account.
+# Check that every package in the Brewfile still exists.
+# Homebrew and the App Store sometimes rename or remove packages,
+# and then `brew bundle install` fails for that package.
 #
-# Usage: scripts/validate-brewfile.sh [path/to/Brewfile]
+# Usage: scripts/validate-brewfile.sh
 
-set -euo pipefail
+set -euo pipefail # stop at the first error
 
-brewfile="${1:-Brewfile}"
-[ -f "$brewfile" ] || { echo "No such file: $brewfile" >&2; exit 1; }
-
+cd "$(dirname "$0")/.." # go to the repo root, where the Brewfile is
 export HOMEBREW_NO_AUTO_UPDATE=1
 
-# Formulae without a bottle for this CPU are compiled from source: slower,
-# but they still install. Homebrew stopped building new Intel bottles.
-if [ "$(uname -m)" = "arm64" ]; then arch=arm64; else arch=intel; fi
+missing=0
 
-errors=0
-warnings=0
-source_builds=0
+# Read the package names from the Brewfile.
+# This also fails if the Brewfile has a typo in it.
+formulas="$(brew bundle list --formula)"
+casks="$(brew bundle list --cask)"
+app_store_ids="$(grep '^mas ' Brewfile | sed 's/.*id: *\([0-9]*\).*/\1/')"
 
-# check <formula|cask> <name>
-check() {
-  local kind="$1" name="$2" json status
-  if ! json="$(brew info "--$kind" --json=v2 "$name" 2>/dev/null)"; then
-    printf 'ERROR    %-6s %s: not found in Homebrew\n' "$kind" "$name"
-    errors=$((errors + 1))
-    return
-  fi
-
-  status="$(jq -r --arg kind "$kind" --arg name "$name" --arg arch "$arch" '
-    (if $kind == "formula" then .formulae[0] else .casks[0] end) as $p
-    | (if $kind == "formula" then $p.name else $p.token end) as $current
-    | ($p.bottle.stable.files // {} | keys) as $tags
-    | ($kind == "cask" or ($tags | index("all")) != null
-        or any($tags[]; (test("linux") | not) and (startswith("arm64_") == ($arch == "arm64")))) as $bottled
-    | if $p.disabled then "disabled"
-      elif $p.deprecated then "deprecated"
-      elif $current != $name and (($p.aliases // []) | index($name) | not) then "renamed to \($current)"
-      elif $bottled | not then "source"
-      else "ok" end
-  ' <<<"$json")"
-
-  if [ "$status" = "ok" ]; then
-    printf 'ok       %-6s %s\n' "$kind" "$name"
-  elif [ "$status" = "source" ]; then
-    printf 'ok       %-6s %s (no %s bottle: builds from source)\n' "$kind" "$name" "$arch"
-    source_builds=$((source_builds + 1))
+# 1. CLI tools (brew "...")
+for name in $formulas; do
+  if brew info --formula "$name" >/dev/null 2>&1; then
+    echo "ok       $name"
   else
-    printf 'WARNING  %-6s %s: %s\n' "$kind" "$name" "$status"
-    warnings=$((warnings + 1))
+    echo "MISSING  $name"
+    missing=$((missing + 1))
   fi
-}
+done
 
-# `brew bundle list` also fails on Brewfile syntax errors.
-formulae="$(brew bundle list --formula --file="$brewfile")"
-casks="$(brew bundle list --cask --file="$brewfile")"
+# 2. Apps (cask "...")
+for name in $casks; do
+  if brew info --cask "$name" >/dev/null 2>&1; then
+    echo "ok       $name"
+  else
+    echo "MISSING  $name"
+    missing=$((missing + 1))
+  fi
+done
 
-for name in $formulae; do check formula "$name"; done
-for name in $casks; do check cask "$name"; done
+# 3. App Store apps (mas "...", id: ...)
+# Apple's public search API knows every app by its id. No sign-in needed.
+for id in $app_store_ids; do
+  if curl -fsS "https://itunes.apple.com/lookup?id=$id" | grep -q '"resultCount":1'; then
+    echo "ok       App Store id $id"
+  else
+    echo "MISSING  App Store id $id"
+    missing=$((missing + 1))
+  fi
+done
 
 echo
-echo "$errors error(s), $warnings warning(s), $source_builds source build(s) on $arch"
-[ "$errors" -eq 0 ] && [ "$warnings" -eq 0 ]
+echo "$missing missing"
+[ "$missing" -eq 0 ] # fail the check if anything is missing

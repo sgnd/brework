@@ -1,3 +1,5 @@
+# Checks that run on GitHub after every push, every pull request,
+# and every Monday (to catch packages that were renamed or removed).
 name: Validate
 
 on:
@@ -5,15 +7,16 @@ on:
     branches: [main]
   pull_request:
   schedule:
-    - cron: "0 3 * * 1" # Mondays 03:00 UTC: catch packages removed or renamed upstream
-  workflow_dispatch:
+    - cron: "0 3 * * 1" # every Monday at 03:00 UTC
+  workflow_dispatch: # adds a "Run workflow" button on GitHub
 
 permissions:
   contents: read
 
 jobs:
+  # 1. Every package in the Brewfile still exists, on Apple Silicon and on Intel.
   brewfile:
-    name: Brewfile packages exist (${{ matrix.os }})
+    name: Brewfile (${{ matrix.os }})
     strategy:
       fail-fast: false
       matrix:
@@ -21,8 +24,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-      - run: scripts/validate-brewfile.sh Brewfile
+      - run: scripts/validate-brewfile.sh
 
+  # 2. The shell scripts have no common bugs.
   shellcheck:
     name: ShellCheck
     runs-on: ubuntu-latest
@@ -30,6 +34,7 @@ jobs:
       - uses: actions/checkout@v4
       - run: shellcheck install.sh scripts/*.sh
 
+  # 3. Every link in the README still works.
   links:
     name: README links
     runs-on: ubuntu-latest
@@ -37,7 +42,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: lycheeverse/lychee-action@v2
         with:
-          # Some sites answer 403/429 to bots even when the page exists, and a
-          # few (gnu.org) are slow; only real errors such as 404 fail the job.
+          # Some websites block bots (403, 429) or answer slowly.
+          # Only real errors, like 404 Not Found, fail this check.
           args: --no-progress --accept 200..=299,403,429 --accept-timeouts --max-retries 3 README.md
           fail: true
