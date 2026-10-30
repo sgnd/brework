@@ -85,6 +85,7 @@ brew "tree"               # Display directories as trees
 brew "tlrc"               # tldr client: simplified, example-based man pages
 brew "watch"              # Run a program periodically, showing output fullscreen
 brew "wget"               # Internet file retriever
+brew "rsync"              # Fast incremental file transfer (macOS ships openrsync)
 
 # ----------------------------------------------------------------------------
 # System maintenance
