@@ -1,6 +1,6 @@
-# brew
+# masbrew
 
-[![Validate](https://github.com/sgnd/brew/actions/workflows/validate.yml/badge.svg)](https://github.com/sgnd/brew/actions/workflows/validate.yml)
+[![Validate](https://github.com/sgnd/masbrew/actions/workflows/validate.yml/badge.svg)](https://github.com/sgnd/masbrew/actions/workflows/validate.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 Set up a Mac for Dev & Ops work with one command.
@@ -59,14 +59,14 @@ On Apple Silicon, do not run `install.sh` in a Rosetta (Intel mode) terminal. Th
 2. Run:
 
    ```bash
-   curl -fsSL https://raw.githubusercontent.com/sgnd/brew/main/install.sh | bash
+   curl -fsSL https://raw.githubusercontent.com/sgnd/masbrew/main/install.sh | bash
    ```
 
 [`install.sh`](install.sh) does this for you:
 
 - Installs Homebrew, if you don't have it yet
 - Adds Homebrew to your `PATH` (in `~/.zprofile`)
-- Downloads this repo to `~/brew` (set `BREW_REPO_DIR` to use another folder)
+- Downloads this repo to `~/masbrew` (set `BREW_REPO_DIR` to use another folder)
 - Installs everything in the `Brewfile`
 - Sets up `docker compose` and `docker buildx`
 
@@ -96,8 +96,8 @@ colima start                # add --kubernetes for a local Kubernetes cluster
 2. Download this repo and install everything:
 
    ```bash
-   git clone https://github.com/sgnd/brew.git
-   cd brew
+   git clone https://github.com/sgnd/masbrew.git
+   cd masbrew
    brew bundle install
    ```
 

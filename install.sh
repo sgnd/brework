@@ -3,13 +3,13 @@
 # Bootstrap a macOS workstation from this repository's Brewfile:
 # install Homebrew, put it on PATH, clone this repository and run `brew bundle`.
 #
-#   curl -fsSL https://raw.githubusercontent.com/sgnd/brew/main/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/sgnd/masbrew/main/install.sh | bash
 #
 # Kept compatible with the bash 3.2 that ships with macOS.
 
 set -euo pipefail
 
-REPO_URL="https://github.com/sgnd/brew.git"
+REPO_URL="https://github.com/sgnd/masbrew.git"
 HOMEBREW_INSTALL_URL="https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh"
 
 usage() {
@@ -24,7 +24,7 @@ Options:
 
 Environment:
   BREW_REPO_DIR  Where to clone this repository when the script is not run
-                 from a checkout (default: ~/brew).
+                 from a checkout (default: ~/masbrew).
 EOF
 }
 
@@ -113,7 +113,7 @@ find_repo() {
     fi
   fi
 
-  REPO_DIR="${BREW_REPO_DIR:-$HOME/brew}"
+  REPO_DIR="${BREW_REPO_DIR:-$HOME/masbrew}"
   if [ -d "$REPO_DIR/.git" ]; then
     log "Updating $REPO_DIR"
     git -C "$REPO_DIR" pull --ff-only || log "Could not update $REPO_DIR; using it as is"
