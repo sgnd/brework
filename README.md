@@ -1,5 +1,7 @@
 # brew
 
+[![Validate](https://github.com/sgnd/brew/actions/workflows/validate.yml/badge.svg)](https://github.com/sgnd/brew/actions/workflows/validate.yml)
+
 A [Homebrew](https://brew.sh) `Brewfile` for setting up a macOS workstation for Dev & Ops in one command.
 
 ## What's inside
@@ -41,32 +43,36 @@ Language runtimes (Node.js, Python, Go, ...) are not installed by Homebrew. They
 
 ## Usage
 
-1. Install Homebrew:
+Sign in to the Mac App Store first (needed for Xcode), then run:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/sgnd/brew/main/install.sh | bash
+```
+
+[`install.sh`](install.sh) installs Homebrew if it is missing, adds it to your `PATH` in `~/.zprofile`, clones this repository to `~/brew` (change it with `BREW_REPO_DIR`) and runs `brew bundle install`. It is safe to run again: everything already installed is skipped.
+
+From a clone of this repository you can run it directly:
+
+```bash
+./install.sh           # install everything
+./install.sh --check   # only list what is missing
+```
+
+### Manual install
+
+1. Install [Homebrew](https://brew.sh):
 
    ```bash
    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
    ```
 
-2. Sign in to the Mac App Store (needed for Xcode).
-
-3. Clone this repository:
+2. Clone this repository and install everything:
 
    ```bash
    git clone https://github.com/sgnd/brew.git
    cd brew
-   ```
-
-4. Install everything:
-
-   ```bash
    brew bundle install
    ```
-
-Check what is missing without installing anything:
-
-```bash
-brew bundle check --verbose
-```
 
 ### Apps already installed outside Homebrew
 
@@ -88,6 +94,18 @@ brew bundle cleanup
 
 Without `--force` this only prints the list; it does not uninstall anything.
 
+Before opening a pull request, check that every package still exists in Homebrew:
+
+```bash
+scripts/validate-brewfile.sh
+```
+
+The same check runs in [GitHub Actions](.github/workflows/validate.yml) on every push and pull request, and every Monday to catch packages that were renamed, deprecated or removed upstream. The workflow also runs ShellCheck and checks the links in this README.
+
 ## Contributing
 
 Suggestions are welcome. Open an issue or pull request, and keep each package in the right category with a short comment describing it.
+
+## License
+
+[MIT](LICENSE)
