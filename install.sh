@@ -18,6 +18,7 @@
 
 set -euo pipefail # stop at the first error
 
+# Forked this repo? Put your fork's address here, so the script installs your list.
 REPO_URL="https://github.com/sgnd/masbrew.git"
 REPO_DIR="$HOME/masbrew" # where `curl | bash` downloads this repo
 
@@ -85,7 +86,9 @@ main() {
 
   say "Installing everything in $REPO_DIR/Brewfile. This can take a while..."
   say "App Store apps need you to be signed in to the App Store."
-  brew bundle install --file="$REPO_DIR/Brewfile"
+  # If one package fails, keep going: step 5 still runs and you get a clear message at the end.
+  all_installed=yes
+  brew bundle install --file="$REPO_DIR/Brewfile" || all_installed=no
 
   # --- 5. Set up docker compose and docker buildx --------------------------
 
@@ -96,6 +99,10 @@ main() {
     [ -e "$plugin" ] || continue
     ln -sfn "$plugin" "$HOME/.docker/cli-plugins/$(basename "$plugin")"
   done
+
+  if [ "$all_installed" = no ]; then
+    fail "Some packages did not install. Read the errors above, fix them, then run this script again."
+  fi
 
   say "Done! Open a new terminal, then start Docker with: colima start"
 }

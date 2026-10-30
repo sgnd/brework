@@ -23,7 +23,7 @@ jobs:
         os: [macos-latest, macos-15-intel] # Apple Silicon, Intel
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - run: scripts/validate-brewfile.sh
 
   # 2. The shell scripts have no common bugs.
@@ -31,7 +31,7 @@ jobs:
     name: ShellCheck
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - run: shellcheck install.sh scripts/*.sh
 
   # 3. Every link in the README still works.
@@ -39,7 +39,7 @@ jobs:
     name: README links
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: lycheeverse/lychee-action@v2
         with:
           # Some websites block bots (403, 429) or answer slowly.

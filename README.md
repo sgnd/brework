@@ -42,7 +42,15 @@ See the [`Brewfile`](Brewfile) for a short description of each one.
 
 Programming languages (Node.js, Python, Go, ...) are not in this list. Install them per project with [`mise`](https://mise.jdx.dev).
 
-## Supported Macs
+## Requirements
+
+- macOS 14 (Sonoma) or newer
+- An admin account (the installer asks for your password)
+- About 20 GB of free disk space
+- An internet connection
+- An Apple ID signed in to the App Store (for the App Store apps)
+
+### Supported Macs
 
 | Mac | Status |
 | --- | --- |
@@ -51,21 +59,21 @@ Programming languages (Node.js, Python, Go, ...) are not in this list. Install t
 
 All apps in the list have both an Apple Silicon and an Intel version.
 
-On Apple Silicon, do not run `install.sh` in a Rosetta (Intel mode) terminal. The script checks this and stops.
-
 ## Install
 
-1. Sign in to the Mac App Store. This is needed for the App Store apps.
+1. Sign in to the Mac App Store.
 2. Run:
 
    ```bash
    curl -fsSL https://raw.githubusercontent.com/sgnd/masbrew/main/install.sh | bash
    ```
 
-[`install.sh`](install.sh) does this for you:
+This runs a script from the internet on your Mac. It is short and easy to read, so you can [read `install.sh`](install.sh) first.
+
+The script does this for you:
 
 1. Installs Homebrew, if you don't have it yet
-2. Adds Homebrew to your `PATH` (in `~/.zprofile`)
+2. Adds Homebrew to your `PATH` (in `~/.zprofile`, for the zsh shell that macOS uses)
 3. Downloads this repo to `~/masbrew`
 4. Installs everything in the `Brewfile`
 5. Sets up `docker compose` and `docker buildx`
@@ -84,12 +92,6 @@ To see what is still missing, without installing anything:
 brew bundle check --verbose
 ```
 
-Then start Docker:
-
-```bash
-colima start                # add --kubernetes for a local Kubernetes cluster
-```
-
 ### Install without the script
 
 1. Install [Homebrew](https://brew.sh):
@@ -106,34 +108,98 @@ colima start                # add --kubernetes for a local Kubernetes cluster
    brew bundle install
    ```
 
-### "It seems there is already an App"
+## After you install
 
-You see this error when an app was installed without Homebrew (for example, dragged into `/Applications`). Let Homebrew take over the app instead of installing it again. It asks for your password:
+1. Open a new terminal, so it can find the new tools.
+2. Start Docker. The first start downloads a small Linux VM, so it takes a few minutes.
+
+   ```bash
+   colima start                 # add --kubernetes for a local Kubernetes cluster
+   docker run --rm hello-world  # check that Docker works
+   ```
+
+3. Open Xcode once to finish its setup.
+4. Open the apps and sign in to the ones you use.
+
+## Keep everything up to date
 
 ```bash
-brew install --cask --adopt visual-studio-code
+brew update && brew upgrade
 ```
+
+App Store apps update through the App Store, as usual.
 
 ## Change the list
 
+### Add a tool or an app
+
 1. Open the [`Brewfile`](Brewfile). The top of the file shows how to add a tool or an app.
-2. Add a line in the right section, or delete a line.
-3. Check your change:
+2. Add a line in the right section, with a short comment.
+3. Check and install it:
 
    ```bash
    scripts/validate-brewfile.sh   # does every package still exist?
    brew bundle install            # install what you added
    ```
 
-Do not use `brew bundle dump`. It rewrites the file and removes the sections and comments.
+### Remove a tool or an app
 
-To see what is installed on your Mac but missing from the `Brewfile`:
+Deleting a line from the `Brewfile` does not uninstall it. Delete the line, then uninstall it yourself:
 
 ```bash
-brew bundle cleanup         # only shows the list, removes nothing
+brew uninstall ripgrep           # a CLI tool
+brew uninstall --cask warp       # an app
 ```
 
+App Store apps: drag them from `/Applications` to the Trash.
+
+### Tips
+
+- Do not use `brew bundle dump`. It rewrites the file and removes the sections and comments.
+- To see what is installed on your Mac but missing from the `Brewfile`:
+
+  ```bash
+  brew bundle cleanup         # only shows the list, removes nothing
+  ```
+
 [GitHub Actions](.github/workflows/validate.yml) runs `validate-brewfile.sh` on every push, every pull request and every Monday, on both Apple Silicon and Intel. It also checks the shell scripts and the links in this README.
+
+## Make it yours
+
+This list is one person's setup. To make your own:
+
+1. [Fork this repo](https://github.com/sgnd/masbrew/fork) on GitHub.
+2. Edit the `Brewfile`: remove what you don't need (for example the chat apps) and add your own tools.
+3. In `install.sh`, change `REPO_URL` to your fork's address.
+4. Install with your fork's link:
+
+   ```bash
+   curl -fsSL https://raw.githubusercontent.com/YOUR-NAME/masbrew/main/install.sh | bash
+   ```
+
+## Troubleshooting
+
+**"It seems there is already an App"**
+The app was installed without Homebrew (for example, dragged into `/Applications`). Let Homebrew take it over instead of installing it again. It asks for your password:
+
+```bash
+brew install --cask --adopt visual-studio-code
+```
+
+**An App Store app did not install**
+Open the App Store, sign in, and run `./install.sh` again.
+
+**"This terminal runs in Rosetta (Intel mode)"**
+Your terminal is set to open using Rosetta. In Finder, open Applications, select your terminal app, choose File > Get Info, and turn off "Open using Rosetta". Then open a new terminal.
+
+**Installing takes very long on an Intel Mac**
+This is expected. Homebrew builds most tools on your Mac (see [Supported Macs](#supported-macs)).
+
+**`docker: Cannot connect to the Docker daemon`**
+Docker is not running. Start it with `colima start`.
+
+**Why Colima and not Docker Desktop?**
+Colima is free, open source and runs from the terminal. It gives you the same `docker` commands.
 
 ## Project files
 
