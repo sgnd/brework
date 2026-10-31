@@ -92,12 +92,6 @@ main() {
   if [ -f "${BASH_SOURCE[0]:-}" ] && [ -f "$(dirname "${BASH_SOURCE[0]}")/Brewfile" ]; then
     # You ran ./install.sh from a downloaded copy: use its Brewfile.
     REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-  elif [ ! -e "$REPO_DIR" ] && git -C "$HOME/masbrew" remote get-url origin 2>/dev/null | grep -q "sgnd/masbrew"; then
-    # brework used to be called masbrew, in ~/masbrew. Move that copy here.
-    say "masbrew is now called brework. Moving ~/masbrew to $REPO_DIR"
-    mv "$HOME/masbrew" "$REPO_DIR"
-    git -C "$REPO_DIR" remote set-url origin "$REPO_URL"
-    git -C "$REPO_DIR" pull --ff-only || say "Could not update. Using the copy you have."
   elif [ -d "$REPO_DIR" ]; then
     say "Updating $REPO_DIR"
     git -C "$REPO_DIR" pull --ff-only || say "Could not update. Using the copy you have."

@@ -5,7 +5,7 @@
 
 Set up a Mac for Dev & Ops work with one command.
 
-brework = brew + work: [Homebrew](https://brew.sh), ready for work. It used to be called masbrew.
+brework = brew + work: [Homebrew](https://brew.sh), ready for work.
 
 This repo has two [Homebrew](https://brew.sh) lists: `Brewfile` with the CLI tools, and `Brewfile.apps` with the GUI and App Store apps. You can install only the CLI tools.
 
@@ -100,8 +100,6 @@ The script does this for you:
 It keeps settings you already have: a tool that is already in your `~/.zshrc`, or a git pager you already picked, stays as it is. Two things it does change: it links `docker compose` and `docker buildx` into `~/.docker/cli-plugins` (replacing Docker Desktop's links), and Colima makes itself the active Docker context when it starts.
 
 You can run it again at any time. It installs what is missing and updates what is out of date.
-
-Installed it when it was called masbrew? Run the install command again. It moves `~/masbrew` to `~/.brework`. If you added the agent skill, download it again (see [Install with an AI agent](#install-with-an-ai-agent)) and delete `~/.claude/skills/masbrew-setup`.
 
 If you already downloaded this repo, run the script from there:
 
