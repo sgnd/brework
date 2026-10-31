@@ -139,10 +139,10 @@ test_docker_compose() {
 
 test_docker_buildx() {
   printf 'FROM busybox\nRUN echo built >/built.txt\n' >Dockerfile
-  docker buildx build -q -t masbrew-smoke-test . >/dev/null &&
-    [ "$(docker run --rm masbrew-smoke-test cat /built.txt)" = built ]
+  docker buildx build -q -t brework-smoke-test . >/dev/null &&
+    [ "$(docker run --rm brework-smoke-test cat /built.txt)" = built ]
   local result=$?
-  docker image rm masbrew-smoke-test >/dev/null 2>&1
+  docker image rm brework-smoke-test >/dev/null 2>&1
   return $result
 }
 
@@ -272,8 +272,8 @@ test_app_store_apps() {
 # --- Run the checks --------------------------------------------------------
 
 case "${1:-}" in
-  "") unset HOMEBREW_MASBREW_CLI_ONLY ;;
-  --cli-only) export HOMEBREW_MASBREW_CLI_ONLY=1 ;;
+  "") unset HOMEBREW_BREWORK_CLI_ONLY ;;
+  --cli-only) export HOMEBREW_BREWORK_CLI_ONLY=1 ;;
   *) echo "Unknown option: $1. The only option is --cli-only." >&2; exit 1 ;;
 esac
 

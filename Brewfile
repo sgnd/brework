@@ -115,4 +115,4 @@ cask "font-jetbrains-mono-nerd-font" # Coding font with icons (eza shows them)
 # Apps: the GUI and App Store apps are in Brewfile.apps.
 # They are loaded here, unless you install with: install.sh --cli-only
 # ============================================================================
-instance_eval File.read(File.join(__dir__, "Brewfile.apps")) unless ENV["HOMEBREW_MASBREW_CLI_ONLY"] == "1"
+instance_eval File.read(File.join(__dir__, "Brewfile.apps")) unless ENV["HOMEBREW_BREWORK_CLI_ONLY"] == "1"

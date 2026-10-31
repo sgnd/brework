@@ -20,7 +20,7 @@ body:
     id: rules
     attributes:
       label: Does it fit the list?
-      description: See [CONTRIBUTING.md](https://github.com/sgnd/masbrew/blob/main/CONTRIBUTING.md).
+      description: See [CONTRIBUTING.md](https://github.com/sgnd/brework/blob/main/CONTRIBUTING.md).
       options:
         - label: It is for Dev & Ops work, or work chat (not a personal app)
           required: true

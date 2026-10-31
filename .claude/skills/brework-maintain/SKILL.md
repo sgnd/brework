@@ -1,11 +1,11 @@
 ---
-name: masbrew-maintain
-description: Add, remove, rename, or move a tool or app in the masbrew Brewfile or Brewfile.apps, and keep the README tables in sync. Use when someone asks to add or remove a package, or edits a Brewfile or the "What's inside" tables in README.md.
+name: brework-maintain
+description: Add, remove, rename, or move a tool or app in the brework Brewfile or Brewfile.apps, and keep the README tables in sync. Use when someone asks to add or remove a package, or edits a Brewfile or the "What's inside" tables in README.md.
 ---
 
-# Maintain the masbrew Brewfiles
+# Maintain the brework Brewfiles
 
-masbrew keeps its package list in these places, and they must match:
+brework keeps its package list in these places, and they must match:
 
 - `Brewfile`: the CLI tools. Its last line loads `Brewfile.apps`.
 - `Brewfile.apps`: the GUI and App Store apps. `install.sh --cli-only` skips this file.
@@ -68,7 +68,7 @@ When Homebrew removes or disables a package, the weekly GitHub check fails with 
 1. Run `brew info NAME` to see why. Look for a replacement with `brew search`.
 2. Change or delete the line in the Brewfile, and update `README.md` the same way.
 
-When an App Store app needs a newer macOS, the check fails with `MISSING  macOS 27.0 in README.md (Xcode needs it now ...)`. Put the new version in `README.md` (Requirements, and Troubleshooting for Xcode) and in the note in `.claude/skills/masbrew-setup/SKILL.md`.
+When an App Store app needs a newer macOS, the check fails with `MISSING  macOS 27.0 in README.md (Xcode needs it now ...)`. Put the new version in `README.md` (Requirements, and Troubleshooting for Xcode) and in the note in `.claude/skills/brework-setup/SKILL.md`.
 
 ## Check your change
 

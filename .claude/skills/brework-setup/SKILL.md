@@ -1,9 +1,9 @@
 ---
-name: masbrew-setup
-description: Set up a Mac with masbrew (install.sh), then check that every tool really works. Use when someone asks to install masbrew, set up or reinstall their Mac with it, run install.sh, or fix a failed masbrew install.
+name: brework-setup
+description: Set up a Mac with brework (install.sh), then check that every tool really works. Use when someone asks to install brework, set up or reinstall their Mac with it, run install.sh, or fix a failed brework install.
 ---
 
-# Set up a Mac with masbrew
+# Set up a Mac with brework
 
 The goal: after one command, the Mac is ready for Dev & Ops work. Every tool in the list is installed, works, and is found when you type it in a new terminal.
 
@@ -19,7 +19,7 @@ sysctl -n sysctl.proc_translated   # must print 0 (or nothing): not a Rosetta te
 sw_vers -productVersion            # must be 15 or newer
 ```
 
-- **Intel Mac (prints 0 or nothing):** stop. The Homebrew installer no longer works on Intel Macs, so masbrew cannot set one up. Don't try other ways to install Homebrew. Tell the user, and point to the "Intel Macs" part of the README.
+- **Intel Mac (prints 0 or nothing):** stop. The Homebrew installer no longer works on Intel Macs, so brework cannot set one up. Don't try other ways to install Homebrew. Tell the user, and point to the "Intel Macs" part of the README.
 - **Rosetta terminal (prints 1):** ask the user to turn off "Open using Rosetta" for their terminal app, then open a new terminal.
 - **macOS older than 15:** ask the user to update macOS first.
 - **Some App Store apps need a newer macOS.** Look up the oldest macOS that Xcode accepts:
@@ -42,11 +42,11 @@ Also check the free space with `df -h /`: about 40 GB for everything, about 20 G
 The installer asks for the user's password (sudo) several times. Some apps use a `.pkg` installer, and the App Store apps need it too. You cannot type it. So run the installer where the user can see it and type: in their terminal, or in a terminal tab they can open. Tell them to watch for `Password:`.
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/sgnd/masbrew/main/install.sh | bash                   # everything
-curl -fsSL https://raw.githubusercontent.com/sgnd/masbrew/main/install.sh | bash -s -- --cli-only  # CLI tools only
+curl -fsSL https://raw.githubusercontent.com/sgnd/brework/main/install.sh | bash                   # everything
+curl -fsSL https://raw.githubusercontent.com/sgnd/brework/main/install.sh | bash -s -- --cli-only  # CLI tools only
 ```
 
-If the repo is already on the Mac (for example in `~/masbrew`), you can run `./install.sh` from that folder instead.
+If the repo is already on the Mac (for example in `~/brework`), you can run `./install.sh` from that folder instead.
 
 A first install takes a long time: often 30 to 60 minutes, more on a slow connection. A quiet terminal is usually a download in progress, not a hang. Check with `ps -ax | grep curl` before you call it stuck.
 
@@ -73,7 +73,7 @@ Never delete user data or apps to make an install pass. Ask first.
 Ask the user to open a **new** terminal window. The new tools and shell settings only load there. Then run:
 
 ```bash
-~/masbrew/scripts/smoke-test.sh              # add --cli-only if they installed only the CLI tools
+~/brework/scripts/smoke-test.sh              # add --cli-only if they installed only the CLI tools
 ```
 
 (If the repo is somewhere else, run `scripts/smoke-test.sh` from that folder.)
@@ -94,7 +94,7 @@ For each `FAIL`, read the lines under it:
 
 ## 6. Tell the user what is left
 
-Report what you did, the smoke test result, and these manual steps (masbrew cannot do them):
+Report what you did, the smoke test result, and these manual steps (brework cannot do them):
 
 - Open Xcode once to finish its setup (if they installed everything).
 - Sign in to the apps they use, and to the CLI tools that need an account: `gh auth login`, `aws configure`, `doctl auth init`, `supabase login`, and `copilot` on its first start.

@@ -1,9 +1,11 @@
-# masbrew
+# brework
 
-[![Validate](https://github.com/sgnd/masbrew/actions/workflows/validate.yml/badge.svg)](https://github.com/sgnd/masbrew/actions/workflows/validate.yml)
+[![Validate](https://github.com/sgnd/brework/actions/workflows/validate.yml/badge.svg)](https://github.com/sgnd/brework/actions/workflows/validate.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 Set up a Mac for Dev & Ops work with one command.
+
+brework = brew + work: [Homebrew](https://brew.sh), ready for work. It used to be called masbrew.
 
 This repo has two [Homebrew](https://brew.sh) lists: `Brewfile` with the CLI tools, and `Brewfile.apps` with the GUI and App Store apps. You can install only the CLI tools.
 
@@ -64,7 +66,7 @@ If Xcode does not install, see [Troubleshooting](#troubleshooting).
 
 ### Intel Macs
 
-masbrew does not work on Intel Macs. The Homebrew installer stops on them, and Homebrew plans to stop working on Intel Macs in or after September 2027 ([Homebrew support tiers](https://docs.brew.sh/Support-Tiers)).
+brework does not work on Intel Macs. The Homebrew installer stops on them, and Homebrew plans to stop working on Intel Macs in or after September 2027 ([Homebrew support tiers](https://docs.brew.sh/Support-Tiers)).
 
 On an Intel Mac, you can still use the lists as a shopping list: every name in [What's inside](#whats-inside) links to its official website, where you can download it. [MacPorts](https://github.com/macports/macports-base) also has many of the CLI tools.
 
@@ -74,13 +76,13 @@ On an Intel Mac, you can still use the lists as a shopping list: every name in [
 2. Run:
 
    ```bash
-   curl -fsSL https://raw.githubusercontent.com/sgnd/masbrew/main/install.sh | bash
+   curl -fsSL https://raw.githubusercontent.com/sgnd/brework/main/install.sh | bash
    ```
 
 Only want the CLI tools, without the GUI and App Store apps? Skip step 1 and run:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/sgnd/masbrew/main/install.sh | bash -s -- --cli-only
+curl -fsSL https://raw.githubusercontent.com/sgnd/brework/main/install.sh | bash -s -- --cli-only
 ```
 
 This runs a script from the internet on your Mac. It is short and easy to read, so you can [read `install.sh`](install.sh) first.
@@ -89,7 +91,7 @@ The script does this for you:
 
 1. Installs Homebrew, if you don't have it yet
 2. Adds Homebrew to your `PATH` (in `~/.zprofile`, for the zsh shell that macOS uses)
-3. Downloads this repo to `~/masbrew`
+3. Downloads this repo to `~/brework`
 4. Installs everything in the `Brewfile` and `Brewfile.apps` (only the `Brewfile` with `--cli-only`)
 5. Sets up `docker compose` and `docker buildx`
 6. Turns on `mise`, `direnv`, `zoxide` and `fzf` in `~/.zshrc`, and shows git diffs with `delta`
@@ -98,6 +100,8 @@ The script does this for you:
 It keeps settings you already have: a tool that is already in your `~/.zshrc`, or a git pager you already picked, stays as it is. Two things it does change: it links `docker compose` and `docker buildx` into `~/.docker/cli-plugins` (replacing Docker Desktop's links), and Colima makes itself the active Docker context when it starts.
 
 You can run it again at any time. It installs what is missing and updates what is out of date.
+
+Installed it when it was called masbrew? Run the install command again. It moves `~/masbrew` to `~/brework`. If you added the agent skill, download it again (see [Install with an AI agent](#install-with-an-ai-agent)) and delete `~/.claude/skills/masbrew-setup`.
 
 If you already downloaded this repo, run the script from there:
 
@@ -114,11 +118,11 @@ Or, for only the CLI tools:
 To see what is missing or out of date, without installing anything:
 
 ```bash
-cd ~/masbrew
+cd ~/brework
 brew bundle check --verbose
 ```
 
-If you installed with `--cli-only`, use `HOMEBREW_MASBREW_CLI_ONLY=1 brew bundle check --verbose`, or it lists the apps as missing.
+If you installed with `--cli-only`, use `HOMEBREW_BREWORK_CLI_ONLY=1 brew bundle check --verbose`, or it lists the apps as missing.
 
 ### Install without the script
 
@@ -133,12 +137,12 @@ If you installed with `--cli-only`, use `HOMEBREW_MASBREW_CLI_ONLY=1 brew bundle
 2. Download this repo and install everything:
 
    ```bash
-   git clone https://github.com/sgnd/masbrew.git ~/masbrew
-   cd ~/masbrew
+   git clone https://github.com/sgnd/brework.git ~/brework
+   cd ~/brework
    brew bundle install
    ```
 
-   For only the CLI tools, run `HOMEBREW_MASBREW_CLI_ONLY=1 brew bundle install` instead of the last line.
+   For only the CLI tools, run `HOMEBREW_BREWORK_CLI_ONLY=1 brew bundle install` instead of the last line.
 
 3. Set up `docker compose` and `docker buildx`:
 
@@ -151,14 +155,14 @@ If you installed with `--cli-only`, use `HOMEBREW_MASBREW_CLI_ONLY=1 brew bundle
 
 ### Install with an AI agent
 
-This repo has an [agent skill](.claude/skills/masbrew-setup/SKILL.md) that tells an AI coding agent how to run the installer, fix common errors, and check that every tool works. To use it with [Claude Code](https://claude.com/claude-code), add it to your skills folder first:
+This repo has an [agent skill](.claude/skills/brework-setup/SKILL.md) that tells an AI coding agent how to run the installer, fix common errors, and check that every tool works. To use it with [Claude Code](https://claude.com/claude-code), add it to your skills folder first:
 
 ```bash
-mkdir -p ~/.claude/skills/masbrew-setup
-curl -fsSL https://raw.githubusercontent.com/sgnd/masbrew/main/.claude/skills/masbrew-setup/SKILL.md -o ~/.claude/skills/masbrew-setup/SKILL.md
+mkdir -p ~/.claude/skills/brework-setup
+curl -fsSL https://raw.githubusercontent.com/sgnd/brework/main/.claude/skills/brework-setup/SKILL.md -o ~/.claude/skills/brework-setup/SKILL.md
 ```
 
-Then start Claude Code in any folder and ask: "Set up my Mac with masbrew". You still type your password yourself when the installer asks for it.
+Then start Claude Code in any folder and ask: "Set up my Mac with brework". You still type your password yourself when the installer asks for it.
 
 Other agents that support agent skills can use the same `SKILL.md`. Put it in their skills folder.
 
@@ -185,7 +189,7 @@ Don't want Docker to start every time you log in? Run `brew services stop colima
 Open a new terminal and run:
 
 ```bash
-~/masbrew/scripts/smoke-test.sh
+~/brework/scripts/smoke-test.sh
 ```
 
 Add `--cli-only` if you installed only the CLI tools. If you ran `./install.sh` from another folder, run `scripts/smoke-test.sh` from that folder.
@@ -204,7 +208,7 @@ To get the newest list and install what was added to it, run the [install comman
 
 ## Change the list
 
-Run the commands below in the masbrew folder (`~/masbrew` if you used the install command).
+Run the commands below in the brework folder (`~/brework` if you used the install command).
 
 ### Add a tool or an app
 
@@ -217,7 +221,7 @@ Run the commands below in the masbrew folder (`~/masbrew` if you used the instal
    brew bundle install            # install what you added
    ```
 
-   If you installed with `--cli-only`, put `HOMEBREW_MASBREW_CLI_ONLY=1` in front of `brew bundle install`, or it also installs all the apps.
+   If you installed with `--cli-only`, put `HOMEBREW_BREWORK_CLI_ONLY=1` in front of `brew bundle install`, or it also installs all the apps.
 
 ### Remove a tool or an app
 
@@ -241,20 +245,20 @@ App Store apps: drag them from `/Applications` to the Trash.
 
 [GitHub Actions](.github/workflows/validate.yml) runs `validate-brewfile.sh` on every push to `main`, every pull request and every Monday. It also checks that the macOS versions in [Requirements](#requirements) still match the App Store, the shell scripts, and the links in this README. [Dependabot](.github/dependabot.yml) opens a pull request when a GitHub Action has a new version.
 
-When a pull request changes a Brewfile, `install.sh` or `smoke-test.sh`, [another check](.github/workflows/e2e.yml) removes Homebrew from a GitHub Mac and then runs `install.sh` for real, once with everything and once with `--cli-only`, and then runs `smoke-test.sh`. Some things are left out, because GitHub's Macs cannot do them: App Store apps (no Apple ID), starting Docker (Colima cannot start a VM there) and typing a password. The test also starts with this repo already in `~/masbrew`, so it does not test the first download of the repo.
+When a pull request changes a Brewfile, `install.sh` or `smoke-test.sh`, [another check](.github/workflows/e2e.yml) removes Homebrew from a GitHub Mac and then runs `install.sh` for real, once with everything and once with `--cli-only`, and then runs `smoke-test.sh`. Some things are left out, because GitHub's Macs cannot do them: App Store apps (no Apple ID), starting Docker (Colima cannot start a VM there) and typing a password. The test also starts with this repo already in `~/brework`, so it does not test the first download of the repo.
 
 ## Make it yours
 
 This list is one person's setup. To make your own:
 
-1. [Fork this repo](https://github.com/sgnd/masbrew/fork) on GitHub.
+1. [Fork this repo](https://github.com/sgnd/brework/fork) on GitHub.
 2. Edit the `Brewfile` and `Brewfile.apps`: remove what you don't need (for example the chat apps) and add your own tools.
 3. In `install.sh`, change `REPO_URL` to your fork's address.
-4. If you already have a `~/masbrew` folder from this repo, delete it.
+4. If you already have a `~/brework` folder from this repo, delete it.
 5. Install with your fork's link:
 
    ```bash
-   curl -fsSL https://raw.githubusercontent.com/YOUR-NAME/masbrew/main/install.sh | bash
+   curl -fsSL https://raw.githubusercontent.com/YOUR-NAME/brework/main/install.sh | bash
    ```
 
 ## Troubleshooting
@@ -295,8 +299,8 @@ Colima is free, open source and runs from the terminal. It gives you the same `d
 | [`.github/dependabot.yml`](.github/dependabot.yml) | Keeps the GitHub Actions up to date |
 | [`CONTRIBUTING.md`](CONTRIBUTING.md), [`SECURITY.md`](SECURITY.md), [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) | How to help, report a security problem, and behave |
 | [`.github/ISSUE_TEMPLATE`](.github/ISSUE_TEMPLATE) | The forms for suggesting a tool and reporting a bug |
-| [`.claude/skills/masbrew-setup/SKILL.md`](.claude/skills/masbrew-setup/SKILL.md) | Tells AI coding agents how to set up a Mac with masbrew and check it |
-| [`.claude/skills/masbrew-maintain/SKILL.md`](.claude/skills/masbrew-maintain/SKILL.md) | Tells AI coding agents how to add or remove a package |
+| [`.claude/skills/brework-setup/SKILL.md`](.claude/skills/brework-setup/SKILL.md) | Tells AI coding agents how to set up a Mac with brework and check it |
+| [`.claude/skills/brework-maintain/SKILL.md`](.claude/skills/brework-maintain/SKILL.md) | Tells AI coding agents how to add or remove a package |
 
 ## Contributing
 

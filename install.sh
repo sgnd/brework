@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# masbrew installer
+# brework installer
 #
 # Sets up a Mac with the tools in the Brewfile and the apps in Brewfile.apps:
 #   1. Install Homebrew (if you don't have it yet)
@@ -12,12 +12,12 @@
 #   7. Start Docker (Colima) now and every time you log in
 #
 # Run it with:
-#   curl -fsSL https://raw.githubusercontent.com/sgnd/masbrew/main/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/sgnd/brework/main/install.sh | bash
 # or from a downloaded copy of this repo:
 #   ./install.sh
 #
 # Only the CLI tools, without the GUI and App Store apps (Brewfile.apps):
-#   curl -fsSL https://raw.githubusercontent.com/sgnd/masbrew/main/install.sh | bash -s -- --cli-only
+#   curl -fsSL https://raw.githubusercontent.com/sgnd/brework/main/install.sh | bash -s -- --cli-only
 #   ./install.sh --cli-only
 #
 # You can run it again at any time. It installs what is missing and updates what is out of date.
@@ -25,8 +25,8 @@
 set -euo pipefail # stop at the first error
 
 # Forked this repo? Put your fork's address here, so the script installs your list.
-REPO_URL="https://github.com/sgnd/masbrew.git"
-REPO_DIR="$HOME/masbrew" # where `curl | bash` downloads this repo
+REPO_URL="https://github.com/sgnd/brework.git"
+REPO_DIR="$HOME/brework" # where `curl | bash` downloads this repo
 
 say() { printf '\033[1;34m==>\033[0m %s\n' "$*"; }
 fail() { printf '\033[1;31mError:\033[0m %s\n' "$*" >&2; exit 1; }
@@ -44,15 +44,15 @@ main() {
   [ $# -le 1 ] || fail "Too many options. The only option is --cli-only."
   case "${1:-}" in
     "") ;;
-    --cli-only) export HOMEBREW_MASBREW_CLI_ONLY=1 ;;
+    --cli-only) export HOMEBREW_BREWORK_CLI_ONLY=1 ;;
     *) fail "Unknown option: $1. The only option is --cli-only." ;;
   esac
 
-  [ "$(uname -s)" = "Darwin" ] || fail "masbrew only works on macOS."
+  [ "$(uname -s)" = "Darwin" ] || fail "brework only works on macOS."
 
   # Homebrew no longer installs on Intel Macs.
   if [ "$(sysctl -n hw.optional.arm64 2>/dev/null)" != "1" ]; then
-    fail "masbrew needs a Mac with Apple Silicon (M1 or newer). Homebrew no longer installs on Intel Macs."
+    fail "brework needs a Mac with Apple Silicon (M1 or newer). Homebrew no longer installs on Intel Macs."
   fi
 
   # A Rosetta (Intel mode) terminal would install the wrong Homebrew.
@@ -92,11 +92,17 @@ main() {
   if [ -f "${BASH_SOURCE[0]:-}" ] && [ -f "$(dirname "${BASH_SOURCE[0]}")/Brewfile" ]; then
     # You ran ./install.sh from a downloaded copy: use its Brewfile.
     REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  elif [ ! -e "$REPO_DIR" ] && git -C "$HOME/masbrew" remote get-url origin 2>/dev/null | grep -q "sgnd/masbrew"; then
+    # brework used to be called masbrew, in ~/masbrew. Move that copy here.
+    say "masbrew is now called brework. Moving ~/masbrew to $REPO_DIR"
+    mv "$HOME/masbrew" "$REPO_DIR"
+    git -C "$REPO_DIR" remote set-url origin "$REPO_URL"
+    git -C "$REPO_DIR" pull --ff-only || say "Could not update. Using the copy you have."
   elif [ -d "$REPO_DIR" ]; then
     say "Updating $REPO_DIR"
     git -C "$REPO_DIR" pull --ff-only || say "Could not update. Using the copy you have."
   else
-    say "Downloading masbrew to $REPO_DIR"
+    say "Downloading brework to $REPO_DIR"
     # git needs Apple's Command Line Tools. A macOS update can remove them.
     xcode-select -p >/dev/null 2>&1 || fail "Install Apple's Command Line Tools with: xcode-select --install. Then run this script again."
     git clone "$REPO_URL" "$REPO_DIR"
@@ -105,14 +111,14 @@ main() {
   [ -f "$REPO_DIR/Brewfile" ] || fail "No Brewfile in $REPO_DIR. Delete that folder and run again."
 
   # An old Brewfile (from before Brewfile.apps) would install the apps anyway.
-  if [ "${HOMEBREW_MASBREW_CLI_ONLY:-}" = 1 ] && ! grep -q HOMEBREW_MASBREW_CLI_ONLY "$REPO_DIR/Brewfile"; then
+  if [ "${HOMEBREW_BREWORK_CLI_ONLY:-}" = 1 ] && ! grep -q HOMEBREW_BREWORK_CLI_ONLY "$REPO_DIR/Brewfile"; then
     fail "The Brewfile in $REPO_DIR does not support --cli-only. Update it with: git -C $REPO_DIR pull"
   fi
 
   # --- 4. Install everything in the Brewfile -------------------------------
 
   say "Installing the list in $REPO_DIR. This can take a while..."
-  if [ "${HOMEBREW_MASBREW_CLI_ONLY:-}" = 1 ]; then
+  if [ "${HOMEBREW_BREWORK_CLI_ONLY:-}" = 1 ]; then
     say "Only the CLI tools: the apps in Brewfile.apps are skipped."
   else
     say "App Store apps need you to be signed in to the App Store."
@@ -138,10 +144,10 @@ main() {
   say "Turning on mise, direnv, zoxide and fzf in ~/.zshrc"
   # shellcheck disable=SC2016 # these lines run later, in your terminal
   {
-    add_to_zshrc "mise activate" 'command -v mise >/dev/null && eval "$(mise activate zsh)" # added by masbrew'
-    add_to_zshrc "direnv hook" 'command -v direnv >/dev/null && eval "$(direnv hook zsh)" # added by masbrew'
-    add_to_zshrc "zoxide init" 'command -v zoxide >/dev/null && eval "$(zoxide init zsh)" # added by masbrew'
-    add_to_zshrc "fzf --zsh" 'command -v fzf >/dev/null && source <(fzf --zsh) # added by masbrew'
+    add_to_zshrc "mise activate" 'command -v mise >/dev/null && eval "$(mise activate zsh)" # added by brework'
+    add_to_zshrc "direnv hook" 'command -v direnv >/dev/null && eval "$(direnv hook zsh)" # added by brework'
+    add_to_zshrc "zoxide init" 'command -v zoxide >/dev/null && eval "$(zoxide init zsh)" # added by brework'
+    add_to_zshrc "fzf --zsh" 'command -v fzf >/dev/null && source <(fzf --zsh) # added by brework'
   }
 
   # Show git diffs with delta, unless you already picked a pager for git.
