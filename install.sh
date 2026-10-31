@@ -111,4 +111,6 @@ main() {
 
 # All the work happens in main(), called on the last line.
 # This way `curl | bash` only starts after the whole script has downloaded.
-main "$@"
+# `exit` on the same line stops bash from reading further, even if this file
+# changes while the script runs.
+main "$@"; exit
