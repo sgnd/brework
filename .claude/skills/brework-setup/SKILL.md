@@ -46,7 +46,7 @@ curl -fsSL https://raw.githubusercontent.com/sgnd/brework/main/install.sh | bash
 curl -fsSL https://raw.githubusercontent.com/sgnd/brework/main/install.sh | bash -s -- --cli-only  # CLI tools only
 ```
 
-If the repo is already on the Mac (for example in `~/brework`), you can run `./install.sh` from that folder instead.
+If the repo is already on the Mac (for example in `~/.brework`), you can run `./install.sh` from that folder instead.
 
 A first install takes a long time: often 30 to 60 minutes, more on a slow connection. A quiet terminal is usually a download in progress, not a hang. Check with `ps -ax | grep curl` before you call it stuck.
 
@@ -73,7 +73,7 @@ Never delete user data or apps to make an install pass. Ask first.
 Ask the user to open a **new** terminal window. The new tools and shell settings only load there. Then run:
 
 ```bash
-~/brework/scripts/smoke-test.sh              # add --cli-only if they installed only the CLI tools
+~/.brework/scripts/smoke-test.sh              # add --cli-only if they installed only the CLI tools
 ```
 
 (If the repo is somewhere else, run `scripts/smoke-test.sh` from that folder.)

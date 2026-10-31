@@ -26,7 +26,7 @@ set -euo pipefail # stop at the first error
 
 # Forked this repo? Put your fork's address here, so the script installs your list.
 REPO_URL="https://github.com/sgnd/brework.git"
-REPO_DIR="$HOME/brework" # where `curl | bash` downloads this repo
+REPO_DIR="$HOME/.brework" # where `curl | bash` downloads this repo
 
 say() { printf '\033[1;34m==>\033[0m %s\n' "$*"; }
 fail() { printf '\033[1;31mError:\033[0m %s\n' "$*" >&2; exit 1; }

@@ -91,7 +91,7 @@ The script does this for you:
 
 1. Installs Homebrew, if you don't have it yet
 2. Adds Homebrew to your `PATH` (in `~/.zprofile`, for the zsh shell that macOS uses)
-3. Downloads this repo to `~/brework`
+3. Downloads this repo to `~/.brework` (a hidden folder: press Cmd+Shift+. in Finder to see it)
 4. Installs everything in the `Brewfile` and `Brewfile.apps` (only the `Brewfile` with `--cli-only`)
 5. Sets up `docker compose` and `docker buildx`
 6. Turns on `mise`, `direnv`, `zoxide` and `fzf` in `~/.zshrc`, and shows git diffs with `delta`
@@ -101,7 +101,7 @@ It keeps settings you already have: a tool that is already in your `~/.zshrc`, o
 
 You can run it again at any time. It installs what is missing and updates what is out of date.
 
-Installed it when it was called masbrew? Run the install command again. It moves `~/masbrew` to `~/brework`. If you added the agent skill, download it again (see [Install with an AI agent](#install-with-an-ai-agent)) and delete `~/.claude/skills/masbrew-setup`.
+Installed it when it was called masbrew? Run the install command again. It moves `~/masbrew` to `~/.brework`. If you added the agent skill, download it again (see [Install with an AI agent](#install-with-an-ai-agent)) and delete `~/.claude/skills/masbrew-setup`.
 
 If you already downloaded this repo, run the script from there:
 
@@ -118,7 +118,7 @@ Or, for only the CLI tools:
 To see what is missing or out of date, without installing anything:
 
 ```bash
-cd ~/brework
+cd ~/.brework
 brew bundle check --verbose
 ```
 
@@ -137,8 +137,8 @@ If you installed with `--cli-only`, use `HOMEBREW_BREWORK_CLI_ONLY=1 brew bundle
 2. Download this repo and install everything:
 
    ```bash
-   git clone https://github.com/sgnd/brework.git ~/brework
-   cd ~/brework
+   git clone https://github.com/sgnd/brework.git ~/.brework
+   cd ~/.brework
    brew bundle install
    ```
 
@@ -189,7 +189,7 @@ Don't want Docker to start every time you log in? Run `brew services stop colima
 Open a new terminal and run:
 
 ```bash
-~/brework/scripts/smoke-test.sh
+~/.brework/scripts/smoke-test.sh
 ```
 
 Add `--cli-only` if you installed only the CLI tools. If you ran `./install.sh` from another folder, run `scripts/smoke-test.sh` from that folder.
@@ -208,7 +208,7 @@ To get the newest list and install what was added to it, run the [install comman
 
 ## Change the list
 
-Run the commands below in the brework folder (`~/brework` if you used the install command).
+Run the commands below in the brework folder (`~/.brework` if you used the install command).
 
 ### Add a tool or an app
 
@@ -245,7 +245,7 @@ App Store apps: drag them from `/Applications` to the Trash.
 
 [GitHub Actions](.github/workflows/validate.yml) runs `validate-brewfile.sh` on every push to `main`, every pull request and every Monday. It also checks that the macOS versions in [Requirements](#requirements) still match the App Store, the shell scripts, and the links in this README. [Dependabot](.github/dependabot.yml) opens a pull request when a GitHub Action has a new version.
 
-When a pull request changes a Brewfile, `install.sh` or `smoke-test.sh`, [another check](.github/workflows/e2e.yml) removes Homebrew from a GitHub Mac and then runs `install.sh` for real, once with everything and once with `--cli-only`, and then runs `smoke-test.sh`. Some things are left out, because GitHub's Macs cannot do them: App Store apps (no Apple ID), starting Docker (Colima cannot start a VM there) and typing a password. The test also starts with this repo already in `~/brework`, so it does not test the first download of the repo.
+When a pull request changes a Brewfile, `install.sh` or `smoke-test.sh`, [another check](.github/workflows/e2e.yml) removes Homebrew from a GitHub Mac and then runs `install.sh` for real, once with everything and once with `--cli-only`, and then runs `smoke-test.sh`. Some things are left out, because GitHub's Macs cannot do them: App Store apps (no Apple ID), starting Docker (Colima cannot start a VM there) and typing a password. The test also starts with this repo already in `~/.brework`, so it does not test the first download of the repo.
 
 ## Make it yours
 
@@ -254,7 +254,7 @@ This list is one person's setup. To make your own:
 1. [Fork this repo](https://github.com/sgnd/brework/fork) on GitHub.
 2. Edit the `Brewfile` and `Brewfile.apps`: remove what you don't need (for example the chat apps) and add your own tools.
 3. In `install.sh`, change `REPO_URL` to your fork's address.
-4. If you already have a `~/brework` folder from this repo, delete it.
+4. If you already have a `~/.brework` folder from this repo, delete it.
 5. Install with your fork's link:
 
    ```bash

@@ -31,5 +31,5 @@ body:
     id: smoke
     attributes:
       label: Smoke test output (if you ran it)
-      description: The FAIL lines from `~/brework/scripts/smoke-test.sh`
+      description: The FAIL lines from `~/.brework/scripts/smoke-test.sh`
       render: text

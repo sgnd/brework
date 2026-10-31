@@ -1,7 +1,7 @@
 # Runs install.sh for real on an Apple Silicon Mac on GitHub:
 # once with everything, and once with --cli-only.
 # Not tested here: App Store apps, starting Docker, typing a password,
-# and the first download of the repo (it starts with the repo in ~/brework).
+# and the first download of the repo (it starts with the repo in ~/.brework).
 # It runs when a pull request changes a Brewfile, install.sh or smoke-test.sh,
 # and when you press "Run workflow" on GitHub.
 name: End-to-end
@@ -37,30 +37,30 @@ jobs:
           rm -f ~/.zprofile ~/.zshrc
           git config --global --unset core.pager || true
 
-      # 2. Put this repo in ~/brework, where `curl | bash` keeps it.
+      # 2. Put this repo in ~/.brework, where `curl | bash` keeps it.
       #    App Store apps need a signed-in Apple ID, so leave them out of this test.
-      - name: Copy the repo to ~/brework
+      - name: Copy the repo to ~/.brework
         run: |
           git checkout -B e2e
-          git clone "$GITHUB_WORKSPACE" ~/brework
-          sed -i '' '/^mas /d' ~/brework/Brewfile.apps
+          git clone "$GITHUB_WORKSPACE" ~/.brework
+          sed -i '' '/^mas /d' ~/.brework/Brewfile.apps
 
       # 3. Run the installer from a pipe, like `curl ... | bash` does.
       - name: Run install.sh (like curl | bash)
         run: |
           if [ "$MODE" = cli-only ]; then
-            cat ~/brework/install.sh | bash -s -- --cli-only
+            cat ~/.brework/install.sh | bash -s -- --cli-only
           else
-            cat ~/brework/install.sh | bash
+            cat ~/.brework/install.sh | bash
           fi
 
       # 4. Run it again from the folder. It should not install anything new.
       - name: Run install.sh again (like ./install.sh)
         run: |
           if [ "$MODE" = cli-only ]; then
-            ~/brework/install.sh --cli-only
+            ~/.brework/install.sh --cli-only
           else
-            ~/brework/install.sh
+            ~/.brework/install.sh
           fi
 
       # 5. Check everything in a new terminal (a clean zsh login shell, like on a new Mac).
@@ -73,7 +73,7 @@ jobs:
             if [ "$MODE" = cli-only ]; then
               export HOMEBREW_BREWORK_CLI_ONLY=1
             fi
-            brew bundle check --verbose --file ~/brework/Brewfile
+            brew bundle check --verbose --file ~/.brework/Brewfile
             [ "$(command -v rsync)" = "$(brew --prefix)/bin/rsync" ]
             docker compose version
             docker buildx version
@@ -110,9 +110,9 @@ jobs:
           # shellcheck disable=SC2016 # the new shell expands $MODE, not this one
           env -i HOME="$HOME" USER="$USER" LOGNAME="$USER" SHELL=/bin/zsh TERM=xterm-256color SKIP_DOCKER=1 MODE="$MODE" /bin/zsh -l -c '
             if [ "$MODE" = cli-only ]; then
-              ~/brework/scripts/smoke-test.sh --cli-only
+              ~/.brework/scripts/smoke-test.sh --cli-only
             else
-              ~/brework/scripts/smoke-test.sh
+              ~/.brework/scripts/smoke-test.sh
             fi
           '
 
