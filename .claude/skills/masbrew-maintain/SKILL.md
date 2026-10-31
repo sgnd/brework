@@ -1,14 +1,15 @@
 ---
 name: masbrew-maintain
-description: Add, remove, rename, or move a tool or app in the masbrew Brewfile, and keep the README tables in sync. Use when someone asks to add or remove a package, or edits the Brewfile or the "What's inside" tables in README.md.
+description: Add, remove, rename, or move a tool or app in the masbrew Brewfile or Brewfile.apps, and keep the README tables in sync. Use when someone asks to add or remove a package, or edits a Brewfile or the "What's inside" tables in README.md.
 ---
 
-# Maintain the masbrew Brewfile
+# Maintain the masbrew Brewfiles
 
-masbrew keeps its package list in two places that must match:
+masbrew keeps its package list in these places, and they must match:
 
-- `Brewfile`: what gets installed
-- `README.md`, section "What's inside": the same list, as tables with links
+- `Brewfile`: the CLI tools. Its last line loads `Brewfile.apps`.
+- `Brewfile.apps`: the GUI and App Store apps. `install.sh --cli-only` skips this file.
+- `README.md`, section "What's inside": the same lists, as tables with links (one table per file)
 
 Keep it simple. Short lines, simple English, no new scripts or tools.
 
@@ -31,7 +32,7 @@ Before adding something, check all of these. If one fails, don't add it and tell
 
    Prefer `brew` or `cask` over `mas`. Use `mas` only when the app is not in Homebrew.
 
-2. Add one line to `Brewfile`, at the end of the right section (or next to a closely related tool, like `docker-buildx` after `docker`):
+2. Add one line to `Brewfile` (a CLI tool, or something the terminal needs, like a font) or `Brewfile.apps` (an app with a window, or an App Store app), at the end of the right section (or next to a closely related tool, like `docker-buildx` after `docker`):
 
    ```ruby
    brew "name"               # Short description, starts with a capital letter
@@ -46,15 +47,15 @@ Before adding something, check all of these. If one fails, don't add it and tell
 3. Add the same package to the matching table in `README.md`:
    - Link the name to its official website (or download page for apps, `apps.apple.com` page for App Store apps). If the tool has no website, link its GitHub repo.
    - Use the name people type or know (`kubectl`, not `kubernetes-cli`).
-   - Keep the order the same as in the `Brewfile`.
-   - A new `Brewfile` section needs a new table row.
+   - Keep the order the same as in the Brewfile.
+   - A new Brewfile section needs a new table row.
 
 4. Check it (see "Check your change" below).
 
 ## Remove a package
 
-1. Delete its line from `Brewfile`.
-2. Delete it from the `README.md` table. If the row is now empty, delete the row, and the `Brewfile` section header too.
+1. Delete its line from `Brewfile` or `Brewfile.apps`.
+2. Delete it from the `README.md` table. If the row is now empty, delete the row, and the Brewfile section header too.
 3. Do not uninstall it from the Mac. Deleting the line does not uninstall it, and the user may still want it. Tell them the uninstall command instead (`brew uninstall NAME` or `brew uninstall --cask NAME`).
 4. Search the rest of `README.md`, `install.sh` and `.github/workflows/e2e.yml` for the name (install.sh sets up some tools, like `mise`, `delta` and `colima`), for example in "After you install" or "Troubleshooting", and update those parts.
 
@@ -65,7 +66,7 @@ When Homebrew renames a package, the old name keeps working. You can still chang
 When Homebrew removes or disables a package, the weekly GitHub check fails with `MISSING  name (removed or disabled)`.
 
 1. Run `brew info NAME` to see why. Look for a replacement with `brew search`.
-2. Change or delete the line in `Brewfile`, and update `README.md` the same way.
+2. Change or delete the line in the Brewfile, and update `README.md` the same way.
 
 ## Check your change
 
@@ -102,4 +103,5 @@ Do not commit unless the user asks. When they do, use a short message like `Add 
 - Don't run `brew bundle dump`. It makes a new file without the sections and comments.
 - Don't add version pins or `Brewfile.lock.json` (it is in `.gitignore`).
 - Don't add options like `args:` or `restart_service:` unless they are really needed.
-- Don't change `install.sh` to add a package. The `Brewfile` is the only list.
+- Don't change `install.sh` to add a package. `Brewfile` and `Brewfile.apps` are the only lists.
+- Don't remove the last line of `Brewfile` (it loads `Brewfile.apps`).

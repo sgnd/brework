@@ -1,10 +1,10 @@
-# Brewfile: tools and apps for a Dev & Ops Mac
+# Brewfile: CLI tools for a Dev & Ops Mac
+# The apps (GUI and App Store) are in Brewfile.apps. This file loads it at the end.
 # Install everything with: brew bundle install
 #
 # How to add something:
 #   CLI tool:       brew "name"            find the name with: brew search name
-#   App:            cask "name"            find the name with: brew search --cask name
-#   App Store app:  mas "Name", id: 123    the id is the number in the App Store link
+#   GUI app:        put it in Brewfile.apps
 #
 # Put it in the right section below, with a short comment.
 # To remove something, delete its line.
@@ -100,47 +100,19 @@ brew "rsync"              # Copy and sync files (newer than the macOS one)
 # System maintenance
 # ----------------------------------------------------------------------------
 brew "mole"               # Clean up your Mac
-brew "mas"                # Install App Store apps from the terminal
-
-# ============================================================================
-# Apps
-# ============================================================================
 
 # ----------------------------------------------------------------------------
-# Editors & terminals
+# AI in the terminal
 # ----------------------------------------------------------------------------
-cask "visual-studio-code" # Code editor
-cask "cursor"             # AI code editor
-cask "warp"               # Terminal
-
-# ----------------------------------------------------------------------------
-# AI assistants
-# ----------------------------------------------------------------------------
-cask "claude"             # Claude desktop app
-cask "chatgpt"            # ChatGPT desktop app
 cask "copilot-cli"        # GitHub Copilot in the terminal
-
-# ----------------------------------------------------------------------------
-# Networking & VPN
-# ----------------------------------------------------------------------------
-cask "cloudflare-warp"    # Cloudflare VPN
-cask "openvpn-connect"    # OpenVPN
-
-# ----------------------------------------------------------------------------
-# Browsers
-# ----------------------------------------------------------------------------
-cask "google-chrome"      # Web browser
 
 # ----------------------------------------------------------------------------
 # Fonts
 # ----------------------------------------------------------------------------
-cask "font-jetbrains-mono-nerd-font" # Coding font with icons
+cask "font-jetbrains-mono-nerd-font" # Coding font with icons (eza shows them)
 
 # ============================================================================
-# Mac App Store (sign in to the App Store first)
+# Apps: the GUI and App Store apps are in Brewfile.apps.
+# They are loaded here, unless you install with: install.sh --cli-only
 # ============================================================================
-mas "Xcode", id: 497799835                       # Apple developer tools
-mas "Termius", id: 1176074088                    # SSH client
-mas "Telegram", id: 747648890                    # Messaging app
-mas "WhatsApp Messenger", id: 310633997          # Messaging app
-mas "WeChat", id: 836500024                      # Messaging app
+instance_eval File.read(File.join(__dir__, "Brewfile.apps")) unless ENV["HOMEBREW_MASBREW_CLI_ONLY"] == "1"

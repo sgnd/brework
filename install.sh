@@ -16,6 +16,10 @@
 # or from a downloaded copy of this repo:
 #   ./install.sh
 #
+# Only the CLI tools, without the GUI and App Store apps (Brewfile.apps):
+#   curl -fsSL https://raw.githubusercontent.com/sgnd/masbrew/main/install.sh | bash -s -- --cli-only
+#   ./install.sh --cli-only
+#
 # You can run it again at any time. It installs what is missing and updates what is out of date.
 
 set -euo pipefail # stop at the first error
@@ -34,7 +38,14 @@ add_to_zshrc() {
 }
 
 main() {
-  # --- 0. Check this Mac ---------------------------------------------------
+  # --- 0. Read the option and check this Mac -------------------------------
+
+  # --cli-only skips Brewfile.apps. The Brewfile reads this setting.
+  case "${1:-}" in
+    "") ;;
+    --cli-only) export HOMEBREW_MASBREW_CLI_ONLY=1 ;;
+    *) fail "Unknown option: $1. The only option is --cli-only." ;;
+  esac
 
   [ "$(uname -s)" = "Darwin" ] || fail "masbrew only works on macOS."
 
@@ -92,10 +103,19 @@ main() {
 
   [ -f "$REPO_DIR/Brewfile" ] || fail "No Brewfile in $REPO_DIR. Delete that folder and run again."
 
+  # An old Brewfile (from before Brewfile.apps) would install the apps anyway.
+  if [ -n "${HOMEBREW_MASBREW_CLI_ONLY:-}" ] && ! grep -q HOMEBREW_MASBREW_CLI_ONLY "$REPO_DIR/Brewfile"; then
+    fail "The Brewfile in $REPO_DIR does not support --cli-only. Update it with: git -C $REPO_DIR pull"
+  fi
+
   # --- 4. Install everything in the Brewfile -------------------------------
 
-  say "Installing everything in $REPO_DIR/Brewfile. This can take a while..."
-  say "App Store apps need you to be signed in to the App Store."
+  say "Installing the list in $REPO_DIR. This can take a while..."
+  if [ -n "${HOMEBREW_MASBREW_CLI_ONLY:-}" ]; then
+    say "Only the CLI tools: the apps in Brewfile.apps are skipped."
+  else
+    say "App Store apps need you to be signed in to the App Store."
+  fi
   # If one package fails, keep going: steps 5 to 7 still run and you get a clear message at the end.
   all_installed=yes
   brew bundle install --file="$REPO_DIR/Brewfile" || all_installed=no

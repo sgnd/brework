@@ -5,13 +5,13 @@
 
 Set up a Mac for Dev & Ops work with one command.
 
-This repo has a [Homebrew](https://brew.sh) `Brewfile`: a list of the tools and apps to install.
+This repo has two [Homebrew](https://brew.sh) lists: `Brewfile` with the CLI tools, and `Brewfile.apps` with the GUI and App Store apps. You can install only the CLI tools.
 
 ## What's inside
 
 Click a name to open its official website. You can also download it from there without Homebrew.
 
-### CLI tools
+### CLI tools (`Brewfile`)
 
 | Category | Packages |
 | --- | --- |
@@ -25,31 +25,33 @@ Click a name to open its official website. You can also download it from there w
 | JSON, YAML & HTTP | [jq](https://jqlang.github.io/jq/), [yq](https://github.com/mikefarah/yq), [httpie](https://httpie.io) |
 | Languages & environment | [mise](https://mise.jdx.dev), [direnv](https://direnv.net) |
 | Shell & CLI utilities | [zoxide](https://github.com/ajeetdsouza/zoxide), [fzf](https://junegunn.github.io/fzf/), [ripgrep](https://github.com/BurntSushi/ripgrep), [fd](https://github.com/sharkdp/fd), [bat](https://github.com/sharkdp/bat), [eza](https://eza.rocks), [tree](https://oldmanprogrammer.net/source.php?dir=projects/tree), [tlrc](https://tldr.sh/tlrc/), [watch](https://gitlab.com/procps-ng/procps), [wget](https://www.gnu.org/software/wget/), [rsync](https://rsync.samba.org) |
-| System maintenance | [mole](https://mole.fit), [mas](https://github.com/mas-cli/mas) |
+| System maintenance | [mole](https://mole.fit) |
+| AI in the terminal | [GitHub Copilot CLI](https://github.com/github/copilot-cli/releases) |
+| Fonts | [JetBrains Mono Nerd Font](https://www.nerdfonts.com/font-downloads) (for the icons in `eza`) |
 
-### Apps
+### Apps (`Brewfile.apps`)
 
 | Category | Apps |
 | --- | --- |
 | Editors & terminals | [Visual Studio Code](https://code.visualstudio.com/download), [Cursor](https://cursor.com/downloads), [Warp](https://www.warp.dev/download) |
-| AI assistants | [Claude](https://claude.com/download), [ChatGPT](https://openai.com/chatgpt/download/), [GitHub Copilot CLI](https://github.com/github/copilot-cli/releases) |
+| AI assistants | [Claude](https://claude.com/download), [ChatGPT](https://openai.com/chatgpt/download/) |
 | Networking & VPN | [Cloudflare WARP](https://one.one.one.one), [OpenVPN Connect](https://openvpn.net/client/) |
 | Browsers | [Google Chrome](https://www.google.com/chrome/) |
-| Fonts | [JetBrains Mono Nerd Font](https://www.nerdfonts.com/font-downloads) |
+| App Store tools | [mas](https://github.com/mas-cli/mas) (installs the App Store apps below) |
 | Mac App Store | [Xcode](https://apps.apple.com/app/id497799835), [Termius](https://apps.apple.com/app/id1176074088), [Telegram](https://apps.apple.com/app/id747648890), [WhatsApp](https://apps.apple.com/app/id310633997), [WeChat](https://apps.apple.com/app/id836500024) |
 
-See the [`Brewfile`](Brewfile) for a short description of each one.
+See the [`Brewfile`](Brewfile) and [`Brewfile.apps`](Brewfile.apps) for a short description of each one.
 
 Programming languages (Node.js, Python, Go, ...) are not in this list. Install them per project with [`mise`](https://mise.jdx.dev).
 
 ## Requirements
 
 - A Mac with Apple Silicon (M1 or newer). The Homebrew installer no longer works on Intel Macs.
-- macOS 15 (Sequoia) or newer. Xcode needs the newest macOS (26.6 or newer today). On an older macOS, everything else installs and the script ends with an error about Xcode.
+- macOS 15 (Sequoia) or newer. Xcode needs the newest macOS (26.6 or newer today). On an older macOS, everything else installs and the script ends with an error about Xcode. With `--cli-only`, Xcode is not installed.
 - An admin account (the installer asks for your password)
 - About 20 GB of free disk space
 - An internet connection
-- An Apple ID signed in to the App Store (for the App Store apps)
+- An Apple ID signed in to the App Store (for the App Store apps, not needed with `--cli-only`)
 
 Xcode from the App Store needs the newest macOS. If your macOS is older, see [Troubleshooting](#troubleshooting).
 
@@ -62,6 +64,12 @@ Xcode from the App Store needs the newest macOS. If your macOS is older, see [Tr
    curl -fsSL https://raw.githubusercontent.com/sgnd/masbrew/main/install.sh | bash
    ```
 
+Only want the CLI tools, without the GUI and App Store apps? Skip step 1 and run:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/sgnd/masbrew/main/install.sh | bash -s -- --cli-only
+```
+
 This runs a script from the internet on your Mac. It is short and easy to read, so you can [read `install.sh`](install.sh) first.
 
 The script does this for you:
@@ -69,7 +77,7 @@ The script does this for you:
 1. Installs Homebrew, if you don't have it yet
 2. Adds Homebrew to your `PATH` (in `~/.zprofile`, for the zsh shell that macOS uses)
 3. Downloads this repo to `~/masbrew`
-4. Installs everything in the `Brewfile`
+4. Installs everything in the `Brewfile` and `Brewfile.apps` (only the `Brewfile` with `--cli-only`)
 5. Sets up `docker compose` and `docker buildx`
 6. Turns on `mise`, `direnv`, `zoxide` and `fzf` in `~/.zshrc`, and shows git diffs with `delta`
 7. Starts Docker (Colima) now and every time you log in
@@ -81,7 +89,8 @@ You can run it again at any time. It installs what is missing and updates what i
 If you already downloaded this repo, run the script from there:
 
 ```bash
-./install.sh
+./install.sh              # everything
+./install.sh --cli-only   # only the CLI tools
 ```
 
 To see what is missing or out of date, without installing anything:
@@ -106,7 +115,8 @@ brew bundle check --verbose
    ```bash
    git clone https://github.com/sgnd/masbrew.git ~/masbrew
    cd ~/masbrew
-   brew bundle install
+   brew bundle install                                   # everything
+   HOMEBREW_MASBREW_CLI_ONLY=1 brew bundle install       # or only the CLI tools
    ```
 
 3. Set up `docker compose` and `docker buildx`:
@@ -150,7 +160,7 @@ Run the commands below in the masbrew folder (`~/masbrew` if you used the instal
 
 ### Add a tool or an app
 
-1. Open the [`Brewfile`](Brewfile). The top of the file shows how to add a tool or an app.
+1. Open the [`Brewfile`](Brewfile) for a CLI tool, or [`Brewfile.apps`](Brewfile.apps) for a GUI or App Store app. The top of each file shows how to add one.
 2. Add a line in the right section, with a short comment.
 3. Check and install it:
 
@@ -161,7 +171,7 @@ Run the commands below in the masbrew folder (`~/masbrew` if you used the instal
 
 ### Remove a tool or an app
 
-Deleting a line from the `Brewfile` does not uninstall it. Delete the line, then uninstall it yourself:
+Deleting a line from the `Brewfile` or `Brewfile.apps` does not uninstall it. Delete the line, then uninstall it yourself:
 
 ```bash
 brew uninstall ripgrep           # a CLI tool
@@ -173,7 +183,7 @@ App Store apps: drag them from `/Applications` to the Trash.
 ### Tips
 
 - Do not use `brew bundle dump` to update the list. It makes a new file without the sections and comments.
-- To see what is installed on your Mac but missing from the `Brewfile`:
+- To see what is installed on your Mac but missing from both lists:
 
   ```bash
   brew bundle cleanup         # shows the list, then asks: press n to keep everything
@@ -181,14 +191,14 @@ App Store apps: drag them from `/Applications` to the Trash.
 
 [GitHub Actions](.github/workflows/validate.yml) runs `validate-brewfile.sh` on every push to `main`, every pull request and every Monday. It also checks the shell scripts and the links in this README.
 
-When a pull request changes the `Brewfile` or `install.sh`, [another check](.github/workflows/e2e.yml) removes Homebrew from a GitHub Mac and then runs `install.sh` for real. Some things are left out, because GitHub's Macs cannot do them: App Store apps (no Apple ID), starting Docker (Colima cannot start a VM there) and typing a password. The test also starts with this repo already in `~/masbrew`, so it does not test the first download of the repo.
+When a pull request changes a Brewfile or `install.sh`, [another check](.github/workflows/e2e.yml) removes Homebrew from a GitHub Mac and then runs `install.sh` for real, once with everything and once with `--cli-only`. Some things are left out, because GitHub's Macs cannot do them: App Store apps (no Apple ID), starting Docker (Colima cannot start a VM there) and typing a password. The test also starts with this repo already in `~/masbrew`, so it does not test the first download of the repo.
 
 ## Make it yours
 
 This list is one person's setup. To make your own:
 
 1. [Fork this repo](https://github.com/sgnd/masbrew/fork) on GitHub.
-2. Edit the `Brewfile`: remove what you don't need (for example the chat apps) and add your own tools.
+2. Edit the `Brewfile` and `Brewfile.apps`: remove what you don't need (for example the chat apps) and add your own tools.
 3. In `install.sh`, change `REPO_URL` to your fork's address.
 4. If you already have a `~/masbrew` folder from this repo, delete it.
 5. Install with your fork's link:
@@ -225,7 +235,8 @@ Colima is free, open source and runs from the terminal. It gives you the same `d
 
 | File | What it does |
 | --- | --- |
-| [`Brewfile`](Brewfile) | The list of tools and apps |
+| [`Brewfile`](Brewfile) | The list of CLI tools. It also loads `Brewfile.apps` |
+| [`Brewfile.apps`](Brewfile.apps) | The list of GUI and App Store apps |
 | [`install.sh`](install.sh) | Sets up a Mac in one command |
 | [`scripts/validate-brewfile.sh`](scripts/validate-brewfile.sh) | Checks that every package in the list still exists |
 | [`.github/workflows/validate.yml`](.github/workflows/validate.yml) | Runs the checks on GitHub |

@@ -17,7 +17,7 @@ missing=0
 # This also fails if the Brewfile has a typo in it.
 formulas="$(brew bundle list --formula)"
 casks="$(brew bundle list --cask)"
-app_store_ids="$(grep '^mas ' Brewfile | sed 's/.*id: *\([0-9]*\).*/\1/')"
+app_store_ids="$(grep -h '^mas ' Brewfile Brewfile.apps | sed 's/.*id: *\([0-9]*\).*/\1/')"
 
 # 1. CLI tools (brew "..."): they must exist and not be disabled.
 for name in $formulas; do
