@@ -68,6 +68,8 @@ When Homebrew removes or disables a package, the weekly GitHub check fails with 
 1. Run `brew info NAME` to see why. Look for a replacement with `brew search`.
 2. Change or delete the line in the Brewfile, and update `README.md` the same way.
 
+When an App Store app needs a newer macOS, the check fails with `MISSING  macOS 27.0 in README.md (Xcode needs it now ...)`. Put the new version in `README.md` (Requirements, and Troubleshooting for Xcode) and in the note in `.claude/skills/masbrew-setup/SKILL.md`.
+
 ## Check your change
 
 Run:
