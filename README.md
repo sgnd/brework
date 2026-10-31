@@ -52,7 +52,7 @@ Programming languages (Node.js, Python, Go, ...) are not in this list. Install t
 
 ## Requirements
 
-- A Mac with Apple Silicon (M1 or newer). The Homebrew installer no longer works on Intel Macs.
+- A Mac with Apple Silicon (M1 or newer). The Homebrew installer no longer works on Intel Macs (see [Intel Macs](#intel-macs)).
 - macOS 15 (Sequoia) or newer. Xcode needs the newest macOS (26.6 or newer today). On an older macOS, everything else installs and the script ends with an error about Xcode. With `--cli-only`, Xcode is not installed.
 - An admin account (the installer asks for your password)
 - About 20 GB of free disk space
@@ -60,6 +60,12 @@ Programming languages (Node.js, Python, Go, ...) are not in this list. Install t
 - An Apple ID signed in to the App Store (for the App Store apps, not needed with `--cli-only`)
 
 Xcode from the App Store needs the newest macOS. If your macOS is older, see [Troubleshooting](#troubleshooting).
+
+### Intel Macs
+
+masbrew does not work on Intel Macs. The Homebrew installer stops on them, and Homebrew plans to stop working on Intel Macs in or after September 2027 ([Homebrew support tiers](https://docs.brew.sh/Support-Tiers)).
+
+On an Intel Mac, you can still use the lists as a shopping list: every name in [What's inside](#whats-inside) links to its official website, where you can download it. [MacPorts](https://www.macports.org) also has many of the CLI tools.
 
 ## Install
 
@@ -258,6 +264,7 @@ Colima is free, open source and runs from the terminal. It gives you the same `d
 | [`scripts/smoke-test.sh`](scripts/smoke-test.sh) | Checks that every installed tool really works |
 | [`.github/workflows/validate.yml`](.github/workflows/validate.yml) | Runs the checks on GitHub |
 | [`.github/workflows/e2e.yml`](.github/workflows/e2e.yml) | Tests `install.sh` for real on a Mac on GitHub |
+| [`.claude/skills/masbrew-setup/SKILL.md`](.claude/skills/masbrew-setup/SKILL.md) | Tells AI coding agents how to set up a Mac with masbrew and check it |
 | [`.claude/skills/masbrew-maintain/SKILL.md`](.claude/skills/masbrew-maintain/SKILL.md) | Tells AI coding agents how to add or remove a package |
 
 ## Contributing
