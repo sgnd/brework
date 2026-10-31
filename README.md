@@ -33,12 +33,18 @@ Click a name to open its official website. You can also download it from there w
 
 | Category | Apps |
 | --- | --- |
+| App Store tools | [mas](https://github.com/mas-cli/mas) (installs the App Store apps below) |
 | Editors & terminals | [Visual Studio Code](https://code.visualstudio.com/download), [Cursor](https://cursor.com/downloads), [Warp](https://www.warp.dev/download) |
 | AI assistants | [Claude](https://claude.com/download), [ChatGPT](https://openai.com/chatgpt/download/) |
+| API & database clients | [Postman](https://www.postman.com/downloads/), [DBeaver](https://dbeaver.io/download/), [MongoDB Compass](https://www.mongodb.com/try/download/compass), [Redis Insight](https://redis.io/insight/) |
+| Chat | [Slack](https://slack.com/downloads/mac), [Discord](https://discord.com/download), [Telegram](https://apps.apple.com/app/id747648890), [WhatsApp](https://apps.apple.com/app/id310633997), [WeChat](https://apps.apple.com/app/id836500024) |
+| Video meetings | [Microsoft Teams](https://www.microsoft.com/microsoft-teams/download-app), [Zoom](https://zoom.us/download), [VooV Meeting](https://voovmeeting.com/download-center.html) |
+| Remote access | [Termius](https://apps.apple.com/app/id1176074088), [TeamViewer](https://www.teamviewer.com/en/download/macos/), [AnyDesk](https://anydesk.com/en/downloads/mac-os) |
 | Networking & VPN | [Cloudflare WARP](https://one.one.one.one), [OpenVPN Connect](https://openvpn.net/client/) |
 | Browsers | [Google Chrome](https://www.google.com/chrome/) |
-| App Store tools | [mas](https://github.com/mas-cli/mas) (installs the App Store apps below) |
-| Mac App Store | [Xcode](https://apps.apple.com/app/id497799835), [Termius](https://apps.apple.com/app/id1176074088), [Telegram](https://apps.apple.com/app/id747648890), [WhatsApp](https://apps.apple.com/app/id310633997), [WeChat](https://apps.apple.com/app/id836500024) |
+| Apple developer tools | [Xcode](https://apps.apple.com/app/id497799835) |
+
+Telegram, WhatsApp, WeChat, Termius and Xcode come from the Mac App Store.
 
 See the [`Brewfile`](Brewfile) and [`Brewfile.apps`](Brewfile.apps) for a short description of each one.
 
