@@ -57,6 +57,7 @@ brew "colima"             # Runs the Docker engine on your Mac
 brew "docker"             # Docker commands
 brew "docker-compose"     # Run multi-container apps (docker compose)
 brew "docker-buildx"      # Build images (docker buildx)
+brew "docker-credential-helper" # Keep docker login passwords in the macOS keychain
 
 # ----------------------------------------------------------------------------
 # Kubernetes

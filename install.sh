@@ -8,6 +8,8 @@
 #   3. Find the Brewfile (download this repo if needed)
 #   4. Install everything in the Brewfile
 #   5. Set up docker compose and docker buildx
+#   6. Turn on the shell tools (mise, direnv, zoxide, fzf) and delta for git
+#   7. Start Docker (Colima) now and every time you log in
 #
 # Run it with:
 #   curl -fsSL https://raw.githubusercontent.com/sgnd/masbrew/main/install.sh | bash
@@ -24,6 +26,12 @@ REPO_DIR="$HOME/masbrew" # where `curl | bash` downloads this repo
 
 say() { printf '\033[1;34m==>\033[0m %s\n' "$*"; }
 fail() { printf '\033[1;31mError:\033[0m %s\n' "$*" >&2; exit 1; }
+
+# Add a line to ~/.zshrc, unless a line with this keyword is already there.
+# Usage: add_to_zshrc KEYWORD LINE
+add_to_zshrc() {
+  grep -qsF "$1" "$HOME/.zshrc" || echo "$2" >>"$HOME/.zshrc"
+}
 
 main() {
   # --- 0. Check this Mac ---------------------------------------------------
@@ -88,7 +96,7 @@ main() {
 
   say "Installing everything in $REPO_DIR/Brewfile. This can take a while..."
   say "App Store apps need you to be signed in to the App Store."
-  # If one package fails, keep going: step 5 still runs and you get a clear message at the end.
+  # If one package fails, keep going: steps 5 to 7 still run and you get a clear message at the end.
   all_installed=yes
   brew bundle install --file="$REPO_DIR/Brewfile" || all_installed=no
 
@@ -102,11 +110,41 @@ main() {
     ln -sfn "$plugin" "$HOME/.docker/cli-plugins/$(basename "$plugin")"
   done
 
+  # --- 6. Turn on the shell tools and delta for git ------------------------
+
+  # mise, direnv, zoxide and fzf need one line in ~/.zshrc to work.
+  # Each line checks that the tool is installed, so a removed tool never breaks your terminal.
+  say "Turning on mise, direnv, zoxide and fzf in ~/.zshrc"
+  # shellcheck disable=SC2016 # these lines run later, in your terminal
+  {
+    add_to_zshrc "mise activate" 'command -v mise >/dev/null && eval "$(mise activate zsh)" # added by masbrew'
+    add_to_zshrc "direnv hook" 'command -v direnv >/dev/null && eval "$(direnv hook zsh)" # added by masbrew'
+    add_to_zshrc "zoxide init" 'command -v zoxide >/dev/null && eval "$(zoxide init zsh)" # added by masbrew'
+    add_to_zshrc "fzf --zsh" 'command -v fzf >/dev/null && source <(fzf --zsh) # added by masbrew'
+  }
+
+  # Show git diffs with delta, unless you already picked a pager for git.
+  if command -v delta >/dev/null && [ -z "$(git config --global core.pager)" ]; then
+    say "Showing git diffs with delta"
+    git config --global core.pager delta
+    git config --global interactive.diffFilter "delta --color-only"
+  fi
+
+  # --- 7. Start Docker (Colima) --------------------------------------------
+
+  # Colima starts now in the background, and again every time you log in.
+  if command -v colima >/dev/null && ! brew services list | grep -q "^colima *started"; then
+    say "Starting Docker (Colima) in the background. The first start takes a few minutes."
+    # If you started Colima yourself before, stop it, so the background service can run it.
+    colima stop >/dev/null 2>&1 || true
+    brew services start colima || say "Could not start Colima. Start it yourself with: colima start"
+  fi
+
   if [ "$all_installed" = no ]; then
     fail "Some packages did not install. Read the errors above, fix them, then run this script again."
   fi
 
-  say "Done! Open a new terminal, then start Docker with: colima start"
+  say "Done! Open a new terminal to use everything."
 }
 
 # All the work happens in main(), called on the last line.
