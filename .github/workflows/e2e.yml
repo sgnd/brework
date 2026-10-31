@@ -105,6 +105,7 @@ jobs:
 
       # 7. Every tool does a small real job, and every command is found in a new terminal.
       - name: Smoke test (every tool really works)
+        timeout-minutes: 15 # a hanging check fails fast instead of using the whole hour
         run: |
           # shellcheck disable=SC2016 # the new shell expands $MODE, not this one
           env -i HOME="$HOME" USER="$USER" LOGNAME="$USER" SHELL=/bin/zsh TERM=xterm-256color SKIP_DOCKER=1 MODE="$MODE" /bin/zsh -l -c '

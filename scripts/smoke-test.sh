@@ -90,7 +90,8 @@ test_sops() {
 }
 
 # A fake GitHub token, made fresh each time.
-fake_token() { echo "ghp_$(LC_ALL=C tr -dc 'A-Za-z0-9' </dev/urandom | head -c 36)"; }
+# (Not `tr </dev/urandom | head`: GitHub Actions ignores SIGPIPE, so tr would never stop.)
+fake_token() { echo "ghp_$(openssl rand -hex 18)"; }
 
 test_gitleaks() { # must find the fake token
   mkdir leak && echo "token = \"$(fake_token)\"" >leak/config.txt
