@@ -14,7 +14,7 @@
 # or from a downloaded copy of this repo:
 #   ./install.sh
 #
-# You can run it again at any time. It skips what is already installed.
+# You can run it again at any time. It installs what is missing and updates what is out of date.
 
 set -euo pipefail # stop at the first error
 
@@ -77,6 +77,8 @@ main() {
     git -C "$REPO_DIR" pull --ff-only || say "Could not update. Using the copy you have."
   else
     say "Downloading masbrew to $REPO_DIR"
+    # git needs Apple's Command Line Tools. A macOS update can remove them.
+    xcode-select -p >/dev/null 2>&1 || fail "Install Apple's Command Line Tools with: xcode-select --install. Then run this script again."
     git clone "$REPO_URL" "$REPO_DIR"
   fi
 

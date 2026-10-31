@@ -44,8 +44,8 @@ Programming languages (Node.js, Python, Go, ...) are not in this list. Install t
 
 ## Requirements
 
-- A Mac with Apple Silicon (M1 or newer). Homebrew [no longer installs on Intel Macs](https://docs.brew.sh/Support-Tiers).
-- macOS 15 (Sequoia) or newer
+- A Mac with Apple Silicon (M1 or newer). The Homebrew installer no longer works on Intel Macs.
+- macOS 15 (Sequoia) or newer. Xcode needs the newest macOS (26.6 or newer today). On an older macOS, everything else installs and the script ends with an error about Xcode.
 - An admin account (the installer asks for your password)
 - About 20 GB of free disk space
 - An internet connection
@@ -72,7 +72,7 @@ The script does this for you:
 4. Installs everything in the `Brewfile`
 5. Sets up `docker compose` and `docker buildx`
 
-You can run it again at any time. It skips what is already installed.
+You can run it again at any time. It installs what is missing and updates what is out of date.
 
 If you already downloaded this repo, run the script from there:
 
@@ -80,7 +80,7 @@ If you already downloaded this repo, run the script from there:
 ./install.sh
 ```
 
-To see what is still missing, without installing anything:
+To see what is missing or out of date, without installing anything:
 
 ```bash
 cd ~/masbrew
@@ -133,7 +133,7 @@ brew update && brew upgrade
 
 App Store apps update through the App Store, as usual.
 
-To get the newest list and install what was added to it, run the [install command](#install) again.
+To get the newest list and install what was added to it, run the [install command](#install) again. This also updates everything in the list, App Store apps included.
 
 ## Change the list
 
@@ -163,16 +163,16 @@ App Store apps: drag them from `/Applications` to the Trash.
 
 ### Tips
 
-- Do not use `brew bundle dump`. It rewrites the file and removes the sections and comments.
+- Do not use `brew bundle dump` to update the list. It makes a new file without the sections and comments.
 - To see what is installed on your Mac but missing from the `Brewfile`:
 
   ```bash
-  brew bundle cleanup         # only shows the list, removes nothing
+  brew bundle cleanup         # shows the list, then asks: press n to keep everything
   ```
 
-[GitHub Actions](.github/workflows/validate.yml) runs `validate-brewfile.sh` on every push, every pull request and every Monday. It also checks the shell scripts and the links in this README.
+[GitHub Actions](.github/workflows/validate.yml) runs `validate-brewfile.sh` on every push to `main`, every pull request and every Monday. It also checks the shell scripts and the links in this README.
 
-When a pull request changes the `Brewfile` or `install.sh`, [another check](.github/workflows/e2e.yml) removes Homebrew from a GitHub Mac and then runs `install.sh` for real. Two things are left out, because GitHub's Macs cannot do them: App Store apps (no Apple ID) and starting Docker (Colima cannot start a VM there).
+When a pull request changes the `Brewfile` or `install.sh`, [another check](.github/workflows/e2e.yml) removes Homebrew from a GitHub Mac and then runs `install.sh` for real. Some things are left out, because GitHub's Macs cannot do them: App Store apps (no Apple ID), starting Docker (Colima cannot start a VM there) and typing a password. The test also starts with this repo already in `~/masbrew`, so it does not test the first download of the repo.
 
 ## Make it yours
 
@@ -181,7 +181,8 @@ This list is one person's setup. To make your own:
 1. [Fork this repo](https://github.com/sgnd/masbrew/fork) on GitHub.
 2. Edit the `Brewfile`: remove what you don't need (for example the chat apps) and add your own tools.
 3. In `install.sh`, change `REPO_URL` to your fork's address.
-4. Install with your fork's link:
+4. If you already have a `~/masbrew` folder from this repo, delete it.
+5. Install with your fork's link:
 
    ```bash
    curl -fsSL https://raw.githubusercontent.com/YOUR-NAME/masbrew/main/install.sh | bash
@@ -203,7 +204,7 @@ Open the App Store, sign in, and run the [install command](#install) again.
 The newest Xcode needs the newest macOS. Update macOS in System Settings > General > Software Update, then run the install command again. Or download an older Xcode from [Apple's developer site](https://developer.apple.com/download/all/?q=xcode).
 
 **"This terminal runs in Rosetta (Intel mode)"**
-Your terminal is set to open using Rosetta. In Finder, open Applications, select your terminal app, choose File > Get Info, and turn off "Open using Rosetta". Then open a new terminal.
+Your terminal is set to open using Rosetta. In Finder, open Applications (Terminal is in Applications > Utilities), select your terminal app, choose File > Get Info, and turn off "Open using Rosetta". Then open a new terminal.
 
 **`docker: Cannot connect to the Docker daemon`**
 Docker is not running. Start it with `colima start`.

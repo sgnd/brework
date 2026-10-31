@@ -1,4 +1,6 @@
 # Runs install.sh for real on an Apple Silicon Mac on GitHub.
+# Not tested here: App Store apps, starting Docker, typing a password,
+# and the first download of the repo (it starts with the repo in ~/masbrew).
 # It runs when a pull request changes the Brewfile or install.sh,
 # and when you press "Run workflow" on GitHub.
 name: End-to-end

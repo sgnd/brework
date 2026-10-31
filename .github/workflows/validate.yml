@@ -1,5 +1,5 @@
-# Checks that run on GitHub after every push, every pull request,
-# and every Monday (to catch packages that were renamed or removed).
+# Checks that run on GitHub after every push to main, every pull request,
+# and every Monday (to catch packages that were removed or disabled).
 name: Validate
 
 on:

@@ -18,7 +18,7 @@ Before adding something, check all of these. If one fails, don't add it and tell
 
 - It is a tool for Dev & Ops work, or for work chat (like Telegram or WhatsApp). Not a personal app: no music, games, or personal finance apps (like Trezor Suite).
 - It is a plain CLI tool, not a full-screen terminal app with its own layout (like lazygit, k9s, or lazydocker).
-- It runs on macOS 15 or newer, on Apple Silicon. For an app, run `brew info --cask NAME`: its "Requirements" part may list a macOS version, but not an architecture (arm64 or x86_64).
+- It runs on macOS 15 or newer, on Apple Silicon. For an app, run `brew info --cask NAME` and read its "Requirements" part. If it says `x86_64 architecture`, the app is Intel only: don't add it.
 - It is not a programming language or runtime (Node, Python, Go, Java, ...). Those are installed per project with `mise`.
 - It is not already in the list, under another name. For example, `kubectl` is `brew "kubernetes-cli"`.
 
@@ -56,14 +56,16 @@ Before adding something, check all of these. If one fails, don't add it and tell
 1. Delete its line from `Brewfile`.
 2. Delete it from the `README.md` table. If the row is now empty, delete the row, and the `Brewfile` section header too.
 3. Do not uninstall it from the Mac. Deleting the line does not uninstall it, and the user may still want it. Tell them the uninstall command instead (`brew uninstall NAME` or `brew uninstall --cask NAME`).
-4. Search the rest of `README.md` and `install.sh` for the name, for example in "After you install" or "Troubleshooting", and update those parts.
+4. Search the rest of `README.md`, `install.sh` and `.github/workflows/e2e.yml` for the name, for example in "After you install" or "Troubleshooting", and update those parts.
 
-## Rename a package
+## A package was removed or renamed
 
-Homebrew sometimes renames packages. The weekly GitHub check then fails with `MISSING  name`.
+When Homebrew renames a package, the old name keeps working. You can still change it to the new name: `brew info OLD-NAME` shows the new one.
 
-1. Find the new name: `brew info NAME` often says where it moved. Otherwise search with `brew search`.
-2. Change the line in `Brewfile`. Change the `README.md` link only if the website changed.
+When Homebrew removes or disables a package, the weekly GitHub check fails with `MISSING  name (removed or disabled)`.
+
+1. Run `brew info NAME` to see why. Look for a replacement with `brew search`.
+2. Change or delete the line in `Brewfile`, and update `README.md` the same way.
 
 ## Check your change
 
@@ -97,7 +99,7 @@ Do not commit unless the user asks. When they do, use a short message like `Add 
 
 ## Don't
 
-- Don't run `brew bundle dump`. It rewrites the `Brewfile` and removes the sections and comments.
+- Don't run `brew bundle dump`. It makes a new file without the sections and comments.
 - Don't add version pins or `Brewfile.lock.json` (it is in `.gitignore`).
 - Don't add options like `args:` or `restart_service:` unless they are really needed.
 - Don't change `install.sh` to add a package. The `Brewfile` is the only list.
