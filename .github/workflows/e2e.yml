@@ -27,7 +27,8 @@ jobs:
         run: |
           NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/uninstall.sh)"
           sudo rm -rf "/Applications/Google Chrome.app" "/Applications/Visual Studio Code.app"
-          rm -f ~/.zprofile
+          rm -f ~/.zprofile ~/.zshrc
+          git config --global --unset core.pager || true
 
       # 2. Put this repo in ~/masbrew, where `curl | bash` keeps it.
       #    App Store apps need a signed-in Apple ID, so leave them out of this test.
@@ -56,9 +57,24 @@ jobs:
             [ "$(command -v rsync)" = "$(brew --prefix)/bin/rsync" ]
             docker compose version
             docker buildx version
+            command -v docker-credential-osxkeychain
             kubectl version --client
             mas version
+            [ "$(git config --global core.pager)" = delta ]
+            ls ~/Library/LaunchAgents/*colima*.plist
           '
+
+      # 6. The shell tools work in a new terminal, and running install.sh twice
+      #    did not add their lines to ~/.zshrc twice.
+      - name: Check the shell tools in a new terminal
+        run: |
+          cat ~/.zshrc
+          [ "$(grep -c "added by masbrew" ~/.zshrc)" -eq 4 ]
+          env -i HOME="$HOME" USER="$USER" TERM=xterm /bin/zsh -l -i -c '
+            set -e
+            whence -w _mise_hook _direnv_hook __zoxide_z fzf-file-widget
+          ' 2>&1 | tee shell.log
+          ! grep -iE "error|not found" shell.log
 
       # Not tested here: App Store apps (no Apple ID on GitHub's Macs)
       # and `colima start` (GitHub's Macs cannot start a VM inside their own VM).

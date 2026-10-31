@@ -20,7 +20,7 @@ Click a name to open its official website. You can also download it from there w
 | Security & secrets | [age](https://github.com/FiloSottile/age), [sops](https://getsops.io), [gitleaks](https://gitleaks.io), [trivy](https://trivy.dev) |
 | Cloud CLIs | [awscli](https://aws.amazon.com/cli/), [doctl](https://docs.digitalocean.com/reference/doctl/), [supabase](https://supabase.com/docs/reference/cli/about) |
 | Infrastructure as Code & server setup | [opentofu](https://opentofu.org), [ansible](https://www.ansible.com), [ansible-lint](https://docs.ansible.com/projects/lint/) |
-| Containers | [colima](https://github.com/abiosoft/colima), [docker](https://docs.docker.com/engine/install/binaries/), [docker-compose](https://github.com/docker/compose), [docker-buildx](https://github.com/docker/buildx) |
+| Containers | [colima](https://github.com/abiosoft/colima), [docker](https://docs.docker.com/engine/install/binaries/), [docker-compose](https://github.com/docker/compose), [docker-buildx](https://github.com/docker/buildx), [docker-credential-helper](https://github.com/docker/docker-credential-helpers) |
 | Kubernetes | [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-macos/), [helm](https://helm.sh), [kustomize](https://github.com/kubernetes-sigs/kustomize), [kubectx](https://github.com/ahmetb/kubectx), [stern](https://github.com/stern/stern) |
 | JSON, YAML & HTTP | [jq](https://jqlang.github.io/jq/), [yq](https://github.com/mikefarah/yq), [httpie](https://httpie.io) |
 | Languages & environment | [mise](https://mise.jdx.dev), [direnv](https://direnv.net) |
@@ -71,6 +71,10 @@ The script does this for you:
 3. Downloads this repo to `~/masbrew`
 4. Installs everything in the `Brewfile`
 5. Sets up `docker compose` and `docker buildx`
+6. Turns on `mise`, `direnv`, `zoxide` and `fzf` in `~/.zshrc`, and shows git diffs with `delta`
+7. Starts Docker (Colima) now and every time you log in
+
+It does not change settings you already have: a tool that is already in your `~/.zshrc`, or a git pager you already picked, stays as it is.
 
 You can run it again at any time. It installs what is missing and updates what is out of date.
 
@@ -112,18 +116,23 @@ brew bundle check --verbose
    ln -sfn "$(brew --prefix)"/lib/docker/cli-plugins/docker-* ~/.docker/cli-plugins/
    ```
 
+4. For the shell tools, `delta` and starting Docker, copy steps 6 and 7 from [`install.sh`](install.sh).
+
 ## After you install
 
-1. Open a new terminal, so it can find the new tools.
-2. Start Docker. The first start downloads a small Linux VM, so it takes a few minutes.
+1. Open a new terminal. Everything is ready to use.
+2. Docker starts by itself. The first start downloads a small Linux VM, so it takes a few minutes. Check that it works:
 
    ```bash
-   colima start                 # add --kubernetes for a local Kubernetes cluster
-   docker run --rm hello-world  # check that Docker works
+   docker run --rm hello-world
    ```
 
 3. Open Xcode once to finish its setup.
 4. Open the apps and sign in to the ones you use.
+
+Need a local Kubernetes cluster? Run `colima stop`, then `colima start --kubernetes`.
+
+Don't want Docker to start every time you log in? Run `brew services stop colima`, and start it yourself with `colima start` when you need it.
 
 ## Keep everything up to date
 
@@ -207,7 +216,7 @@ The newest Xcode needs the newest macOS. Update macOS in System Settings > Gener
 Your terminal is set to open using Rosetta. In Finder, open Applications (Terminal is in Applications > Utilities), select your terminal app, choose File > Get Info, and turn off "Open using Rosetta". Then open a new terminal.
 
 **`docker: Cannot connect to the Docker daemon`**
-Docker is not running. Start it with `colima start`.
+Docker is still starting (the first start takes a few minutes), or it is not running. Check with `colima status`. Start it with `brew services restart colima`.
 
 **Why Colima and not Docker Desktop?**
 Colima is free, open source and runs from the terminal. It gives you the same `docker` commands.
