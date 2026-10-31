@@ -30,7 +30,7 @@ sw_vers -productVersion            # must be 15 or newer
 
   If the Mac is older, everything installs except Xcode. Tell the user before you start. (WhatsApp needs 15.1.)
 
-Also check that there is about 20 GB of free space: `df -h /`.
+Also check the free space with `df -h /`: about 40 GB for everything, about 20 GB with `--cli-only`.
 
 ## 2. Ask the user two things
 

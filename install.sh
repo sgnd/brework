@@ -2,11 +2,11 @@
 #
 # masbrew installer
 #
-# Sets up a Mac with everything in the Brewfile:
+# Sets up a Mac with the tools in the Brewfile and the apps in Brewfile.apps:
 #   1. Install Homebrew (if you don't have it yet)
 #   2. Add Homebrew to your PATH
 #   3. Find the Brewfile (download this repo if needed)
-#   4. Install everything in the Brewfile
+#   4. Install everything in the Brewfile and Brewfile.apps (only the Brewfile with --cli-only)
 #   5. Set up docker compose and docker buildx
 #   6. Turn on the shell tools (mise, direnv, zoxide, fzf) and delta for git
 #   7. Start Docker (Colima) now and every time you log in

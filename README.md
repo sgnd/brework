@@ -55,7 +55,7 @@ Programming languages (Node.js, Python, Go, ...) are not in this list. Install t
 - A Mac with Apple Silicon (M1 or newer). The Homebrew installer no longer works on Intel Macs (see [Intel Macs](#intel-macs)).
 - macOS 15 (Sequoia) or newer. Some App Store apps need more: Xcode needs macOS 26.6 or newer today, and WhatsApp 15.1. On an older macOS, everything else installs and the script ends with an error about those apps. With `--cli-only`, no App Store apps are installed.
 - An admin account (the installer asks for your password)
-- About 20 GB of free disk space
+- About 40 GB of free disk space (about 20 GB with `--cli-only`). Docker needs more as you add images.
 - An internet connection
 - An Apple ID signed in to the App Store (for the App Store apps, not needed with `--cli-only`)
 
@@ -148,6 +148,23 @@ If you installed with `--cli-only`, use `HOMEBREW_MASBREW_CLI_ONLY=1 brew bundle
 
 4. For the shell tools, `delta` and starting Docker, copy steps 6 and 7 from [`install.sh`](install.sh).
 
+## After you install
+
+1. Open a new terminal. Everything is ready to use. To check that, see [Check that everything works](#check-that-everything-works).
+2. Docker starts by itself. The first start downloads a small Linux VM, so it takes a few minutes. Check that it works:
+
+   ```bash
+   docker run --rm hello-world
+   ```
+
+3. Open Xcode once to finish its setup (not with `--cli-only`).
+4. Open the apps and sign in to the ones you use.
+5. Sign in to the CLI tools you use: `gh auth login`, `aws configure`, `doctl auth init`, `supabase login`, and `copilot` (it asks on its first start).
+
+Need a local Kubernetes cluster? Run `colima stop`, then `colima start --kubernetes`.
+
+Don't want Docker to start every time you log in? Run `brew services stop colima`, and start it yourself with `colima start` when you need it. Running the install command again turns the autostart back on, unless Colima is running at that moment.
+
 ## Check that everything works
 
 Open a new terminal and run:
@@ -159,22 +176,6 @@ Open a new terminal and run:
 Add `--cli-only` if you installed only the CLI tools. If you ran `./install.sh` from another folder, run `scripts/smoke-test.sh` from that folder.
 
 It gives every CLI tool one small real task (for example: `age` encrypts and decrypts a file, `gitleaks` finds a planted fake token, `docker` runs a container). It also checks that every command is found in a new terminal, and that every app Homebrew puts in `/Applications` is signed and runs on Apple Silicon. Tools that need an account, like `gh` and `aws`, only show their version. The last line must say `0 failed`.
-
-## After you install
-
-1. Open a new terminal. Everything is ready to use.
-2. Docker starts by itself. The first start downloads a small Linux VM, so it takes a few minutes. Check that it works:
-
-   ```bash
-   docker run --rm hello-world
-   ```
-
-3. Open Xcode once to finish its setup.
-4. Open the apps and sign in to the ones you use.
-
-Need a local Kubernetes cluster? Run `colima stop`, then `colima start --kubernetes`.
-
-Don't want Docker to start every time you log in? Run `brew services stop colima`, and start it yourself with `colima start` when you need it. Running the install command again turns the autostart back on, unless Colima is running at that moment.
 
 ## Keep everything up to date
 
@@ -225,7 +226,7 @@ App Store apps: drag them from `/Applications` to the Trash.
 
 [GitHub Actions](.github/workflows/validate.yml) runs `validate-brewfile.sh` on every push to `main`, every pull request and every Monday. It also checks the shell scripts and the links in this README.
 
-When a pull request changes a Brewfile or `install.sh`, [another check](.github/workflows/e2e.yml) removes Homebrew from a GitHub Mac and then runs `install.sh` for real, once with everything and once with `--cli-only`, and then runs `smoke-test.sh`. Some things are left out, because GitHub's Macs cannot do them: App Store apps (no Apple ID), starting Docker (Colima cannot start a VM there) and typing a password. The test also starts with this repo already in `~/masbrew`, so it does not test the first download of the repo.
+When a pull request changes a Brewfile, `install.sh` or `smoke-test.sh`, [another check](.github/workflows/e2e.yml) removes Homebrew from a GitHub Mac and then runs `install.sh` for real, once with everything and once with `--cli-only`, and then runs `smoke-test.sh`. Some things are left out, because GitHub's Macs cannot do them: App Store apps (no Apple ID), starting Docker (Colima cannot start a VM there) and typing a password. The test also starts with this repo already in `~/masbrew`, so it does not test the first download of the repo.
 
 ## Make it yours
 
