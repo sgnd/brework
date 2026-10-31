@@ -148,6 +148,19 @@ If you installed with `--cli-only`, use `HOMEBREW_MASBREW_CLI_ONLY=1 brew bundle
 
 4. For the shell tools, `delta` and starting Docker, copy steps 6 and 7 from [`install.sh`](install.sh).
 
+### Install with an AI agent
+
+This repo has an [agent skill](.claude/skills/masbrew-setup/SKILL.md) that tells an AI coding agent how to run the installer, fix common errors, and check that every tool works. To use it with [Claude Code](https://claude.com/claude-code), add it to your skills folder first:
+
+```bash
+mkdir -p ~/.claude/skills/masbrew-setup
+curl -fsSL https://raw.githubusercontent.com/sgnd/masbrew/main/.claude/skills/masbrew-setup/SKILL.md -o ~/.claude/skills/masbrew-setup/SKILL.md
+```
+
+Then start Claude Code in any folder and ask: "Set up my Mac with masbrew". You still type your password yourself when the installer asks for it.
+
+Other agents that support agent skills can use the same `SKILL.md`. Put it in their skills folder.
+
 ## After you install
 
 1. Open a new terminal. Everything is ready to use. To check that, see [Check that everything works](#check-that-everything-works).
