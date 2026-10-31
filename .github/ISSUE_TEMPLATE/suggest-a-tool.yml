@@ -1,0 +1,32 @@
+name: Suggest a tool
+description: Suggest a CLI tool or an app for the list
+labels: [enhancement]
+body:
+  - type: input
+    id: name
+    attributes:
+      label: Homebrew name
+      description: Find it with `brew search NAME`. For an App Store app, the id from its App Store link.
+      placeholder: brew "k6"
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: What do you use it for at work?
+    validations:
+      required: true
+  - type: checkboxes
+    id: rules
+    attributes:
+      label: Does it fit the list?
+      description: See [CONTRIBUTING.md](https://github.com/sgnd/masbrew/blob/main/CONTRIBUTING.md).
+      options:
+        - label: It is for Dev & Ops work, or work chat (not a personal app)
+          required: true
+        - label: It is a plain CLI tool or an app, not a full-screen terminal app (like lazygit or k9s)
+          required: true
+        - label: It runs on macOS 15 or newer, on Apple Silicon
+          required: true
+        - label: It is not a programming language or runtime (those go in mise)
+          required: true

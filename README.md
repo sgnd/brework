@@ -291,12 +291,14 @@ Colima is free, open source and runs from the terminal. It gives you the same `d
 | [`.github/workflows/validate.yml`](.github/workflows/validate.yml) | Runs the checks on GitHub |
 | [`.github/workflows/e2e.yml`](.github/workflows/e2e.yml) | Tests `install.sh` for real on a Mac on GitHub |
 | [`.github/dependabot.yml`](.github/dependabot.yml) | Keeps the GitHub Actions up to date |
+| [`CONTRIBUTING.md`](CONTRIBUTING.md), [`SECURITY.md`](SECURITY.md), [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) | How to help, report a security problem, and behave |
+| [`.github/ISSUE_TEMPLATE`](.github/ISSUE_TEMPLATE) | The forms for suggesting a tool and reporting a bug |
 | [`.claude/skills/masbrew-setup/SKILL.md`](.claude/skills/masbrew-setup/SKILL.md) | Tells AI coding agents how to set up a Mac with masbrew and check it |
 | [`.claude/skills/masbrew-maintain/SKILL.md`](.claude/skills/masbrew-maintain/SKILL.md) | Tells AI coding agents how to add or remove a package |
 
 ## Contributing
 
-Ideas are welcome. Open an issue or a pull request.
+Ideas are welcome. To suggest a tool, report a bug or send a pull request, see [CONTRIBUTING.md](CONTRIBUTING.md). Found a security problem? See [SECURITY.md](SECURITY.md).
 
 ## License
 
