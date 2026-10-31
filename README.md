@@ -170,9 +170,10 @@ Other agents that support agent skills can use the same `SKILL.md`. Put it in th
    docker run --rm hello-world
    ```
 
-3. Open Xcode once to finish its setup (not with `--cli-only`).
-4. Open the apps and sign in to the ones you use.
-5. Sign in to the CLI tools you use: `gh auth login`, `aws configure`, `doctl auth init`, `supabase login`, and `copilot` (it asks on its first start).
+3. For icons in the terminal, pick the font **JetBrainsMono Nerd Font** (some apps list it as **JetBrainsMono NF**) in your terminal's settings, and run `eza --icons`. The terminal does not switch fonts by itself.
+4. Open Xcode once to finish its setup (not with `--cli-only`).
+5. Open the apps and sign in to the ones you use.
+6. Sign in to the CLI tools you use: `gh auth login`, `aws configure`, `doctl auth init`, `supabase login`, and `copilot` (it asks on its first start).
 
 Need a local Kubernetes cluster? Run `colima stop`, then `colima start --kubernetes`.
 
