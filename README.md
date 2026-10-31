@@ -209,6 +209,7 @@ Colima is free, open source and runs from the terminal. It gives you the same `d
 | [`install.sh`](install.sh) | Sets up a Mac in one command |
 | [`scripts/validate-brewfile.sh`](scripts/validate-brewfile.sh) | Checks that every package in the list still exists |
 | [`.github/workflows/validate.yml`](.github/workflows/validate.yml) | Runs the checks on GitHub |
+| [`.claude/skills/masbrew-maintain/SKILL.md`](.claude/skills/masbrew-maintain/SKILL.md) | Tells AI coding agents how to add or remove a package |
 
 ## Contributing
 
