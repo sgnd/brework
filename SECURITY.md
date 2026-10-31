@@ -6,7 +6,7 @@
 
 Please don't open a public issue for a security problem. Report it privately instead:
 
-1. Open the [Security tab](https://github.com/sgnd/masbrew/security) of this repo.
+1. Open the [Security tab](https://github.com/sgnd/brework/security) of this repo.
 2. Click **Report a vulnerability**.
 
 You get an answer within a week. Once it is fixed, a new release says what changed.
