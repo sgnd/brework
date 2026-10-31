@@ -57,7 +57,7 @@ Before adding something, check all of these. If one fails, don't add it and tell
 1. Delete its line from `Brewfile` or `Brewfile.apps`.
 2. Delete it from the `README.md` table. If the row is now empty, delete the row, and the Brewfile section header too.
 3. Do not uninstall it from the Mac. Deleting the line does not uninstall it, and the user may still want it. Tell them the uninstall command instead (`brew uninstall NAME` or `brew uninstall --cask NAME`).
-4. Search the rest of `README.md`, `install.sh` and `.github/workflows/e2e.yml` for the name (install.sh sets up some tools, like `mise`, `delta` and `colima`), for example in "After you install" or "Troubleshooting", and update those parts.
+4. Search the rest of `README.md`, `install.sh`, `scripts/smoke-test.sh` and `.github/workflows/e2e.yml` for the name (install.sh sets up some tools, like `mise`, `delta` and `colima`), for example in "After you install" or "Troubleshooting", and update those parts.
 
 ## A package was removed or renamed
 

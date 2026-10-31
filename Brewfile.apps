@@ -9,6 +9,9 @@
 # Use mas only when the app is not in Homebrew. mas apps need you to be signed in to the App Store.
 # To remove something, delete its line.
 
+# ----------------------------------------------------------------------------
+# App Store tools
+# ----------------------------------------------------------------------------
 brew "mas"                # Install App Store apps from the terminal
 
 # ----------------------------------------------------------------------------

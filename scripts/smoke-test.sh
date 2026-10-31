@@ -45,6 +45,7 @@ check() {
 # --- Version control -------------------------------------------------------
 
 test_git() {
+  export GIT_CONFIG_GLOBAL=/dev/null # ignore your own git settings (like commit signing)
   git init -q repo && cd repo &&
     echo hello >file.txt && git add file.txt &&
     git -c user.name=test -c user.email=test@example.com commit -q -m first &&
@@ -93,7 +94,7 @@ fake_token() { echo "ghp_$(LC_ALL=C tr -dc 'A-Za-z0-9' </dev/urandom | head -c 3
 
 test_gitleaks() { # must find the fake token
   mkdir leak && echo "token = \"$(fake_token)\"" >leak/config.txt
-  ! gitleaks dir --no-banner leak >/dev/null 2>&1
+  gitleaks dir --no-banner leak 2>&1 | grep -q 'leaks found: [1-9]'
 }
 
 test_trivy() { # must find the fake token (the secret scanner works offline)
@@ -110,7 +111,7 @@ test_opentofu() {
 }
 
 test_ansible() {
-  ansible localhost -i localhost, -c local -m ping | grep -q SUCCESS
+  ANSIBLE_HOME="$PWD" ansible localhost -i localhost, -c local -m ping | grep -q SUCCESS
 }
 
 test_ansible_lint() { # must find the task without a name
@@ -122,11 +123,17 @@ test_ansible_lint() { # must find the task without a name
 
 test_docker() {
   docker run --rm hello-world | grep -q 'Hello from Docker'
+  local result=$?
+  docker image rm hello-world >/dev/null 2>&1
+  return $result
 }
 
 test_docker_compose() {
   printf 'services:\n  hello:\n    image: busybox\n    command: echo compose-works\n' >compose.yaml
   docker compose run --rm hello | grep -q compose-works
+  local result=$?
+  docker compose down >/dev/null 2>&1 # removes the network it made
+  return $result
 }
 
 test_docker_buildx() {
@@ -169,8 +176,11 @@ test_http_tools() {
   echo hello-http >page.txt
   local port=8765
   python3 -m http.server "$port" --bind 127.0.0.1 >/dev/null 2>&1 &
-  local server=$!
-  sleep 2
+  local server=$! _
+  for _ in 1 2 3 4 5 6 7 8 9 10; do # wait up to 10 seconds for the server
+    curl -s "127.0.0.1:$port/page.txt" >/dev/null && break
+    sleep 1
+  done
   http --ignore-stdin --print=b GET "127.0.0.1:$port/page.txt" | grep -q hello-http &&
     wget -q -O - "http://127.0.0.1:$port/page.txt" | grep -q hello-http
   local result=$?
@@ -205,7 +215,7 @@ test_tldr() { tldr tar | grep -qi archive; } # downloads the pages the first tim
 
 test_rsync() {
   make_files && rsync -a files/ copy/ && [ -f copy/sub/hay.txt ] &&
-    rsync --version | head -1 | grep -qv 'version 2\.'
+    [ "$(command -v rsync)" = "$(brew --prefix)/bin/rsync" ]
 }
 
 # --- Every command is found in a new terminal ------------------------------
@@ -218,16 +228,21 @@ commands_from_list() {
     ls "$(brew --prefix)/opt/$name/bin"
   done
   brew bundle list --cask --file="$repo/Brewfile" | xargs brew info --json=v2 --cask |
-    jq -r '.casks[].artifacts[] | objects | select(has("binary")) | .binary[0] | split("/") | last'
+    jq -r '.casks[].artifacts[] | objects | select(has("binary")) | .target | split("/") | last'
 }
 
 # Open a new terminal (a clean zsh, like a new Terminal window) and look for each command.
 test_commands_found() {
-  local commands missing
+  local commands output missing
   commands="$(commands_from_list | sort -u | tr '\n' ' ')"
-  missing="$(env -i HOME="$HOME" USER="$USER" LOGNAME="$LOGNAME" SHELL=/bin/zsh TERM=xterm-256color /bin/zsh -l -i -c \
-    "for c in $commands; do whence -p \$c >/dev/null || echo \"command not found: \$c\"; done" 2>/dev/null)"
+  # Your ~/.zshrc may print things too, so only read our own lines.
+  # "all checked" at the end shows that the loop really ran.
+  output="$(env -i HOME="$HOME" USER="$USER" LOGNAME="$LOGNAME" SHELL=/bin/zsh TERM=xterm-256color /bin/zsh -l -i -c \
+    "for c in $commands; do whence -p \$c >/dev/null || echo \"command not found: \$c\"; done; echo all checked" \
+    </dev/null 2>/dev/null)"
+  missing="$(echo "$output" | grep '^command not found:')"
   echo "checked: $commands"
+  echo "$output" | grep -q '^all checked$' || { echo "the new terminal did not finish"; return 1; }
   [ -z "$missing" ] || { echo "$missing"; return 1; }
 }
 
@@ -255,10 +270,13 @@ test_app_store_apps() {
 
 # --- Run the checks --------------------------------------------------------
 
+case "${1:-}" in
+  "") unset HOMEBREW_MASBREW_CLI_ONLY ;;
+  --cli-only) export HOMEBREW_MASBREW_CLI_ONLY=1 ;;
+  *) echo "Unknown option: $1. The only option is --cli-only." >&2; exit 1 ;;
+esac
+
 echo "== Everything in the list is installed"
-if [ "${1:-}" = --cli-only ]; then
-  export HOMEBREW_MASBREW_CLI_ONLY=1
-fi
 check "brew bundle check" brew bundle check --file="$repo/Brewfile"
 check "every command is found in a new terminal" test_commands_found
 
@@ -301,7 +319,8 @@ check "aws: runs (sign in with: aws configure)" aws --version
 check "doctl: runs (sign in with: doctl auth init)" doctl version
 check "supabase: runs (sign in with: supabase login)" supabase --version
 check "copilot: runs (sign in on first start)" copilot --version
-check "font: JetBrains Mono Nerd Font is installed" ls "$HOME/Library/Fonts/JetBrainsMonoNerdFont-Regular.ttf"
+test_font() { brew list --cask font-jetbrains-mono-nerd-font | grep -q 'JetBrainsMonoNerdFont-Regular.ttf'; }
+check "font: JetBrains Mono Nerd Font is installed" test_font
 
 echo "== Docker"
 if [ -n "${SKIP_DOCKER:-}" ]; then

@@ -41,6 +41,7 @@ main() {
   # --- 0. Read the option and check this Mac -------------------------------
 
   # --cli-only skips Brewfile.apps. The Brewfile reads this setting.
+  [ $# -le 1 ] || fail "Too many options. The only option is --cli-only."
   case "${1:-}" in
     "") ;;
     --cli-only) export HOMEBREW_MASBREW_CLI_ONLY=1 ;;
@@ -104,14 +105,14 @@ main() {
   [ -f "$REPO_DIR/Brewfile" ] || fail "No Brewfile in $REPO_DIR. Delete that folder and run again."
 
   # An old Brewfile (from before Brewfile.apps) would install the apps anyway.
-  if [ -n "${HOMEBREW_MASBREW_CLI_ONLY:-}" ] && ! grep -q HOMEBREW_MASBREW_CLI_ONLY "$REPO_DIR/Brewfile"; then
+  if [ "${HOMEBREW_MASBREW_CLI_ONLY:-}" = 1 ] && ! grep -q HOMEBREW_MASBREW_CLI_ONLY "$REPO_DIR/Brewfile"; then
     fail "The Brewfile in $REPO_DIR does not support --cli-only. Update it with: git -C $REPO_DIR pull"
   fi
 
   # --- 4. Install everything in the Brewfile -------------------------------
 
   say "Installing the list in $REPO_DIR. This can take a while..."
-  if [ -n "${HOMEBREW_MASBREW_CLI_ONLY:-}" ]; then
+  if [ "${HOMEBREW_MASBREW_CLI_ONLY:-}" = 1 ]; then
     say "Only the CLI tools: the apps in Brewfile.apps are skipped."
   else
     say "App Store apps need you to be signed in to the App Store."
@@ -144,7 +145,7 @@ main() {
   }
 
   # Show git diffs with delta, unless you already picked a pager for git.
-  if command -v delta >/dev/null && [ -z "$(git config --global core.pager)" ]; then
+  if command -v delta >/dev/null && [ -z "$(git config --global --includes core.pager)" ]; then
     say "Showing git diffs with delta"
     git config --global core.pager delta
     git config --global interactive.diffFilter "delta --color-only"
@@ -153,11 +154,14 @@ main() {
   # --- 7. Start Docker (Colima) --------------------------------------------
 
   # Colima starts now in the background, and again every time you log in.
+  # A Colima you already started yourself is left alone, so your containers keep running.
   if command -v colima >/dev/null && ! brew services list | grep -q "^colima *started"; then
-    say "Starting Docker (Colima) in the background. The first start takes a few minutes."
-    # If you started Colima yourself before, stop it, so the background service can run it.
-    colima stop >/dev/null 2>&1 || true
-    brew services start colima || say "Could not start Colima. Start it yourself with: colima start"
+    if colima status >/dev/null 2>&1; then
+      say "Docker (Colima) is already running. To also start it at every login, run: colima stop && brew services start colima"
+    else
+      say "Starting Docker (Colima) in the background. The first start takes a few minutes."
+      brew services start colima || say "Could not start Colima. Start it yourself with: colima start"
+    fi
   fi
 
   if [ "$all_installed" = no ]; then

@@ -2,13 +2,13 @@
 # once with everything, and once with --cli-only.
 # Not tested here: App Store apps, starting Docker, typing a password,
 # and the first download of the repo (it starts with the repo in ~/masbrew).
-# It runs when a pull request changes a Brewfile or install.sh,
+# It runs when a pull request changes a Brewfile, install.sh or smoke-test.sh,
 # and when you press "Run workflow" on GitHub.
 name: End-to-end
 
 on:
   pull_request:
-    paths: [Brewfile, Brewfile.apps, install.sh, .github/workflows/e2e.yml]
+    paths: [Brewfile, Brewfile.apps, install.sh, scripts/smoke-test.sh, .github/workflows/e2e.yml]
   workflow_dispatch: # adds a "Run workflow" button on GitHub
 
 permissions:
@@ -101,7 +101,7 @@ jobs:
             set -e
             whence -w _mise_hook _direnv_hook __zoxide_z fzf-file-widget
           ' 2>&1 | tee shell.log
-          ! grep -iE "error|not found" shell.log
+          ! grep -iE "error|not found|: none" shell.log # whence prints "NAME: none" for a missing hook
 
       # 7. Every tool does a small real job, and every command is found in a new terminal.
       - name: Smoke test (every tool really works)

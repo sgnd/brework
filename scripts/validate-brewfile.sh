@@ -10,6 +10,7 @@ set -euo pipefail # stop at the first error
 
 cd "$(dirname "$0")/.." # go to the repo root, where the Brewfile is
 brew update --quiet     # get Homebrew's newest package list
+unset HOMEBREW_MASBREW_CLI_ONLY # always check both lists
 
 missing=0
 

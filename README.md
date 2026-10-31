@@ -53,13 +53,13 @@ Programming languages (Node.js, Python, Go, ...) are not in this list. Install t
 ## Requirements
 
 - A Mac with Apple Silicon (M1 or newer). The Homebrew installer no longer works on Intel Macs (see [Intel Macs](#intel-macs)).
-- macOS 15 (Sequoia) or newer. Xcode needs the newest macOS (26.6 or newer today). On an older macOS, everything else installs and the script ends with an error about Xcode. With `--cli-only`, Xcode is not installed.
+- macOS 15 (Sequoia) or newer. Some App Store apps need more: Xcode needs macOS 26.6 or newer today, and WhatsApp 15.1. On an older macOS, everything else installs and the script ends with an error about those apps. With `--cli-only`, no App Store apps are installed.
 - An admin account (the installer asks for your password)
 - About 20 GB of free disk space
 - An internet connection
 - An Apple ID signed in to the App Store (for the App Store apps, not needed with `--cli-only`)
 
-Xcode from the App Store needs the newest macOS. If your macOS is older, see [Troubleshooting](#troubleshooting).
+If Xcode does not install, see [Troubleshooting](#troubleshooting).
 
 ### Intel Macs
 
@@ -94,15 +94,20 @@ The script does this for you:
 6. Turns on `mise`, `direnv`, `zoxide` and `fzf` in `~/.zshrc`, and shows git diffs with `delta`
 7. Starts Docker (Colima) now and every time you log in
 
-It does not change settings you already have: a tool that is already in your `~/.zshrc`, or a git pager you already picked, stays as it is.
+It keeps settings you already have: a tool that is already in your `~/.zshrc`, or a git pager you already picked, stays as it is. Two things it does change: it links `docker compose` and `docker buildx` into `~/.docker/cli-plugins` (replacing Docker Desktop's links), and Colima makes itself the active Docker context when it starts.
 
 You can run it again at any time. It installs what is missing and updates what is out of date.
 
 If you already downloaded this repo, run the script from there:
 
 ```bash
-./install.sh              # everything
-./install.sh --cli-only   # only the CLI tools
+./install.sh
+```
+
+Or, for only the CLI tools:
+
+```bash
+./install.sh --cli-only
 ```
 
 To see what is missing or out of date, without installing anything:
@@ -111,6 +116,8 @@ To see what is missing or out of date, without installing anything:
 cd ~/masbrew
 brew bundle check --verbose
 ```
+
+If you installed with `--cli-only`, use `HOMEBREW_MASBREW_CLI_ONLY=1 brew bundle check --verbose`, or it lists the apps as missing.
 
 ### Install without the script
 
@@ -127,9 +134,10 @@ brew bundle check --verbose
    ```bash
    git clone https://github.com/sgnd/masbrew.git ~/masbrew
    cd ~/masbrew
-   brew bundle install                                   # everything
-   HOMEBREW_MASBREW_CLI_ONLY=1 brew bundle install       # or only the CLI tools
+   brew bundle install
    ```
+
+   For only the CLI tools, run `HOMEBREW_MASBREW_CLI_ONLY=1 brew bundle install` instead of the last line.
 
 3. Set up `docker compose` and `docker buildx`:
 
@@ -145,10 +153,12 @@ brew bundle check --verbose
 Open a new terminal and run:
 
 ```bash
-~/masbrew/scripts/smoke-test.sh              # or add --cli-only
+~/masbrew/scripts/smoke-test.sh
 ```
 
-It gives every CLI tool one small real task (for example: `age` encrypts and decrypts a file, `gitleaks` finds a planted fake token, `docker` runs a container). It also checks that every command is found in a new terminal, and that every app is signed and runs on Apple Silicon. Tools that need an account, like `gh` and `aws`, only show their version.
+Add `--cli-only` if you installed only the CLI tools. If you ran `./install.sh` from another folder, run `scripts/smoke-test.sh` from that folder.
+
+It gives every CLI tool one small real task (for example: `age` encrypts and decrypts a file, `gitleaks` finds a planted fake token, `docker` runs a container). It also checks that every command is found in a new terminal, and that every app Homebrew puts in `/Applications` is signed and runs on Apple Silicon. Tools that need an account, like `gh` and `aws`, only show their version. The last line must say `0 failed`.
 
 ## After you install
 
@@ -164,7 +174,7 @@ It gives every CLI tool one small real task (for example: `age` encrypts and dec
 
 Need a local Kubernetes cluster? Run `colima stop`, then `colima start --kubernetes`.
 
-Don't want Docker to start every time you log in? Run `brew services stop colima`, and start it yourself with `colima start` when you need it.
+Don't want Docker to start every time you log in? Run `brew services stop colima`, and start it yourself with `colima start` when you need it. Running the install command again turns the autostart back on, unless Colima is running at that moment.
 
 ## Keep everything up to date
 
@@ -190,6 +200,8 @@ Run the commands below in the masbrew folder (`~/masbrew` if you used the instal
    scripts/validate-brewfile.sh   # does every package still exist?
    brew bundle install            # install what you added
    ```
+
+   If you installed with `--cli-only`, put `HOMEBREW_MASBREW_CLI_ONLY=1` in front of `brew bundle install`, or it also installs all the apps.
 
 ### Remove a tool or an app
 
@@ -242,7 +254,7 @@ brew install --cask --adopt visual-studio-code
 Open the App Store, sign in, and run the [install command](#install) again.
 
 **Xcode did not install**
-The newest Xcode needs the newest macOS. Update macOS in System Settings > General > Software Update, then run the install command again. Or download an older Xcode from [Apple's developer site](https://developer.apple.com/download/all/?q=xcode).
+Xcode from the App Store needs a recent macOS (26.6 or newer today). Update macOS in System Settings > General > Software Update, then run the install command again. Or download an older Xcode from [Apple's developer site](https://developer.apple.com/download/all/?q=xcode).
 
 **"This terminal runs in Rosetta (Intel mode)"**
 Your terminal is set to open using Rosetta. In Finder, open Applications (Terminal is in Applications > Utilities), select your terminal app, choose File > Get Info, and turn off "Open using Rosetta". Then open a new terminal.

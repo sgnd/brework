@@ -22,7 +22,13 @@ sw_vers -productVersion            # must be 15 or newer
 - **Intel Mac (prints 0 or nothing):** stop. The Homebrew installer no longer works on Intel Macs, so masbrew cannot set one up. Don't try other ways to install Homebrew. Tell the user, and point to the "Intel Macs" part of the README.
 - **Rosetta terminal (prints 1):** ask the user to turn off "Open using Rosetta" for their terminal app, then open a new terminal.
 - **macOS older than 15:** ask the user to update macOS first.
-- **Older than the newest macOS:** everything installs except Xcode. Tell the user before you start.
+- **Some App Store apps need a newer macOS.** Look up the oldest macOS that Xcode accepts:
+
+  ```bash
+  curl -s 'https://itunes.apple.com/lookup?id=497799835' | jq -r '.results[0].minimumOsVersion'
+  ```
+
+  If the Mac is older, everything installs except Xcode. Tell the user before you start. (WhatsApp needs 15.1.)
 
 Also check that there is about 20 GB of free space: `df -h /`.
 
@@ -76,7 +82,7 @@ It checks three things:
 
 - Every command from the list is found in a new terminal.
 - Every CLI tool does one small real task.
-- Every app is signed and runs on Apple Silicon.
+- Every app that Homebrew puts in /Applications is signed and runs on Apple Silicon.
 
 The last line must say `0 failed`.
 
