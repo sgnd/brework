@@ -65,7 +65,7 @@ Xcode from the App Store needs the newest macOS. If your macOS is older, see [Tr
 
 masbrew does not work on Intel Macs. The Homebrew installer stops on them, and Homebrew plans to stop working on Intel Macs in or after September 2027 ([Homebrew support tiers](https://docs.brew.sh/Support-Tiers)).
 
-On an Intel Mac, you can still use the lists as a shopping list: every name in [What's inside](#whats-inside) links to its official website, where you can download it. [MacPorts](https://www.macports.org) also has many of the CLI tools.
+On an Intel Mac, you can still use the lists as a shopping list: every name in [What's inside](#whats-inside) links to its official website, where you can download it. [MacPorts](https://github.com/macports/macports-base) also has many of the CLI tools.
 
 ## Install
 
