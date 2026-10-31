@@ -42,13 +42,23 @@ done
 
 # 3. App Store apps (mas "...", id: ...): they must exist and run on a Mac.
 # Apple's public search API knows every app by its id. No sign-in needed.
+# An app that needs a newer macOS than 15 must have that version in the README
+# (Requirements), so the README does not go out of date when Apple updates the app.
 for id in $app_store_ids; do
-  if curl -fsS "https://itunes.apple.com/lookup?id=$id" |
-    jq -e '.results[0] | .kind == "mac-software" or (.supportedDevices // [] | any(startswith("MacDesktop")))' >/dev/null; then
-    echo "ok       App Store id $id"
-  else
+  app="$(curl -fsS "https://itunes.apple.com/lookup?id=$id" | jq '.results[0] // {}')"
+  if ! echo "$app" | jq -e '.kind == "mac-software" or (.supportedDevices // [] | any(startswith("MacDesktop")))' >/dev/null; then
     echo "MISSING  App Store id $id (no Mac app with this id)"
     missing=$((missing + 1))
+    continue
+  fi
+  name="$(echo "$app" | jq -r '.trackName')"
+  min_macos="$(echo "$app" | jq -r '.minimumOsVersion')"
+  if awk -v v="$min_macos" 'BEGIN { split(v, a, "."); exit !(a[1] > 15 || (a[1] == 15 && a[2] + a[3] > 0)) }' &&
+    ! grep -qwF "$min_macos" README.md; then
+    echo "MISSING  macOS $min_macos in README.md ($name needs it now: update Requirements)"
+    missing=$((missing + 1))
+  else
+    echo "ok       App Store id $id"
   fi
 done
 

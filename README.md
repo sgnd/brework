@@ -237,7 +237,7 @@ App Store apps: drag them from `/Applications` to the Trash.
   brew bundle cleanup         # shows the list, then asks: press n to keep everything
   ```
 
-[GitHub Actions](.github/workflows/validate.yml) runs `validate-brewfile.sh` on every push to `main`, every pull request and every Monday. It also checks the shell scripts and the links in this README.
+[GitHub Actions](.github/workflows/validate.yml) runs `validate-brewfile.sh` on every push to `main`, every pull request and every Monday. It also checks that the macOS versions in [Requirements](#requirements) still match the App Store, the shell scripts, and the links in this README. [Dependabot](.github/dependabot.yml) opens a pull request when a GitHub Action has a new version.
 
 When a pull request changes a Brewfile, `install.sh` or `smoke-test.sh`, [another check](.github/workflows/e2e.yml) removes Homebrew from a GitHub Mac and then runs `install.sh` for real, once with everything and once with `--cli-only`, and then runs `smoke-test.sh`. Some things are left out, because GitHub's Macs cannot do them: App Store apps (no Apple ID), starting Docker (Colima cannot start a VM there) and typing a password. The test also starts with this repo already in `~/masbrew`, so it does not test the first download of the repo.
 
@@ -286,10 +286,11 @@ Colima is free, open source and runs from the terminal. It gives you the same `d
 | [`Brewfile`](Brewfile) | The list of CLI tools. It also loads `Brewfile.apps` |
 | [`Brewfile.apps`](Brewfile.apps) | The list of GUI and App Store apps |
 | [`install.sh`](install.sh) | Sets up a Mac in one command |
-| [`scripts/validate-brewfile.sh`](scripts/validate-brewfile.sh) | Checks that every package in the list still exists |
+| [`scripts/validate-brewfile.sh`](scripts/validate-brewfile.sh) | Checks that every package in the list still exists, and that the macOS versions in the README are current |
 | [`scripts/smoke-test.sh`](scripts/smoke-test.sh) | Checks that every installed tool really works |
 | [`.github/workflows/validate.yml`](.github/workflows/validate.yml) | Runs the checks on GitHub |
 | [`.github/workflows/e2e.yml`](.github/workflows/e2e.yml) | Tests `install.sh` for real on a Mac on GitHub |
+| [`.github/dependabot.yml`](.github/dependabot.yml) | Keeps the GitHub Actions up to date |
 | [`.claude/skills/masbrew-setup/SKILL.md`](.claude/skills/masbrew-setup/SKILL.md) | Tells AI coding agents how to set up a Mac with masbrew and check it |
 | [`.claude/skills/masbrew-maintain/SKILL.md`](.claude/skills/masbrew-maintain/SKILL.md) | Tells AI coding agents how to add or remove a package |
 
