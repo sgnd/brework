@@ -14,7 +14,7 @@
 # or from a downloaded copy of this repo:
 #   ./install.sh
 #
-# You can run it again at any time. It skips what is already installed.
+# You can run it again at any time. It installs what is missing and updates what is out of date.
 
 set -euo pipefail # stop at the first error
 
@@ -30,17 +30,17 @@ main() {
 
   [ "$(uname -s)" = "Darwin" ] || fail "masbrew only works on macOS."
 
-  # Apple Silicon Macs keep Homebrew in /opt/homebrew, Intel Macs in /usr/local.
-  if [ "$(sysctl -n hw.optional.arm64 2>/dev/null)" = "1" ]; then
-    BREW=/opt/homebrew/bin/brew
-  else
-    BREW=/usr/local/bin/brew
+  # Homebrew no longer installs on Intel Macs.
+  if [ "$(sysctl -n hw.optional.arm64 2>/dev/null)" != "1" ]; then
+    fail "masbrew needs a Mac with Apple Silicon (M1 or newer). Homebrew no longer installs on Intel Macs."
   fi
 
-  # On Apple Silicon, a Rosetta (Intel mode) terminal would install the wrong Homebrew.
+  # A Rosetta (Intel mode) terminal would install the wrong Homebrew.
   if [ "$(sysctl -n sysctl.proc_translated 2>/dev/null)" = "1" ]; then
     fail "This terminal runs in Rosetta (Intel mode). Open a normal terminal and try again."
   fi
+
+  BREW=/opt/homebrew/bin/brew # where Homebrew lives on Apple Silicon
 
   # --- 1. Install Homebrew -------------------------------------------------
 
@@ -77,6 +77,8 @@ main() {
     git -C "$REPO_DIR" pull --ff-only || say "Could not update. Using the copy you have."
   else
     say "Downloading masbrew to $REPO_DIR"
+    # git needs Apple's Command Line Tools. A macOS update can remove them.
+    xcode-select -p >/dev/null 2>&1 || fail "Install Apple's Command Line Tools with: xcode-select --install. Then run this script again."
     git clone "$REPO_URL" "$REPO_DIR"
   fi
 
@@ -109,4 +111,6 @@ main() {
 
 # All the work happens in main(), called on the last line.
 # This way `curl | bash` only starts after the whole script has downloaded.
-main "$@"
+# `exit` on the same line stops bash from reading further, even if this file
+# changes while the script runs.
+main "$@"; exit

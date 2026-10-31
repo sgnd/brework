@@ -1,0 +1,64 @@
+# Runs install.sh for real on an Apple Silicon Mac on GitHub.
+# Not tested here: App Store apps, starting Docker, typing a password,
+# and the first download of the repo (it starts with the repo in ~/masbrew).
+# It runs when a pull request changes the Brewfile or install.sh,
+# and when you press "Run workflow" on GitHub.
+name: End-to-end
+
+on:
+  pull_request:
+    paths: [Brewfile, install.sh, .github/workflows/e2e.yml]
+  workflow_dispatch: # adds a "Run workflow" button on GitHub
+
+permissions:
+  contents: read
+
+jobs:
+  install:
+    name: Install
+    runs-on: macos-latest # Apple Silicon
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v7
+
+      # 1. Make this Mac look like a new Mac.
+      #    GitHub's Macs come with Homebrew and some apps. Remove them.
+      - name: Remove Homebrew and apps from the list
+        run: |
+          NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/uninstall.sh)"
+          sudo rm -rf "/Applications/Google Chrome.app" "/Applications/Visual Studio Code.app"
+          rm -f ~/.zprofile
+
+      # 2. Put this repo in ~/masbrew, where `curl | bash` keeps it.
+      #    App Store apps need a signed-in Apple ID, so leave them out of this test.
+      - name: Copy the repo to ~/masbrew
+        run: |
+          git checkout -B e2e
+          git clone "$GITHUB_WORKSPACE" ~/masbrew
+          sed -i '' '/^mas /d' ~/masbrew/Brewfile
+
+      # 3. Run the installer from a pipe, like `curl ... | bash` does.
+      - name: Run install.sh (like curl | bash)
+        run: cat ~/masbrew/install.sh | bash
+
+      # 4. Run it again from the folder. It should skip what is installed.
+      - name: Run install.sh again (like ./install.sh)
+        run: ~/masbrew/install.sh
+
+      # 5. Check everything in a new terminal (a clean zsh login shell, like on a new Mac).
+      - name: Check the tools in a new terminal
+        run: |
+          # shellcheck disable=SC2016 # the new shell expands the $(...), not this one
+          env -i HOME="$HOME" USER="$USER" /bin/zsh -l -c '
+            set -ex
+            brew --version
+            brew bundle check --verbose --file ~/masbrew/Brewfile
+            [ "$(command -v rsync)" = "$(brew --prefix)/bin/rsync" ]
+            docker compose version
+            docker buildx version
+            kubectl version --client
+            mas version
+          '
+
+      # Not tested here: App Store apps (no Apple ID on GitHub's Macs)
+      # and `colima start` (GitHub's Macs cannot start a VM inside their own VM).
