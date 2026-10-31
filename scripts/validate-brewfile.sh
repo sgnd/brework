@@ -10,6 +10,7 @@ set -euo pipefail # stop at the first error
 
 cd "$(dirname "$0")/.." # go to the repo root, where the Brewfile is
 brew update --quiet     # get Homebrew's newest package list
+unset HOMEBREW_MASBREW_CLI_ONLY # always check both lists
 
 missing=0
 
@@ -17,7 +18,7 @@ missing=0
 # This also fails if the Brewfile has a typo in it.
 formulas="$(brew bundle list --formula)"
 casks="$(brew bundle list --cask)"
-app_store_ids="$(grep '^mas ' Brewfile | sed 's/.*id: *\([0-9]*\).*/\1/')"
+app_store_ids="$(grep -h '^mas ' Brewfile Brewfile.apps | sed 's/.*id: *\([0-9]*\).*/\1/')"
 
 # 1. CLI tools (brew "..."): they must exist and not be disabled.
 for name in $formulas; do

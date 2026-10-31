@@ -2,11 +2,11 @@
 #
 # masbrew installer
 #
-# Sets up a Mac with everything in the Brewfile:
+# Sets up a Mac with the tools in the Brewfile and the apps in Brewfile.apps:
 #   1. Install Homebrew (if you don't have it yet)
 #   2. Add Homebrew to your PATH
 #   3. Find the Brewfile (download this repo if needed)
-#   4. Install everything in the Brewfile
+#   4. Install everything in the Brewfile and Brewfile.apps (only the Brewfile with --cli-only)
 #   5. Set up docker compose and docker buildx
 #   6. Turn on the shell tools (mise, direnv, zoxide, fzf) and delta for git
 #   7. Start Docker (Colima) now and every time you log in
@@ -15,6 +15,10 @@
 #   curl -fsSL https://raw.githubusercontent.com/sgnd/masbrew/main/install.sh | bash
 # or from a downloaded copy of this repo:
 #   ./install.sh
+#
+# Only the CLI tools, without the GUI and App Store apps (Brewfile.apps):
+#   curl -fsSL https://raw.githubusercontent.com/sgnd/masbrew/main/install.sh | bash -s -- --cli-only
+#   ./install.sh --cli-only
 #
 # You can run it again at any time. It installs what is missing and updates what is out of date.
 
@@ -34,7 +38,15 @@ add_to_zshrc() {
 }
 
 main() {
-  # --- 0. Check this Mac ---------------------------------------------------
+  # --- 0. Read the option and check this Mac -------------------------------
+
+  # --cli-only skips Brewfile.apps. The Brewfile reads this setting.
+  [ $# -le 1 ] || fail "Too many options. The only option is --cli-only."
+  case "${1:-}" in
+    "") ;;
+    --cli-only) export HOMEBREW_MASBREW_CLI_ONLY=1 ;;
+    *) fail "Unknown option: $1. The only option is --cli-only." ;;
+  esac
 
   [ "$(uname -s)" = "Darwin" ] || fail "masbrew only works on macOS."
 
@@ -92,10 +104,19 @@ main() {
 
   [ -f "$REPO_DIR/Brewfile" ] || fail "No Brewfile in $REPO_DIR. Delete that folder and run again."
 
+  # An old Brewfile (from before Brewfile.apps) would install the apps anyway.
+  if [ "${HOMEBREW_MASBREW_CLI_ONLY:-}" = 1 ] && ! grep -q HOMEBREW_MASBREW_CLI_ONLY "$REPO_DIR/Brewfile"; then
+    fail "The Brewfile in $REPO_DIR does not support --cli-only. Update it with: git -C $REPO_DIR pull"
+  fi
+
   # --- 4. Install everything in the Brewfile -------------------------------
 
-  say "Installing everything in $REPO_DIR/Brewfile. This can take a while..."
-  say "App Store apps need you to be signed in to the App Store."
+  say "Installing the list in $REPO_DIR. This can take a while..."
+  if [ "${HOMEBREW_MASBREW_CLI_ONLY:-}" = 1 ]; then
+    say "Only the CLI tools: the apps in Brewfile.apps are skipped."
+  else
+    say "App Store apps need you to be signed in to the App Store."
+  fi
   # If one package fails, keep going: steps 5 to 7 still run and you get a clear message at the end.
   all_installed=yes
   brew bundle install --file="$REPO_DIR/Brewfile" || all_installed=no
@@ -124,7 +145,7 @@ main() {
   }
 
   # Show git diffs with delta, unless you already picked a pager for git.
-  if command -v delta >/dev/null && [ -z "$(git config --global core.pager)" ]; then
+  if command -v delta >/dev/null && [ -z "$(git config --global --includes core.pager)" ]; then
     say "Showing git diffs with delta"
     git config --global core.pager delta
     git config --global interactive.diffFilter "delta --color-only"
@@ -133,11 +154,14 @@ main() {
   # --- 7. Start Docker (Colima) --------------------------------------------
 
   # Colima starts now in the background, and again every time you log in.
+  # A Colima you already started yourself is left alone, so your containers keep running.
   if command -v colima >/dev/null && ! brew services list | grep -q "^colima *started"; then
-    say "Starting Docker (Colima) in the background. The first start takes a few minutes."
-    # If you started Colima yourself before, stop it, so the background service can run it.
-    colima stop >/dev/null 2>&1 || true
-    brew services start colima || say "Could not start Colima. Start it yourself with: colima start"
+    if colima status >/dev/null 2>&1; then
+      say "Docker (Colima) is already running. To also start it at every login, run: colima stop && brew services start colima"
+    else
+      say "Starting Docker (Colima) in the background. The first start takes a few minutes."
+      brew services start colima || say "Could not start Colima. Start it yourself with: colima start"
+    fi
   fi
 
   if [ "$all_installed" = no ]; then

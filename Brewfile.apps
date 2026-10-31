@@ -1,0 +1,75 @@
+# Brewfile.apps: GUI and App Store apps for a Dev & Ops Mac
+# The Brewfile loads this file. Skip these apps with: install.sh --cli-only
+#
+# How to add something:
+#   App:            cask "name"            find the name with: brew search --cask name
+#   App Store app:  mas "Name", id: 123    the id is the number in the App Store link
+#
+# Put it in the right section below, with a short comment.
+# Use mas only when the app is not in Homebrew. mas apps need you to be signed in to the App Store.
+# To remove something, delete its line.
+
+# ----------------------------------------------------------------------------
+# App Store tools
+# ----------------------------------------------------------------------------
+brew "mas"                # Install App Store apps from the terminal
+
+# ----------------------------------------------------------------------------
+# Editors & terminals
+# ----------------------------------------------------------------------------
+cask "visual-studio-code" # Code editor
+cask "cursor"             # AI code editor
+cask "warp"               # Terminal
+
+# ----------------------------------------------------------------------------
+# AI assistants
+# ----------------------------------------------------------------------------
+cask "claude"             # Claude desktop app
+cask "chatgpt"            # ChatGPT desktop app
+
+# ----------------------------------------------------------------------------
+# API & database clients
+# ----------------------------------------------------------------------------
+cask "postman"            # Test HTTP APIs
+cask "dbeaver-community"  # SQL database client (PostgreSQL, MySQL, ...)
+cask "mongodb-compass"    # MongoDB client
+cask "redis-insight"      # Redis client
+
+# ----------------------------------------------------------------------------
+# Chat
+# ----------------------------------------------------------------------------
+cask "slack"              # Team chat
+cask "discord"            # Community chat
+mas "Telegram", id: 747648890                    # Messaging app
+mas "WhatsApp Messenger", id: 310633997          # Messaging app
+mas "WeChat", id: 836500024                      # Messaging app
+
+# ----------------------------------------------------------------------------
+# Video meetings
+# ----------------------------------------------------------------------------
+cask "microsoft-teams"    # Microsoft Teams
+cask "zoom"               # Zoom
+cask "voov-meeting"       # VooV Meeting (Tencent Meeting)
+
+# ----------------------------------------------------------------------------
+# Remote access
+# ----------------------------------------------------------------------------
+mas "Termius", id: 1176074088                    # SSH client
+cask "teamviewer"         # Remote desktop
+cask "anydesk"            # Remote desktop
+
+# ----------------------------------------------------------------------------
+# Networking & VPN
+# ----------------------------------------------------------------------------
+cask "cloudflare-warp"    # Cloudflare VPN
+cask "openvpn-connect"    # OpenVPN
+
+# ----------------------------------------------------------------------------
+# Browsers
+# ----------------------------------------------------------------------------
+cask "google-chrome"      # Web browser
+
+# ----------------------------------------------------------------------------
+# Apple developer tools
+# ----------------------------------------------------------------------------
+mas "Xcode", id: 497799835                       # Apple developer tools
