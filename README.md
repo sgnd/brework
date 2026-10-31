@@ -36,7 +36,7 @@ Click a name to open its official website. You can also download it from there w
 | Networking & VPN | [Cloudflare WARP](https://one.one.one.one), [OpenVPN Connect](https://openvpn.net/client/) |
 | Browsers | [Google Chrome](https://www.google.com/chrome/) |
 | Fonts | [JetBrains Mono Nerd Font](https://www.nerdfonts.com/font-downloads) |
-| Mac App Store | [Xcode](https://apps.apple.com/app/id497799835) (Apple Silicon only), [Termius](https://apps.apple.com/app/id1176074088), [Telegram](https://apps.apple.com/app/id747648890), [WhatsApp](https://apps.apple.com/app/id310633997), [WeChat](https://apps.apple.com/app/id836500024) |
+| Mac App Store | [Xcode](https://apps.apple.com/app/id497799835), [Termius](https://apps.apple.com/app/id1176074088), [Telegram](https://apps.apple.com/app/id747648890), [WhatsApp](https://apps.apple.com/app/id310633997), [WeChat](https://apps.apple.com/app/id836500024) |
 
 See the [`Brewfile`](Brewfile) for a short description of each one.
 
@@ -44,18 +44,12 @@ Programming languages (Node.js, Python, Go, ...) are not in this list. Install t
 
 ## Requirements
 
+- A Mac with Apple Silicon (M1 or newer). Homebrew [no longer installs on Intel Macs](https://docs.brew.sh/Support-Tiers).
 - macOS 15 (Sequoia) or newer
 - An admin account (the installer asks for your password)
 - About 20 GB of free disk space
 - An internet connection
 - An Apple ID signed in to the App Store (for the App Store apps)
-
-### Supported Macs
-
-| Mac | Status |
-| --- | --- |
-| Apple Silicon (M1 and newer) | Fully supported. Everything installs fast. |
-| Intel | Works, but slower. Homebrew [stopped making ready-made Intel packages](https://docs.brew.sh/Support-Tiers), so most tools are built on your Mac the first time. Homebrew plans to stop supporting Intel Macs in or after September 2027. Xcode is skipped, because the newest Xcode only runs on Apple Silicon. |
 
 Xcode from the App Store needs the newest macOS. If your macOS is older, see [Troubleshooting](#troubleshooting).
 
@@ -176,9 +170,9 @@ App Store apps: drag them from `/Applications` to the Trash.
   brew bundle cleanup         # only shows the list, removes nothing
   ```
 
-[GitHub Actions](.github/workflows/validate.yml) runs `validate-brewfile.sh` on every push, every pull request and every Monday, on both Apple Silicon and Intel. It also checks the shell scripts and the links in this README.
+[GitHub Actions](.github/workflows/validate.yml) runs `validate-brewfile.sh` on every push, every pull request and every Monday. It also checks the shell scripts and the links in this README.
 
-When a pull request changes the `Brewfile` or `install.sh`, [another check](.github/workflows/e2e.yml) removes Homebrew from GitHub's Macs and then runs `install.sh` for real, on both Apple Silicon and Intel. It also starts Docker with Colima. App Store apps are left out of this test, because it cannot sign in to the App Store.
+When a pull request changes the `Brewfile` or `install.sh`, [another check](.github/workflows/e2e.yml) removes Homebrew from a GitHub Mac and then runs `install.sh` for real. Two things are left out, because GitHub's Macs cannot do them: App Store apps (no Apple ID) and starting Docker (Colima cannot start a VM there).
 
 ## Make it yours
 
@@ -211,9 +205,6 @@ The newest Xcode needs the newest macOS. Update macOS in System Settings > Gener
 **"This terminal runs in Rosetta (Intel mode)"**
 Your terminal is set to open using Rosetta. In Finder, open Applications, select your terminal app, choose File > Get Info, and turn off "Open using Rosetta". Then open a new terminal.
 
-**Installing takes very long on an Intel Mac**
-This is expected. Homebrew builds most tools on your Mac (see [Supported Macs](#supported-macs)).
-
 **`docker: Cannot connect to the Docker daemon`**
 Docker is not running. Start it with `colima start`.
 
@@ -228,7 +219,7 @@ Colima is free, open source and runs from the terminal. It gives you the same `d
 | [`install.sh`](install.sh) | Sets up a Mac in one command |
 | [`scripts/validate-brewfile.sh`](scripts/validate-brewfile.sh) | Checks that every package in the list still exists |
 | [`.github/workflows/validate.yml`](.github/workflows/validate.yml) | Runs the checks on GitHub |
-| [`.github/workflows/e2e.yml`](.github/workflows/e2e.yml) | Tests `install.sh` on a clean Mac on GitHub |
+| [`.github/workflows/e2e.yml`](.github/workflows/e2e.yml) | Tests `install.sh` for real on a Mac on GitHub |
 | [`.claude/skills/masbrew-maintain/SKILL.md`](.claude/skills/masbrew-maintain/SKILL.md) | Tells AI coding agents how to add or remove a package |
 
 ## Contributing

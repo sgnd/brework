@@ -138,8 +138,7 @@ cask "font-jetbrains-mono-nerd-font" # Coding font with icons
 # ============================================================================
 # Mac App Store (sign in to the App Store first)
 # ============================================================================
-# The newest Xcode only runs on Apple Silicon, so Intel Macs skip it.
-mas "Xcode", id: 497799835 if Hardware::CPU.arm? # Apple developer tools
+mas "Xcode", id: 497799835                       # Apple developer tools
 mas "Termius", id: 1176074088                    # SSH client
 mas "Telegram", id: 747648890                    # Messaging app
 mas "WhatsApp Messenger", id: 310633997          # Messaging app

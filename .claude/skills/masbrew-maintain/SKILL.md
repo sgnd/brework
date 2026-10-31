@@ -18,7 +18,7 @@ Before adding something, check all of these. If one fails, don't add it and tell
 
 - It is a tool for Dev & Ops work, or for work chat (like Telegram or WhatsApp). Not a personal app: no music, games, or personal finance apps (like Trezor Suite).
 - It is a plain CLI tool, not a full-screen terminal app with its own layout (like lazygit, k9s, or lazydocker).
-- It runs on macOS 15 or newer, on both Apple Silicon and Intel. For an app, run `brew info --cask NAME`: its "Requirements" part may list a macOS version, but not an architecture (arm64 or x86_64). Xcode is the only exception: it has `if Hardware::CPU.arm?` at the end of its line, so Intel Macs skip it.
+- It runs on macOS 15 or newer, on Apple Silicon. For an app, run `brew info --cask NAME`: its "Requirements" part may list a macOS version, but not an architecture (arm64 or x86_64).
 - It is not a programming language or runtime (Node, Python, Go, Java, ...). Those are installed per project with `mise`.
 - It is not already in the list, under another name. For example, `kubectl` is `brew "kubernetes-cli"`.
 

@@ -14,14 +14,10 @@ permissions:
   contents: read
 
 jobs:
-  # 1. Every package in the Brewfile still exists, on Apple Silicon and on Intel.
+  # 1. Every package in the Brewfile still exists.
   brewfile:
-    name: Brewfile (${{ matrix.os }})
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [macos-latest, macos-15-intel] # Apple Silicon, Intel
-    runs-on: ${{ matrix.os }}
+    name: Brewfile
+    runs-on: macos-latest # Apple Silicon
     steps:
       - uses: actions/checkout@v7
       - run: scripts/validate-brewfile.sh

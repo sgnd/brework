@@ -1,4 +1,4 @@
-# Runs install.sh for real on a Mac on GitHub, on Apple Silicon and on Intel.
+# Runs install.sh for real on an Apple Silicon Mac on GitHub.
 # It runs when a pull request changes the Brewfile or install.sh,
 # and when you press "Run workflow" on GitHub.
 name: End-to-end
@@ -13,13 +13,9 @@ permissions:
 
 jobs:
   install:
-    name: Install (${{ matrix.os }})
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [macos-latest, macos-15-intel] # Apple Silicon, Intel
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 360 # Intel Macs build many tools from source, which is slow
+    name: Install
+    runs-on: macos-latest # Apple Silicon
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v7
 
@@ -62,11 +58,5 @@ jobs:
             mas version
           '
 
-      # 6. Start Docker with Colima and run a container.
-      - name: Start Docker and run a container
-        run: |
-          env -i HOME="$HOME" USER="$USER" /bin/zsh -l -c '
-            set -ex
-            colima start
-            docker run --rm hello-world
-          '
+      # Not tested here: App Store apps (no Apple ID on GitHub's Macs)
+      # and `colima start` (GitHub's Macs cannot start a VM inside their own VM).
