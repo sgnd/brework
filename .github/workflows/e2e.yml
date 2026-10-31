@@ -103,5 +103,17 @@ jobs:
           ' 2>&1 | tee shell.log
           ! grep -iE "error|not found" shell.log
 
+      # 7. Every tool does a small real job, and every command is found in a new terminal.
+      - name: Smoke test (every tool really works)
+        run: |
+          # shellcheck disable=SC2016 # the new shell expands $MODE, not this one
+          env -i HOME="$HOME" USER="$USER" LOGNAME="$USER" SHELL=/bin/zsh TERM=xterm-256color SKIP_DOCKER=1 MODE="$MODE" /bin/zsh -l -c '
+            if [ "$MODE" = cli-only ]; then
+              ~/masbrew/scripts/smoke-test.sh --cli-only
+            else
+              ~/masbrew/scripts/smoke-test.sh
+            fi
+          '
+
       # Not tested here: App Store apps (no Apple ID on GitHub's Macs)
       # and `colima start` (GitHub's Macs cannot start a VM inside their own VM).

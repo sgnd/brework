@@ -86,6 +86,14 @@ curl -sSIL -o /dev/null -w '%{http_code}\n' URL   # 200 is good
 
 Some sites block scripts or answer slowly: 403, 429 or a timeout is fine (the GitHub check allows them too). A 404 is not.
 
+After installing, check that the tools really work (it also checks that every command is found in a new terminal):
+
+```bash
+scripts/smoke-test.sh
+```
+
+If a new CLI tool can do a small job offline, add a check for it in `scripts/smoke-test.sh`, like the other checks there.
+
 If you changed a script, also run:
 
 ```bash
