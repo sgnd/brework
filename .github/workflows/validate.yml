@@ -21,6 +21,8 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - run: scripts/validate-brewfile.sh
+        env:
+          GITHUB_TOKEN: ${{ github.token }} # mise looks up versions on GitHub (more requests with a token)
 
   # 2. The shell scripts have no common bugs.
   shellcheck:

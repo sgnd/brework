@@ -212,7 +212,9 @@ test_http_tools() {
 
 # --- Database clients ------------------------------------------------------
 
-test_mongosh() { [ "$(mongosh --nodb --quiet --eval 'print(6 * 7)')" = 42 ]; }
+test_mongosh() { # installed with mise
+  [ "$(mise exec -- mongosh --nodb --quiet --eval 'print(6 * 7)')" = 42 ]
+}
 
 test_usql() { # installed with mise
   [ "$(mise exec -- usql -q -J -c 'select 6*7 as answer' sqlite:test.db | jq '.[0].answer')" = 42 ]
@@ -289,7 +291,7 @@ commands_from_list() {
   done
   brew bundle list --cask --file="$repo/Brewfile" | xargs brew info --json=v2 --cask |
     jq -r '.casks[].artifacts[] | objects | select(has("binary")) | .target | split("/") | last'
-  echo usql # installed with mise
+  sed -n 's/^MISE_TOOLS="\([^"]*\)".*/\1/p' "$repo/install.sh" | tr ' ' '\n' | sed 's/@.*//' # installed with mise
 }
 
 # Open a new terminal (a clean zsh, like a new Terminal window) and look for each command.
