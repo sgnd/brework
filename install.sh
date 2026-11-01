@@ -33,6 +33,7 @@ REPO_DIR="$HOME/.brework" # where `curl | bash` downloads this repo
 MISE_TOOLS="usql@0.21.6 mongosh@2.14.1"
 
 say() { printf '\033[1;34m==>\033[0m %s\n' "$*"; }
+step() { printf '\n\033[1;32mStep %s of 7:\033[0m \033[1m%s\033[0m\n' "$1" "$2"; } # a header, so you can see how far it is
 fail() { printf '\033[1;31mError:\033[0m %s\n' "$*" >&2; exit 1; }
 
 # Add a line to a file, unless a line with this keyword is already there.
@@ -68,6 +69,7 @@ main() {
 
   # --- 1. Install Homebrew -------------------------------------------------
 
+  step 1 "Homebrew"
   if [ -x "$BREW" ]; then
     say "Homebrew is already installed."
   else
@@ -84,6 +86,7 @@ main() {
 
   # --- 2. Add Homebrew to your PATH ----------------------------------------
 
+  step 2 "Add Homebrew to your PATH"
   eval "$("$BREW" shellenv)" # for the rest of this script
 
   # Every zsh reads ~/.zshenv: a terminal, an IDE, an AI agent, a script, `ssh mac COMMAND`.
@@ -100,9 +103,11 @@ main() {
 
   # --- 3. Find the Brewfile ------------------------------------------------
 
+  step 3 "Get the list"
   if [ -f "${BASH_SOURCE[0]:-}" ] && [ -f "$(dirname "${BASH_SOURCE[0]}")/Brewfile" ]; then
     # You ran ./install.sh from a downloaded copy: use its Brewfile.
     REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    say "Using the list in $REPO_DIR"
   elif [ -d "$REPO_DIR" ]; then
     say "Updating $REPO_DIR"
     git -C "$REPO_DIR" pull --ff-only || say "Could not update. Using the copy you have."
@@ -122,6 +127,7 @@ main() {
 
   # --- 4. Install everything in the Brewfile -------------------------------
 
+  step 4 "Install the tools and apps (this takes the longest)"
   say "Installing the list in $REPO_DIR. This can take a while..."
   if [ "${HOMEBREW_BREWORK_CLI_ONLY:-}" = 1 ]; then
     say "Only the CLI tools: the apps in Brewfile.apps are skipped."
@@ -142,6 +148,7 @@ main() {
 
   # --- 5. Set up docker compose and docker buildx --------------------------
 
+  step 5 "Set up docker compose and docker buildx"
   # Docker looks for its plugins in ~/.docker/cli-plugins.
   # Link the plugins that Homebrew installed into that folder.
   mkdir -p "$HOME/.docker/cli-plugins"
@@ -152,6 +159,7 @@ main() {
 
   # --- 6. Turn on the shell tools and delta for git ------------------------
 
+  step 6 "Set up your shell"
   # mise, direnv, zoxide and fzf need one line in ~/.zshrc to work.
   # Each line checks that the tool is installed, so a removed tool never breaks your terminal.
   say "Turning on mise, direnv, zoxide and fzf in ~/.zshrc"
@@ -182,6 +190,7 @@ main() {
 
   # --- 7. Start Docker (Colima) --------------------------------------------
 
+  step 7 "Start Docker (Colima)"
   # Colima starts now in the background, and again every time you log in.
   # A Colima you already started yourself is left alone, so your containers keep running.
   if command -v colima >/dev/null && ! brew services list | grep -q "^colima *started"; then
@@ -194,10 +203,19 @@ main() {
   fi
 
   if [ "$all_installed" = no ]; then
-    fail "Some packages did not install. Read the errors above, fix them, then run this script again."
+    echo
+    # Show only what is missing, so you don't have to look for it in the long output above.
+    say "Not installed:"
+    brew bundle check --verbose --file="$REPO_DIR/Brewfile" 2>&1 | grep '→' || true # it prints to stderr
+    command -v mise >/dev/null || echo "→ mise, so also: $MISE_TOOLS"
+    fail "Some packages did not install. Fix them (see https://github.com/sgnd/brework#troubleshooting), then run this script again."
   fi
 
-  say "Done! Open a new terminal to use everything."
+  check_command="$REPO_DIR/scripts/smoke-test.sh"
+  [ "${HOMEBREW_BREWORK_CLI_ONLY:-}" = 1 ] && check_command="$check_command --cli-only"
+  echo
+  say "Done! Open a new Terminal window (Cmd+N). Wait a few minutes for Docker to start, then check that every tool works:"
+  echo "    $check_command"
 }
 
 # All the work happens in main(), called on the last line.

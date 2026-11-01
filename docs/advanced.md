@@ -175,6 +175,41 @@ brework adds Homebrew and the `mise` tools to the last three, so every shell fin
 
 cron and launchd don't start a shell, so they don't read `~/.zshenv` or any other file, and their `PATH` has no Homebrew. Write the full path in the job, like `/opt/homebrew/bin/kubectl`, or `mise exec -- usql` with `/opt/homebrew/bin/mise`.
 
+## Remove brework
+
+This undoes what `install.sh` set up. The tools and apps stay installed.
+
+1. Stop Docker (Colima) from starting at login:
+
+   ```bash
+   brew services stop colima
+   ```
+
+2. Remove the lines brework added to your shell files (each ends with `# added by brework`):
+
+   ```bash
+   for file in ~/.zshrc ~/.zshenv ~/.zprofile ~/.bash_profile; do
+     [ -f "$file" ] && sed -i '' '/# added by brework/d' "$file"
+   done
+   [ -s ~/.bash_profile ] || rm -f ~/.bash_profile   # if it is now empty
+   ```
+
+3. Remove the tools brework installed with mise, and delta as your git pager (skip this if you set the pager yourself):
+
+   ```bash
+   mise unuse --global usql mongosh
+   git config --global --unset core.pager
+   git config --global --unset interactive.diffFilter
+   ```
+
+4. Delete the brework folder:
+
+   ```bash
+   rm -rf ~/.brework
+   ```
+
+To remove a tool or an app too, see [Remove a tool or an app](#remove-a-tool-or-an-app). To remove Homebrew itself, use its [uninstall script](https://github.com/Homebrew/install#uninstall-homebrew).
+
 ## Project files
 
 | File | What it does |

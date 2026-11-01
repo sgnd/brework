@@ -211,6 +211,7 @@ For people who want to go further, see [docs/advanced.md](docs/advanced.md):
 - [Docker (Colima)](docs/advanced.md#docker-colima): stop it from starting at login, or run Kubernetes
 - [How it works](docs/advanced.md#how-it-works): what the script changes, and why
 - [See what's missing or out of date](docs/advanced.md#see-whats-missing-or-out-of-date), and [project files](docs/advanced.md#project-files)
+- [Remove brework](docs/advanced.md#remove-brework)
 
 ## Contributing
 
