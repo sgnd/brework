@@ -8,7 +8,8 @@
 #   3. Find the Brewfile (download this repo if needed)
 #   4. Install everything in the Brewfile and Brewfile.apps (only the Brewfile with --cli-only), and MISE_TOOLS with mise
 #   5. Set up docker compose and docker buildx
-#   6. Turn on the shell tools (mise, direnv, zoxide, fzf) and delta for git
+#   6. Turn on the shell tools (mise, direnv, zoxide, fzf) and delta for git,
+#      and let scripts and AI agents find the mise tools too
 #   7. Start Docker (Colima) now and every time you log in
 #
 # Run it with:
@@ -34,10 +35,10 @@ MISE_TOOLS="usql@0.21.6 mongosh@2.14.1"
 say() { printf '\033[1;34m==>\033[0m %s\n' "$*"; }
 fail() { printf '\033[1;31mError:\033[0m %s\n' "$*" >&2; exit 1; }
 
-# Add a line to ~/.zshrc, unless a line with this keyword is already there.
-# Usage: add_to_zshrc KEYWORD LINE
-add_to_zshrc() {
-  grep -qsF "$1" "$HOME/.zshrc" || echo "$2" >>"$HOME/.zshrc"
+# Add a line to a file, unless a line with this keyword is already there.
+# Usage: add_line FILE KEYWORD LINE
+add_line() {
+  grep -qsF "$2" "$1" || echo "$3" >>"$1"
 }
 
 main() {
@@ -149,11 +150,17 @@ main() {
   say "Turning on mise, direnv, zoxide and fzf in ~/.zshrc"
   # shellcheck disable=SC2016 # these lines run later, in your terminal
   {
-    add_to_zshrc "mise activate" 'command -v mise >/dev/null && eval "$(mise activate zsh)" # added by brework'
-    add_to_zshrc "direnv hook" 'command -v direnv >/dev/null && eval "$(direnv hook zsh)" # added by brework'
-    add_to_zshrc "zoxide init" 'command -v zoxide >/dev/null && eval "$(zoxide init zsh)" # added by brework'
-    add_to_zshrc "fzf --zsh" 'command -v fzf >/dev/null && source <(fzf --zsh) # added by brework'
+    add_line "$HOME/.zshrc" "mise activate" 'command -v mise >/dev/null && eval "$(mise activate zsh)" # added by brework'
+    add_line "$HOME/.zshrc" "direnv hook" 'command -v direnv >/dev/null && eval "$(direnv hook zsh)" # added by brework'
+    add_line "$HOME/.zshrc" "zoxide init" 'command -v zoxide >/dev/null && eval "$(zoxide init zsh)" # added by brework'
+    add_line "$HOME/.zshrc" "fzf --zsh" 'command -v fzf >/dev/null && source <(fzf --zsh) # added by brework'
   }
+
+  # Scripts, IDEs and AI agents often run `zsh -l -c COMMAND`. That shell reads ~/.zprofile, not ~/.zshrc.
+  # Without this line it does not find the mise tools, or it finds the wrong ones (like the macOS java).
+  say "Adding the mise tools to ~/.zprofile, for scripts and AI agents"
+  # shellcheck disable=SC2016 # this line runs later, in your terminal
+  add_line "$HOME/.zprofile" "mise activate zsh --shims" 'command -v mise >/dev/null && eval "$(mise activate zsh --shims)" # added by brework'
 
   # Show git diffs with delta, unless you already picked a pager for git.
   if command -v delta >/dev/null && [ -z "$(git config --global --includes core.pager)" ]; then

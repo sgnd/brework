@@ -83,7 +83,7 @@ Ask the user to open a **new** terminal window. The new tools and shell settings
 
 It checks three things:
 
-- Every command from the list is found in a new terminal.
+- Every command from the list is found in a new terminal, and by scripts and AI agents (`zsh -l -c`, which reads `~/.zprofile` but not `~/.zshrc`).
 - Every CLI tool does one small real task.
 - Every app that Homebrew puts in /Applications is signed and runs on Apple Silicon.
 
@@ -92,6 +92,7 @@ The last line must say `0 failed`.
 For each `FAIL`, read the lines under it:
 
 - `command not found: NAME`: the command is not linked. For a cask (an app), `brew reinstall --cask THE-CASK` makes the links again. It closes the app, so ask the user first. For a CLI tool, `brew link NAME`. For a tool from `MISE_TOOLS` (like `usql`), check that `mise activate` is in `~/.zshrc`, then run `mise use --global` with it.
+- Only in the check "by scripts and AI agents" (`command not found: NAME` or `not the one from mise: PATH`, like the macOS `/usr/bin/java`): `~/.zprofile` is missing the mise line. Run `install.sh` again: it adds `eval "$(mise activate zsh --shims)"` there.
 - Docker checks fail with `Cannot connect to the Docker daemon`: Docker is still starting. The first start takes a few minutes. Check `colima status`, wait, and run the smoke test again.
 - Anything else: show the user the output, and say what you think is wrong.
 

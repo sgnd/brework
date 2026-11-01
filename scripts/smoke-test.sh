@@ -310,21 +310,40 @@ commands_from_list() {
   done
   brew bundle list --cask --file="$repo/Brewfile" | xargs brew info --json=v2 --cask |
     jq -r '.casks[].artifacts[] | objects | select(has("binary")) | .target | split("/") | last'
-  sed -n 's/^MISE_TOOLS="\([^"]*\)".*/\1/p' "$repo/install.sh" | tr ' ' '\n' | sed 's/@.*//' # installed with mise
 }
 
-# Open a new terminal (a clean zsh, like a new Terminal window) and look for each command.
+# All commands from mise: the tools in MISE_TOOLS, and the languages you set with `mise use --global`.
+commands_from_mise() {
+  local file
+  for file in $(mise bin-paths | sed 's|$|/*|'); do
+    [ -f "$file" ] && [ -x "$file" ] && [[ "$file" != *.dylib ]] && basename "$file"
+  done
+}
+
+# Open a clean zsh with these options and look for each command.
+# Every command from mise must be the one mise picks (not the macOS java, or a python3 from Homebrew):
+# a mise shim (a link to mise itself), or the path that `mise which` gives.
+# Usage: test_commands_found ZSH-OPTIONS...
 test_commands_found() {
-  local commands output missing
+  local commands mise_commands output missing
   commands="$(commands_from_list | sort -u | tr '\n' ' ')"
+  mise_commands="$(commands_from_mise | sort -u | tr '\n' ' ')"
   # Your ~/.zshrc may print things too, so only read our own lines.
-  # "all checked" at the end shows that the loop really ran.
-  output="$(env -i HOME="$HOME" USER="$USER" LOGNAME="$LOGNAME" SHELL=/bin/zsh TERM=xterm-256color /bin/zsh -l -i -c \
-    "for c in $commands; do whence -p \$c >/dev/null || echo \"command not found: \$c\"; done; echo all checked" \
-    </dev/null 2>/dev/null)"
-  missing="$(echo "$output" | grep '^command not found:')"
-  echo "checked: $commands"
-  echo "$output" | grep -q '^all checked$' || { echo "the new terminal did not finish"; return 1; }
+  # "all checked" at the end shows that the loops really ran.
+  output="$(env -i HOME="$HOME" USER="$USER" LOGNAME="$LOGNAME" SHELL=/bin/zsh TERM=xterm-256color /bin/zsh "$@" -c "
+    for c in $commands; do whence -p \$c >/dev/null || echo \"command not found: \$c\"; done
+    for c in $mise_commands; do
+      p=\"\$(whence -p \$c)\"
+      if [ -z \"\$p\" ]; then
+        echo \"command not found: \$c\"
+      elif ! [ \"\$p\" -ef \"\$(whence -p mise)\" ] && [ \"\$p\" != \"\$(mise which \$c 2>/dev/null)\" ]; then
+        echo \"not the one from mise: \$p\"
+      fi
+    done
+    echo all checked" </dev/null 2>/dev/null)"
+  missing="$(echo "$output" | grep -E '^(command not found|not the one from mise):')"
+  echo "checked: $commands $mise_commands"
+  echo "$output" | grep -q '^all checked$' || { echo "the shell did not finish"; return 1; }
   [ -z "$missing" ] || { echo "$missing"; return 1; }
 }
 
@@ -360,7 +379,9 @@ esac
 
 echo "== Everything in the list is installed"
 check "brew bundle check" brew bundle check --file="$repo/Brewfile"
-check "every command is found in a new terminal" test_commands_found
+check "every command is found in a new terminal" test_commands_found -l -i
+# Scripts, IDEs and AI agents run `zsh -l -c COMMAND`: it reads ~/.zprofile, not ~/.zshrc.
+check "every command is found by scripts and AI agents" test_commands_found -l
 
 echo "== CLI tools do their job"
 check "git: make a commit" test_git

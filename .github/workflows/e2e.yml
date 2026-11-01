@@ -92,11 +92,12 @@ jobs:
           '
 
       # 6. The shell tools work in a new terminal, and running install.sh twice
-      #    did not add their lines to ~/.zshrc twice.
+      #    did not add their lines to ~/.zshrc and ~/.zprofile twice.
       - name: Check the shell tools in a new terminal
         run: |
-          cat ~/.zshrc
+          cat ~/.zshrc ~/.zprofile
           [ "$(grep -c "added by brework" ~/.zshrc)" -eq 4 ]
+          [ "$(grep -c "added by brework" ~/.zprofile)" -eq 1 ]
           env -i HOME="$HOME" USER="$USER" TERM=xterm /bin/zsh -l -i -c '
             set -e
             whence -w _mise_hook _direnv_hook __zoxide_z fzf-file-widget
