@@ -48,7 +48,7 @@ curl -fsSL https://raw.githubusercontent.com/sgnd/brework/main/install.sh | bash
 
 If the repo is already on the Mac (for example in `~/.brework`), you can run `./install.sh` from that folder instead.
 
-Most tools come from Homebrew. A few come from `mise`, at fixed versions (`MISE_TOOLS` in `install.sh`, like `usql` and `mongosh`). `mise use --global` adds them to `~/.config/mise/config.toml`. Tell the user, because that file is theirs.
+Most tools come from Homebrew. A few come from `mise`, at fixed versions (`MISE_TOOLS` in `install.sh`, like `usql` and `mongosh`). `mise use --global` adds them to `~/.config/mise/config.toml`. The installer also adds lines to `~/.zshrc`, `~/.zshenv`, `~/.zprofile` and `~/.bash_profile` (each ends with `# added by brework`), so every shell finds the tools. Tell the user about these files, because they are theirs.
 
 A first install takes a long time: often 30 to 60 minutes, more on a slow connection. A quiet terminal is usually a download in progress, not a hang. Check with `ps -ax | grep curl` before you call it stuck.
 
