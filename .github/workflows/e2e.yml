@@ -34,7 +34,7 @@ jobs:
         run: |
           NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/uninstall.sh)"
           sudo rm -rf "/Applications/Google Chrome.app" "/Applications/Visual Studio Code.app"
-          rm -f ~/.zprofile ~/.zshrc
+          rm -f ~/.zshenv ~/.zprofile ~/.zshrc ~/.bash_profile
           git config --global --unset core.pager || true
 
       # 2. Put this repo in ~/.brework, where `curl | bash` keeps it.
@@ -92,12 +92,15 @@ jobs:
           '
 
       # 6. The shell tools work in a new terminal, and running install.sh twice
-      #    did not add their lines to ~/.zshrc and ~/.zprofile twice.
+      #    did not add their lines to ~/.zshrc, ~/.zshenv, ~/.zprofile and ~/.bash_profile twice.
       - name: Check the shell tools in a new terminal
         run: |
-          cat ~/.zshrc ~/.zprofile
+          cat ~/.zshrc ~/.zshenv ~/.zprofile ~/.bash_profile
           [ "$(grep -c "added by brework" ~/.zshrc)" -eq 4 ]
-          [ "$(grep -c "added by brework" ~/.zprofile)" -eq 1 ]
+          for file in ~/.zshenv ~/.zprofile ~/.bash_profile; do
+            [ "$(grep -c "brew shellenv" "$file")" -eq 1 ]
+            [ "$(grep -c "mise activate .* --shims" "$file")" -eq 1 ]
+          done
           env -i HOME="$HOME" USER="$USER" TERM=xterm /bin/zsh -l -i -c '
             set -e
             whence -w _mise_hook _direnv_hook __zoxide_z fzf-file-widget
