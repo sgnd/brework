@@ -32,7 +32,7 @@ jobs:
       - uses: actions/checkout@v7
       - run: shellcheck install.sh scripts/*.sh
 
-  # 3. Every link in the README still works.
+  # 3. Every link in the README and docs/advanced.md still works.
   links:
     name: README links
     runs-on: ubuntu-latest
@@ -42,5 +42,5 @@ jobs:
         with:
           # Some websites block bots (403, 429) or answer slowly.
           # Only real errors, like 404 Not Found, fail this check.
-          args: --no-progress --accept 200..=299,403,429 --accept-timeouts --max-retries 3 README.md
+          args: --no-progress --accept 200..=299,403,429 --accept-timeouts --max-retries 3 README.md docs/advanced.md
           fail: true
