@@ -45,6 +45,7 @@ brew "trivy"              # Find security issues in images and code
 brew "awscli"             # AWS from the terminal
 brew "doctl"              # DigitalOcean from the terminal
 brew "supabase"           # Supabase from the terminal
+cask "gcloud-cli"         # Google Cloud from the terminal (gcloud)
 
 # ----------------------------------------------------------------------------
 # Infrastructure as Code & server setup

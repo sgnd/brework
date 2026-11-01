@@ -108,4 +108,4 @@ ln -s ~/.brework/.claude/skills/brework-setup ~/.claude/skills/brework-setup
 Report what you did, the smoke test result, and these manual steps (brework cannot do them):
 
 - Open Xcode once to finish its setup (if they installed everything).
-- Sign in to the apps they use, and to the CLI tools that need an account: `gh auth login`, `aws configure`, `doctl auth init`, `supabase login`, and `copilot` on its first start.
+- Sign in to the apps they use, and to the CLI tools that need an account: `gh auth login`, `aws configure`, `doctl auth init`, `supabase login`, `gcloud auth login`, and `copilot` on its first start.

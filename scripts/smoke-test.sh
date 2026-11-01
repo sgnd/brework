@@ -294,6 +294,13 @@ test_watch() {
 }
 test_doggo() { doggo --short github.com A | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$'; } # needs the internet
 
+# Save a setting in a temporary config folder. No sign-in needed.
+test_gcloud() {
+  export CLOUDSDK_CONFIG="$PWD/gcloud" CLOUDSDK_CORE_DISABLE_PROMPTS=1
+  gcloud config set project brework-test >/dev/null 2>&1 &&
+    [ "$(gcloud config get project 2>/dev/null)" = brework-test ]
+}
+
 test_rsync() {
   make_files && rsync -a files/ copy/ && [ -f copy/sub/hay.txt ] &&
     [ "$(command -v rsync)" = "$(brew --prefix)/bin/rsync" ]
@@ -436,6 +443,7 @@ check "gh: runs (sign in with: gh auth login)" gh --version
 check "aws: runs (sign in with: aws configure)" aws --version
 check "doctl: runs (sign in with: doctl auth init)" doctl version
 check "supabase: runs (sign in with: supabase login)" supabase --version
+check "gcloud: save a setting (sign in with: gcloud auth login)" test_gcloud
 check "copilot: runs (sign in on first start)" copilot --version
 test_font() { brew list --cask font-jetbrains-mono-nerd-font | grep -q 'JetBrainsMonoNerdFont-Regular.ttf'; }
 check "font: JetBrains Mono Nerd Font is installed" test_font
