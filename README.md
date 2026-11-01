@@ -7,7 +7,9 @@ Set up a Mac for software development and IT operations (Dev & Ops) with one com
 
 brework = brew + work: [Homebrew](https://brew.sh), ready for work.
 
-One command installs about 55 command-line tools (programs you use by typing in Terminal) and about 20 apps, sets them up, and checks that they all work. You can install only the command-line tools.
+One command installs about 55 command-line tools (programs you use by typing in Terminal) and about 20 apps, and sets them up. A second command checks that they all work. You can install only the command-line tools.
+
+**You need:** a Mac with Apple Silicon (M1 or newer), macOS 15 or newer, your Mac password, about 40 GB of free disk space, and 30 to 60 minutes. See [Requirements](#requirements), then [Install](#install).
 
 New to these words? See [Words used here](#words-used-here).
 
@@ -68,11 +70,11 @@ Programming languages (Node.js, Python, Go, ...) are not in this list. Install t
 ## Requirements
 
 - A Mac with Apple Silicon (M1 or newer). To check: Apple menu > About This Mac. It says **Chip: Apple M1** (or M2, M3, ...). The Homebrew installer no longer works on Intel Macs (see [Intel Macs](#intel-macs)).
-- macOS 15 (Sequoia) or newer. About This Mac shows your version. Some App Store apps need more: Xcode needs macOS 26.6 or newer today, and WhatsApp 15.1. On an older macOS, everything else installs and the script ends with an error about those apps. With `--cli-only`, no App Store apps are installed.
-- An admin account (the installer asks for your password)
-- About 40 GB of free disk space (about 20 GB with `--cli-only`). Docker needs more as you add images.
+- macOS 15 (Sequoia) or newer. About This Mac shows your version. Some App Store apps need a newer macOS: Xcode needs macOS 26.6 or newer today, and WhatsApp needs macOS 15.1. On an older macOS, those apps don't install and the script ends with an error, but everything else is installed. With `--cli-only`, no App Store apps are installed.
+- An admin account (the installer asks for your password). To check: System Settings > Users & Groups. Your name says **Admin**.
+- About 40 GB of free disk space (about 20 GB with `--cli-only`). Docker needs more as you add images. To check: System Settings > General > Storage.
 - An internet connection
-- An Apple ID signed in to the App Store (for the App Store apps, not needed with `--cli-only`)
+- An Apple Account signed in to the App Store (for the App Store apps, not needed with `--cli-only`)
 
 If Xcode does not install, see [Troubleshooting](#troubleshooting).
 
@@ -84,36 +86,42 @@ On an Intel Mac, you can still use the lists as a shopping list: every name in [
 
 ## Install
 
-**Before you start:** sign in to the Mac App Store (not needed with `--cli-only`), and plug in your Mac. The install takes 30 to 60 minutes, depending on your internet.
+**Before you start:**
 
-1. Open Terminal: press Cmd+Space, type `Terminal`, and press Return.
-2. Copy this line, paste it into Terminal (Cmd+V), and press Return:
+- Sign in to the Mac App Store (not needed with `--cli-only`).
+- Plug in your Mac and keep it awake. The install takes 30 to 60 minutes, depending on your internet.
+- Choose what to install: **everything** (tools and apps), or **only the command-line tools** (`--cli-only`, no apps).
+
+**Is this safe?** The command runs a script from the internet on your Mac. The script only installs what is in these lists and sets it up. Your password goes to macOS, not to brework. You can [read `install.sh`](install.sh) first.
+
+1. Open Terminal: press Command (⌘) + Space, type `Terminal`, and press Return.
+2. Copy one of these lines (on GitHub, click the copy icon at the right of the box), paste it into Terminal (⌘V), and press Return.
+
+   Everything:
 
    ```bash
    curl -fsSL https://raw.githubusercontent.com/sgnd/brework/main/install.sh | bash
    ```
 
-3. When it asks for your password, type your Mac login password and press Return. **You don't see anything while you type.** That is normal.
-4. Wait until it says `Done!`. Then open a new Terminal window (Cmd+N) and go on with [After you install](#after-you-install).
+   Only the command-line tools:
 
-If it stops with an error, read the last lines, then see [Troubleshooting](#troubleshooting). You can run the same line again at any time: it installs what is missing and updates what is out of date.
+   ```bash
+   curl -fsSL https://raw.githubusercontent.com/sgnd/brework/main/install.sh | bash -s -- --cli-only
+   ```
 
-Only want the command-line tools, without the apps? Use this line in step 2:
+3. When it asks for your password, type your Mac login password and press Return. **You don't see anything while you type.** That is normal. It may ask for your password more than once (some apps ask again), and may ask you to press Return. Look at the window every few minutes.
+4. Wait until it says `Done!`. Then open a new Terminal window (⌘N) and go on with [After you install](#after-you-install).
 
-```bash
-curl -fsSL https://raw.githubusercontent.com/sgnd/brework/main/install.sh | bash -s -- --cli-only
-```
-
-**Is this safe?** The line runs a script from the internet on your Mac. It is short and easy to read, so you can [read `install.sh`](install.sh) first.
+If it ends with an error, read the last lines, then see [Troubleshooting](#troubleshooting). An error about only Xcode or WhatsApp means your macOS is too old for them: everything else is installed. You can run the same line again at any time: it installs what is missing and updates what is out of date.
 
 **What does it change on my Mac?**
 
-- It installs Homebrew (an installer for developer tools) and everything in the lists.
-- It keeps a copy of this project in `~/.brework`, a hidden folder in your home folder (press Cmd+Shift+. in Finder to see it).
+- It installs Homebrew (an installer for developer tools) and everything in the lists. Tools and apps you already have from Homebrew are updated.
+- It keeps a copy of this project in `~/.brework`, a hidden folder in your home folder (press ⌘ + Shift + . in Finder to see it).
 - It adds a few lines to the files your terminal reads when it starts, so the tools work everywhere: in Terminal, in code editors and in AI agents. Each line ends with `# added by brework`.
-- It starts Docker (Colima) in the background, now and every time you log in.
+- It starts Docker (Colima) in the background, now and every time you log in. Docker runs a small hidden Linux computer that uses about 2 GB of memory. To turn that off, see [After you install](#after-you-install).
 
-Settings you already have stay as they are. For the details, see [How it works](#how-it-works).
+Most settings you already have stay as they are. For the details, see [How it works](#how-it-works).
 
 ### Install from a downloaded copy
 
@@ -148,7 +156,7 @@ Or, for only the CLI tools:
    mise use --global usql@0.21.6 mongosh@2.14.1   # see MISE_TOOLS in install.sh
    ```
 
-   For only the CLI tools, run `HOMEBREW_BREWORK_CLI_ONLY=1 brew bundle install` instead of the last line.
+   For only the CLI tools, replace `brew bundle install` with `HOMEBREW_BREWORK_CLI_ONLY=1 brew bundle install`.
 
 3. Set up `docker compose` and `docker buildx`:
 
@@ -157,11 +165,41 @@ Or, for only the CLI tools:
    ln -sfn "$(brew --prefix)"/lib/docker/cli-plugins/docker-* ~/.docker/cli-plugins/
    ```
 
-4. For the shell tools, `delta` and starting Docker, copy steps 6 and 7 from [`install.sh`](install.sh).
+4. For the `PATH`, the shell tools, `delta` and starting Docker, do what steps 2, 6 and 7 of [`install.sh`](install.sh) do: add the lines it shows to the files it names, and run the commands.
 
-### Install with an AI agent
+## After you install
 
-This repo has an [agent skill](.claude/skills/brework-setup/SKILL.md) that tells an AI coding agent how to run the installer, fix common errors, and check that every tool works. To use it with [Claude Code](https://claude.com/claude-code), add it to your skills folder first:
+1. Open a new terminal. Everything is ready to use. To check that, see [Check that everything works](#check-that-everything-works).
+2. Docker starts by itself. The first start downloads a small Linux VM, so it takes a few minutes. Check that it works:
+
+   ```bash
+   docker run --rm hello-world
+   ```
+
+3. For icons in the terminal, pick the font **JetBrainsMono Nerd Font** (some apps list it as **JetBrainsMono NF**). In Terminal: Terminal > Settings > Profiles > Text > Font > Change. Then run `eza --icons`. The terminal does not switch fonts by itself.
+4. Open Xcode once to finish its setup (not with `--cli-only`).
+5. Open the apps and sign in to the ones you use.
+6. Sign in to the CLI tools you have an account for: `gh auth login`, `aws configure`, `doctl auth init`, `supabase login`, and `copilot` (it asks on its first start). Skip the ones you don't use.
+
+Need a local Kubernetes cluster? Run `colima stop`, then `colima start --kubernetes`.
+
+Don't want Docker to start every time you log in? Run `brew services stop colima`, and start it yourself with `colima start` when you need it. Running the install command again turns the autostart back on, unless Colima is running at that moment.
+
+## Check that everything works
+
+Open a new terminal and run:
+
+```bash
+~/.brework/scripts/smoke-test.sh
+```
+
+Add `--cli-only` if you installed only the CLI tools. If you ran `./install.sh` from another folder, run `scripts/smoke-test.sh` from that folder.
+
+It gives every CLI tool one small real task (for example: `age` encrypts and decrypts a file, `gitleaks` finds a planted fake token, `docker` runs a container). It also checks that every command is found, in Terminal and in editors, AI agents and scripts, and that every app is signed and made for Apple Silicon. Tools that need an account, like `gh` and `aws`, only show their version. The last line must say `0 failed`. If it doesn't, read the lines under each `FAIL`, then see [Troubleshooting](#troubleshooting) or [open an issue](https://github.com/sgnd/brework/issues/new?template=bug-report.yml).
+
+## Install with an AI agent
+
+This repo has an [agent skill](.claude/skills/brework-setup/SKILL.md) that tells an AI coding agent how to run the installer, fix common errors, and check that every tool works. To use it with [Claude Code](https://claude.com/claude-code) (install Claude Code first), add the skill to your skills folder:
 
 ```bash
 mkdir -p ~/.claude/skills/brework-setup
@@ -178,36 +216,6 @@ ln -s ~/.brework/.claude/skills/brework-setup ~/.claude/skills/brework-setup
 ```
 
 Other agents that support agent skills can use the same `SKILL.md`. Put it in their skills folder.
-
-## After you install
-
-1. Open a new terminal. Everything is ready to use. To check that, see [Check that everything works](#check-that-everything-works).
-2. Docker starts by itself. The first start downloads a small Linux VM, so it takes a few minutes. Check that it works:
-
-   ```bash
-   docker run --rm hello-world
-   ```
-
-3. For icons in the terminal, pick the font **JetBrainsMono Nerd Font** (some apps list it as **JetBrainsMono NF**) in your terminal's settings, and run `eza --icons`. The terminal does not switch fonts by itself.
-4. Open Xcode once to finish its setup (not with `--cli-only`).
-5. Open the apps and sign in to the ones you use.
-6. Sign in to the CLI tools you use: `gh auth login`, `aws configure`, `doctl auth init`, `supabase login`, and `copilot` (it asks on its first start).
-
-Need a local Kubernetes cluster? Run `colima stop`, then `colima start --kubernetes`.
-
-Don't want Docker to start every time you log in? Run `brew services stop colima`, and start it yourself with `colima start` when you need it. Running the install command again turns the autostart back on, unless Colima is running at that moment.
-
-## Check that everything works
-
-Open a new terminal and run:
-
-```bash
-~/.brework/scripts/smoke-test.sh
-```
-
-Add `--cli-only` if you installed only the CLI tools. If you ran `./install.sh` from another folder, run `scripts/smoke-test.sh` from that folder.
-
-It gives every CLI tool one small real task (for example: `age` encrypts and decrypts a file, `gitleaks` finds a planted fake token, `docker` runs a container). It also checks that every command is found, in Terminal and in editors, AI agents and scripts, and that every app is signed and made for Apple Silicon. Tools that need an account, like `gh` and `aws`, only show their version. The last line must say `0 failed`.
 
 ## Keep everything up to date
 
@@ -293,6 +301,9 @@ brew install --cask --adopt visual-studio-code
 **An App Store app did not install**
 Open the App Store, sign in, and run the [install command](#install) again.
 
+**The install ended with an error about Xcode or WhatsApp**
+Your macOS is too old for them (see [Requirements](#requirements)). Everything else is installed. Update macOS, or ignore it if you don't need those apps.
+
 **Xcode did not install**
 Xcode from the App Store needs a recent macOS (26.6 or newer today). Update macOS in System Settings > General > Software Update, then run the install command again. Or download an older Xcode from [Apple's developer site](https://developer.apple.com/download/all/?q=xcode).
 
@@ -300,7 +311,7 @@ Xcode from the App Store needs a recent macOS (26.6 or newer today). Update macO
 Your terminal is set to open using Rosetta. In Finder, open Applications (Terminal is in Applications > Utilities), select your terminal app, choose File > Get Info, and turn off "Open using Rosetta". Then open a new terminal.
 
 **`command not found` right after the install**
-Open a new Terminal window (Cmd+N). A window that was open during the install does not know the new tools yet. Still not found? Run the [check](#check-that-everything-works): it says what is wrong.
+Open a new Terminal window (⌘N). A window that was open during the install does not know the new tools yet. Still not found? Run the [check](#check-that-everything-works): it says what is wrong.
 
 **`docker: Cannot connect to the Docker daemon`**
 Docker is still starting (the first start takes a few minutes), or it is not running. Check with `colima status`. Start it with `brew services restart colima`.
@@ -319,7 +330,7 @@ For the curious. You don't need this to use brework.
 
 1. Installs Homebrew, if you don't have it yet
 2. Adds Homebrew to your `PATH` for every shell: `~/.zshenv` (every zsh, also `ssh mac COMMAND`), `~/.zprofile` (a terminal, IDEs and AI agents) and `~/.bash_profile` (bash)
-3. Downloads this repo to `~/.brework` (a hidden folder: press Cmd+Shift+. in Finder to see it)
+3. Downloads this repo to `~/.brework` (a hidden folder: press ⌘ + Shift + . in Finder to see it)
 4. Installs everything in the `Brewfile` and `Brewfile.apps` (only the `Brewfile` with `--cli-only`). It also installs `usql` and `mongosh` with `mise`, at fixed versions (`MISE_TOOLS` in `install.sh`): `usql` is not in Homebrew, and Homebrew's `mongosh` needs a second Node.js.
 5. Sets up `docker compose` and `docker buildx`
 6. Turns on `mise`, `direnv`, `zoxide` and `fzf` in `~/.zshrc`, and shows git diffs with `delta`. It also adds the `mise` tools to the same three files as Homebrew, so IDEs, AI agents and scripts find them too (they don't read `~/.zshrc`).
@@ -350,7 +361,7 @@ brework adds Homebrew and the `mise` tools to the last three, so every shell fin
 
 | Word | What it means |
 | --- | --- |
-| Terminal | The Mac app where you type commands. Open it with Cmd+Space, then type `Terminal` |
+| Terminal | The Mac app where you type commands. Open it with ⌘ + Space, then type `Terminal` |
 | Command-line tool (CLI) | A program you use by typing in Terminal, like `git` |
 | App (GUI) | A program with a window, like VS Code or Slack |
 | Homebrew | A free installer for developer tools and apps on a Mac. Its command is `brew` |
@@ -360,6 +371,9 @@ brework adds Homebrew and the `mise` tools to the last three, so every shell fin
 | Docker, container | A way to run an app with everything it needs, separate from the rest of your Mac |
 | `mise` | A tool that installs a language, like Python, at the version a project needs |
 | AI agent | An AI that runs commands for you, like [Claude Code](https://claude.com/claude-code) |
+| Repo | A project folder on GitHub, like this one |
+| Fork | Your own copy of a repo on GitHub, which you can change |
+| VM (virtual machine) | A computer that runs inside your computer |
 
 ## Project files
 
