@@ -97,6 +97,13 @@ For each `FAIL`, read the lines under it:
 
 ## 6. Tell the user what is left
 
+If this skill is a downloaded copy in `~/.claude/skills/brework-setup` (not a link), offer to swap it for a link to `~/.brework`, so it stays up to date. Ask first:
+
+```bash
+rm -rf ~/.claude/skills/brework-setup
+ln -s ~/.brework/.claude/skills/brework-setup ~/.claude/skills/brework-setup
+```
+
 Report what you did, the smoke test result, and these manual steps (brework cannot do them):
 
 - Open Xcode once to finish its setup (if they installed everything).
