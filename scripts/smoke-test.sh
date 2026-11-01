@@ -214,6 +214,10 @@ test_http_tools() {
 
 test_mongosh() { [ "$(mongosh --nodb --quiet --eval 'print(6 * 7)')" = 42 ]; }
 
+test_usql() { # installed with mise
+  [ "$(mise exec -- usql -q -J -c 'select 6*7 as answer' sqlite:test.db | jq '.[0].answer')" = 42 ]
+}
+
 # redis-cli saves and reads a value in a small local Redis server.
 test_redis() {
   local port=8766
@@ -266,7 +270,6 @@ test_ripgrep() { make_files && rg -q needle files; }
 test_fd() { make_files && fd hay files | grep -q hay.txt; }
 test_bat() { make_files && bat --paging=never --color=never files/sub/hay.txt | grep -q needle; }
 test_eza() { make_files && eza --tree files | grep -q hay.txt; }
-test_tree() { make_files && tree files | grep -q hay.txt; }
 test_tldr() { tldr tar | grep -qi archive; } # downloads the pages the first time
 test_doggo() { doggo --short github.com A | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$'; } # needs the internet
 
@@ -286,6 +289,7 @@ commands_from_list() {
   done
   brew bundle list --cask --file="$repo/Brewfile" | xargs brew info --json=v2 --cask |
     jq -r '.casks[].artifacts[] | objects | select(has("binary")) | .target | split("/") | last'
+  echo usql # installed with mise
 }
 
 # Open a new terminal (a clean zsh, like a new Terminal window) and look for each command.
@@ -363,6 +367,7 @@ check "yq: read YAML" test_yq
 check "httpie and wget: download a file" test_http_tools
 check "mongosh: run a script" test_mongosh
 check "redis-cli: save and read a value" test_redis
+check "usql: query a database" test_usql
 check "k6: run a load test" test_k6
 check "hyperfine: time a command" test_hyperfine
 check "direnv: load a folder's .envrc" test_direnv
@@ -373,7 +378,6 @@ check "ripgrep: search text" test_ripgrep
 check "fd: find a file" test_fd
 check "bat: show a file" test_bat
 check "eza: list files" test_eza
-check "tree: show folders" test_tree
 check "tldr: show a help page" test_tldr
 check "doggo: look up a DNS record" test_doggo
 check "rsync: copy a folder (newer rsync)" test_rsync

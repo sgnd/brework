@@ -84,7 +84,9 @@ brew "httpie"             # Simple HTTP requests
 # Database clients
 # ----------------------------------------------------------------------------
 brew "mongosh"            # MongoDB shell
-brew "redis"              # Redis command line (redis-cli)
+brew "redis"              # Redis command line (redis-cli). The server is not started
+# usql (one SQL shell for PostgreSQL, MySQL, SQLite, Cassandra, ...) is not in Homebrew core.
+# install.sh installs it with mise instead, at a fixed version.
 
 # ----------------------------------------------------------------------------
 # Load testing & benchmarks
@@ -108,7 +110,6 @@ brew "ripgrep"            # Fast text search in files (rg)
 brew "fd"                 # Fast file search
 brew "bat"                # cat with colors
 brew "eza"                # ls with colors and icons
-brew "tree"               # Show folders as a tree
 brew "tlrc"               # Short help with examples (tldr)
 brew "watch"              # Run a command every few seconds
 brew "wget"               # Download files
