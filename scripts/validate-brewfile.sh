@@ -68,6 +68,14 @@ mise_tools="$(sed -n 's/^MISE_TOOLS="\([^"]*\)".*/\1/p' install.sh)"
 for tool in $mise_tools; do
   if mise ls-remote "${tool%@*}" 2>/dev/null | grep -qxF "${tool#*@}"; then
     echo "ok       $tool (mise)"
+    # A newer version does not fail the check. On GitHub it shows as a warning on the run.
+    latest="$(mise latest "${tool%@*}" 2>/dev/null)"
+    if [ -n "$latest" ] && [ "$latest" != "${tool#*@}" ]; then
+      echo "NEWER    ${tool%@*} $latest is out. Update MISE_TOOLS in install.sh"
+      if [ -n "${GITHUB_ACTIONS:-}" ]; then
+        echo "::warning title=Update MISE_TOOLS::${tool%@*} $latest is out (install.sh has ${tool#*@})"
+      fi
+    fi
   else
     echo "MISSING  $tool (mise cannot find this version)"
     missing=$((missing + 1))

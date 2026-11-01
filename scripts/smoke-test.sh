@@ -136,8 +136,20 @@ test_ansible_lint() { # must find the task without a name
 
 # --- Containers ------------------------------------------------------------
 
+# Docker Hub sometimes drops a download (like "failed to fetch anonymous token: EOF").
+# Try up to 3 times, so one bad moment on the network is not a failed check.
+docker_pull() {
+  local _
+  for _ in 1 2 3; do
+    docker pull -q "$1" >/dev/null 2>&1 && return 0
+    sleep 5
+  done
+  echo "could not download $1 from Docker Hub"
+  return 1
+}
+
 test_docker() {
-  docker run --rm hello-world | grep -q 'Hello from Docker'
+  docker_pull hello-world && docker run --rm hello-world | grep -q 'Hello from Docker'
   local result=$?
   docker image rm hello-world >/dev/null 2>&1
   return $result
@@ -145,7 +157,7 @@ test_docker() {
 
 test_docker_compose() {
   printf 'services:\n  hello:\n    image: busybox\n    command: echo compose-works\n' >compose.yaml
-  docker compose run --rm hello | grep -q compose-works
+  docker_pull busybox && docker compose run --rm hello | grep -q compose-works
   local result=$?
   docker compose down >/dev/null 2>&1 # removes the network it made
   return $result
@@ -153,7 +165,7 @@ test_docker_compose() {
 
 test_docker_buildx() {
   printf 'FROM busybox\nRUN echo built >/built.txt\n' >Dockerfile
-  docker buildx build -q -t brework-smoke-test . >/dev/null &&
+  docker_pull busybox && docker buildx build -q -t brework-smoke-test . >/dev/null &&
     [ "$(docker run --rm brework-smoke-test cat /built.txt)" = built ]
   local result=$?
   docker image rm brework-smoke-test >/dev/null 2>&1
@@ -273,6 +285,13 @@ test_fd() { make_files && fd hay files | grep -q hay.txt; }
 test_bat() { make_files && bat --paging=never --color=never files/sub/hay.txt | grep -q needle; }
 test_eza() { make_files && eza --tree files | grep -q hay.txt; }
 test_tldr() { tldr tar | grep -qi archive; } # downloads the pages the first time
+# watch must stop by itself (-g) when the file changes. It needs a terminal, so `script` gives it one.
+# perl's alarm stops it after 10 seconds if it does not.
+test_watch() {
+  echo before >file.txt
+  (sleep 1 && echo after >file.txt) &
+  TERM=xterm-256color perl -e 'alarm 10; exec @ARGV' script -q /dev/null watch -t -g -n 0.2 cat file.txt </dev/null >/dev/null 2>&1
+}
 test_doggo() { doggo --short github.com A | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$'; } # needs the internet
 
 test_rsync() {
@@ -381,6 +400,7 @@ check "fd: find a file" test_fd
 check "bat: show a file" test_bat
 check "eza: list files" test_eza
 check "tldr: show a help page" test_tldr
+check "watch: notice a change" test_watch
 check "doggo: look up a DNS record" test_doggo
 check "rsync: copy a folder (newer rsync)" test_rsync
 check "docker-credential-helper: runs" docker-credential-osxkeychain version

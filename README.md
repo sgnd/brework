@@ -165,6 +165,13 @@ curl -fsSL https://raw.githubusercontent.com/sgnd/brework/main/.claude/skills/br
 
 Then start Claude Code in any folder and ask: "Set up my Mac with brework". You still type your password yourself when the installer asks for it.
 
+After the install, swap that copy for a link to `~/.brework`. Then the skill updates every time you run the install command again:
+
+```bash
+rm -rf ~/.claude/skills/brework-setup
+ln -s ~/.brework/.claude/skills/brework-setup ~/.claude/skills/brework-setup
+```
+
 Other agents that support agent skills can use the same `SKILL.md`. Put it in their skills folder.
 
 ## After you install
