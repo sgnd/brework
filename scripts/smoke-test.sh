@@ -320,23 +320,24 @@ commands_from_mise() {
   done
 }
 
-# Open a clean zsh with these options and look for each command.
+# Open a clean shell (zsh or bash) with these options and look for each command.
 # Every command from mise must be the one mise picks (not the macOS java, or a python3 from Homebrew):
-# a mise shim (a link to mise itself), or the path that `mise which` gives.
-# Usage: test_commands_found ZSH-OPTIONS...
+# a mise shim (a link to mise itself), or the file that `mise which` gives (or a link to it).
+# Usage: test_commands_found SHELL OPTIONS...
 test_commands_found() {
   local commands mise_commands output missing
   commands="$(commands_from_list | sort -u | tr '\n' ' ')"
   mise_commands="$(commands_from_mise | sort -u | tr '\n' ' ')"
   # Your ~/.zshrc may print things too, so only read our own lines.
   # "all checked" at the end shows that the loops really ran.
-  output="$(env -i HOME="$HOME" USER="$USER" LOGNAME="$LOGNAME" SHELL=/bin/zsh TERM=xterm-256color /bin/zsh "$@" -c "
-    for c in $commands; do whence -p \$c >/dev/null || echo \"command not found: \$c\"; done
+  output="$(env -i HOME="$HOME" USER="$USER" LOGNAME="$LOGNAME" SHELL=/bin/zsh TERM=xterm-256color "$@" -c "
+    path_of() { whence -p \$1 2>/dev/null || type -P \$1 2>/dev/null; } # zsh || bash
+    for c in $commands; do path_of \$c >/dev/null || echo \"command not found: \$c\"; done
     for c in $mise_commands; do
-      p=\"\$(whence -p \$c)\"
+      p=\"\$(path_of \$c)\"
       if [ -z \"\$p\" ]; then
         echo \"command not found: \$c\"
-      elif ! [ \"\$p\" -ef \"\$(whence -p mise)\" ] && [ \"\$p\" != \"\$(mise which \$c 2>/dev/null)\" ]; then
+      elif ! [ \"\$p\" -ef \"\$(path_of mise)\" ] && ! [ \"\$p\" -ef \"\$(mise which \$c 2>/dev/null)\" ]; then
         echo \"not the one from mise: \$p\"
       fi
     done
@@ -379,9 +380,11 @@ esac
 
 echo "== Everything in the list is installed"
 check "brew bundle check" brew bundle check --file="$repo/Brewfile"
-check "every command is found in a new terminal" test_commands_found -l -i
-# Scripts, IDEs and AI agents run `zsh -l -c COMMAND`: it reads ~/.zprofile, not ~/.zshrc.
-check "every command is found by scripts and AI agents" test_commands_found -l
+check "every command is found in a new terminal" test_commands_found /bin/zsh -l -i
+# The shells that don't read ~/.zshrc:
+check "every command is found by IDEs and AI agents (zsh -l -c)" test_commands_found /bin/zsh -l
+check "every command is found by scripts and ssh (zsh -c)" test_commands_found /bin/zsh
+check "every command is found in bash (bash -l -c)" test_commands_found /bin/bash -l
 
 echo "== CLI tools do their job"
 check "git: make a commit" test_git

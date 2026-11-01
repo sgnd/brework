@@ -4,12 +4,12 @@
 #
 # Sets up a Mac with the tools in the Brewfile and the apps in Brewfile.apps:
 #   1. Install Homebrew (if you don't have it yet)
-#   2. Add Homebrew to your PATH
+#   2. Add Homebrew to your PATH, for every shell (zsh and bash)
 #   3. Find the Brewfile (download this repo if needed)
 #   4. Install everything in the Brewfile and Brewfile.apps (only the Brewfile with --cli-only), and MISE_TOOLS with mise
 #   5. Set up docker compose and docker buildx
 #   6. Turn on the shell tools (mise, direnv, zoxide, fzf) and delta for git,
-#      and let scripts and AI agents find the mise tools too
+#      and add the mise tools to your PATH, for every shell
 #   7. Start Docker (Colima) now and every time you log in
 #
 # Run it with:
@@ -86,10 +86,17 @@ main() {
 
   eval "$("$BREW" shellenv)" # for the rest of this script
 
-  if ! grep -qs "brew shellenv" "$HOME/.zprofile"; then # for every new terminal
-    say "Adding Homebrew to your PATH in ~/.zprofile"
-    echo "eval \"\$($BREW shellenv)\"" >>"$HOME/.zprofile"
+  # Every zsh reads ~/.zshenv: a terminal, an IDE, an AI agent, a script, `ssh mac COMMAND`.
+  # A login shell (a terminal, most IDEs and agents) then lets macOS put /usr/bin first again,
+  # so ~/.zprofile needs the same line. bash reads ~/.bash_profile (and then skips ~/.profile).
+  say "Adding Homebrew to your PATH in ~/.zshenv, ~/.zprofile and ~/.bash_profile"
+  if [ ! -f "$HOME/.bash_profile" ] && [ -f "$HOME/.profile" ]; then
+    # shellcheck disable=SC2016 # this line runs later, in bash
+    echo '. "$HOME/.profile" # added by brework, so bash still reads ~/.profile' >"$HOME/.bash_profile"
   fi
+  add_line "$HOME/.zshenv" "brew shellenv" "eval \"\$($BREW shellenv)\" # added by brework"
+  add_line "$HOME/.zprofile" "brew shellenv" "eval \"\$($BREW shellenv)\" # added by brework"
+  add_line "$HOME/.bash_profile" "brew shellenv" "eval \"\$($BREW shellenv bash)\" # added by brework"
 
   # --- 3. Find the Brewfile ------------------------------------------------
 
@@ -156,11 +163,15 @@ main() {
     add_line "$HOME/.zshrc" "fzf --zsh" 'command -v fzf >/dev/null && source <(fzf --zsh) # added by brework'
   }
 
-  # Scripts, IDEs and AI agents often run `zsh -l -c COMMAND`. That shell reads ~/.zprofile, not ~/.zshrc.
-  # Without this line it does not find the mise tools, or it finds the wrong ones (like the macOS java).
-  say "Adding the mise tools to ~/.zprofile, for scripts and AI agents"
-  # shellcheck disable=SC2016 # this line runs later, in your terminal
-  add_line "$HOME/.zprofile" "mise activate zsh --shims" 'command -v mise >/dev/null && eval "$(mise activate zsh --shims)" # added by brework'
+  # IDEs, AI agents and scripts don't read ~/.zshrc. Without these lines they don't find the mise tools,
+  # or they find the wrong ones (like the macOS java). Same files as Homebrew in step 2, for the same reasons.
+  say "Adding the mise tools to your PATH in ~/.zshenv, ~/.zprofile and ~/.bash_profile"
+  # shellcheck disable=SC2016 # these lines run later, in your shell
+  {
+    add_line "$HOME/.zshenv" "mise activate zsh --shims" 'command -v mise >/dev/null && eval "$(mise activate zsh --shims)" # added by brework'
+    add_line "$HOME/.zprofile" "mise activate zsh --shims" 'command -v mise >/dev/null && eval "$(mise activate zsh --shims)" # added by brework'
+    add_line "$HOME/.bash_profile" "mise activate bash --shims" 'command -v mise >/dev/null && eval "$(mise activate bash --shims)" # added by brework'
+  }
 
   # Show git diffs with delta, unless you already picked a pager for git.
   if command -v delta >/dev/null && [ -z "$(git config --global --includes core.pager)" ]; then

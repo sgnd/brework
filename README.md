@@ -92,11 +92,11 @@ This runs a script from the internet on your Mac. It is short and easy to read, 
 The script does this for you:
 
 1. Installs Homebrew, if you don't have it yet
-2. Adds Homebrew to your `PATH` (in `~/.zprofile`, for the zsh shell that macOS uses)
+2. Adds Homebrew to your `PATH` for every shell: `~/.zshenv` (every zsh, also `ssh mac COMMAND`), `~/.zprofile` (a terminal, IDEs and AI agents) and `~/.bash_profile` (bash)
 3. Downloads this repo to `~/.brework` (a hidden folder: press Cmd+Shift+. in Finder to see it)
 4. Installs everything in the `Brewfile` and `Brewfile.apps` (only the `Brewfile` with `--cli-only`). It also installs `usql` and `mongosh` with `mise`, at fixed versions (`MISE_TOOLS` in `install.sh`): `usql` is not in Homebrew, and Homebrew's `mongosh` needs a second Node.js.
 5. Sets up `docker compose` and `docker buildx`
-6. Turns on `mise`, `direnv`, `zoxide` and `fzf` in `~/.zshrc`, and shows git diffs with `delta`. It also adds the `mise` tools to `~/.zprofile`, so scripts, IDEs and AI agents find them too (they often run `zsh -l -c COMMAND`, which does not read `~/.zshrc`).
+6. Turns on `mise`, `direnv`, `zoxide` and `fzf` in `~/.zshrc`, and shows git diffs with `delta`. It also adds the `mise` tools to the same three files as Homebrew, so IDEs, AI agents and scripts find them too (they don't read `~/.zshrc`).
 7. Starts Docker (Colima) now and every time you log in
 
 It keeps settings you already have: a tool that is already in your `~/.zshrc`, or a git pager you already picked, stays as it is. Two things it does change: it links `docker compose` and `docker buildx` into `~/.docker/cli-plugins` (replacing Docker Desktop's links), and Colima makes itself the active Docker context when it starts.
@@ -202,7 +202,7 @@ Open a new terminal and run:
 
 Add `--cli-only` if you installed only the CLI tools. If you ran `./install.sh` from another folder, run `scripts/smoke-test.sh` from that folder.
 
-It gives every CLI tool one small real task (for example: `age` encrypts and decrypts a file, `gitleaks` finds a planted fake token, `docker` runs a container). It also checks that every command is found in a new terminal and by scripts and AI agents (without `~/.zshrc`), and that every app Homebrew puts in `/Applications` is signed and runs on Apple Silicon. Tools that need an account, like `gh` and `aws`, only show their version. The last line must say `0 failed`.
+It gives every CLI tool one small real task (for example: `age` encrypts and decrypts a file, `gitleaks` finds a planted fake token, `docker` runs a container). It also checks that every command is found in a new terminal, by IDEs and AI agents (`zsh -l -c`), by scripts and ssh (`zsh -c`) and in bash, and that every app Homebrew puts in `/Applications` is signed and runs on Apple Silicon. Tools that need an account, like `gh` and `aws`, only show their version. The last line must say `0 failed`.
 
 ## Keep everything up to date
 
@@ -289,6 +289,10 @@ Your terminal is set to open using Rosetta. In Finder, open Applications (Termin
 
 **`docker: Cannot connect to the Docker daemon`**
 Docker is still starting (the first start takes a few minutes), or it is not running. Check with `colima status`. Start it with `brew services restart colima`.
+
+**`command not found` in a cron job or launchd agent**
+
+cron and launchd don't start a shell, so they don't read `~/.zshenv` or any other file, and their `PATH` has no Homebrew. Write the full path in the job, like `/opt/homebrew/bin/kubectl`, or `mise exec -- usql` with `/opt/homebrew/bin/mise`.
 
 **Why Colima and not Docker Desktop?**
 Colima is free, open source and runs from the terminal. It gives you the same `docker` commands.
