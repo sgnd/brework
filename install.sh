@@ -6,7 +6,7 @@
 #   1. Install Homebrew (if you don't have it yet)
 #   2. Add Homebrew to your PATH
 #   3. Find the Brewfile (download this repo if needed)
-#   4. Install everything in the Brewfile and Brewfile.apps (only the Brewfile with --cli-only)
+#   4. Install everything in the Brewfile and Brewfile.apps (only the Brewfile with --cli-only), and usql with mise
 #   5. Set up docker compose and docker buildx
 #   6. Turn on the shell tools (mise, direnv, zoxide, fzf) and delta for git
 #   7. Start Docker (Colima) now and every time you log in
@@ -27,6 +27,7 @@ set -euo pipefail # stop at the first error
 # Forked this repo? Put your fork's address here, so the script installs your list.
 REPO_URL="https://github.com/sgnd/brework.git"
 REPO_DIR="$HOME/.brework" # where `curl | bash` downloads this repo
+USQL_VERSION="0.21.6"     # installed with mise (not in Homebrew core)
 
 say() { printf '\033[1;34m==>\033[0m %s\n' "$*"; }
 fail() { printf '\033[1;31mError:\033[0m %s\n' "$*" >&2; exit 1; }
@@ -120,6 +121,14 @@ main() {
   # If one package fails, keep going: steps 5 to 7 still run and you get a clear message at the end.
   all_installed=yes
   brew bundle install --file="$REPO_DIR/Brewfile" || all_installed=no
+
+  # usql is not in Homebrew core. mise installs its official build, at this version.
+  if command -v mise >/dev/null; then
+    say "Installing usql $USQL_VERSION with mise"
+    mise use --global "usql@$USQL_VERSION" || all_installed=no
+  else
+    all_installed=no
+  fi
 
   # --- 5. Set up docker compose and docker buildx --------------------------
 

@@ -62,6 +62,16 @@ for id in $app_store_ids; do
   fi
 done
 
+# 4. usql, which install.sh installs with mise at a fixed version.
+usql_version="$(sed -n 's/^USQL_VERSION="\([^"]*\)".*/\1/p' install.sh)"
+# mise downloads the official Apple Silicon build from GitHub, so that file must exist.
+if curl -fsSIL -o /dev/null "https://github.com/xo/usql/releases/download/v$usql_version/usql-$usql_version-darwin-arm64.tar.bz2"; then
+  echo "ok       usql $usql_version (mise)"
+else
+  echo "MISSING  usql $usql_version (no Apple Silicon build on GitHub)"
+  missing=$((missing + 1))
+fi
+
 echo
 echo "$missing missing"
 [ "$missing" -eq 0 ] # fail the check if anything is missing

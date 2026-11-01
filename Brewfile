@@ -20,6 +20,7 @@
 brew "git"                # Version control
 brew "gh"                 # GitHub from the terminal
 brew "git-delta"          # Colored, easy-to-read git diffs
+brew "git-lfs"            # Keep large files in git
 
 # ----------------------------------------------------------------------------
 # Code quality & Git hooks
@@ -27,6 +28,8 @@ brew "git-delta"          # Colored, easy-to-read git diffs
 brew "pre-commit"         # Run checks before each git commit
 brew "shellcheck"         # Find bugs in shell scripts
 brew "hadolint"           # Find mistakes in Dockerfiles
+brew "shfmt"              # Format shell scripts
+brew "actionlint"         # Find mistakes in GitHub Actions workflows
 
 # ----------------------------------------------------------------------------
 # Security & secrets
@@ -58,6 +61,7 @@ brew "docker"             # Docker commands
 brew "docker-compose"     # Run multi-container apps (docker compose)
 brew "docker-buildx"      # Build images (docker buildx)
 brew "docker-credential-helper" # Keep docker login passwords in the macOS keychain
+brew "crane"              # Copy and inspect images in a registry, without Docker
 
 # ----------------------------------------------------------------------------
 # Kubernetes
@@ -65,6 +69,7 @@ brew "docker-credential-helper" # Keep docker login passwords in the macOS keych
 brew "kubernetes-cli"     # Kubernetes from the terminal (kubectl)
 brew "helm"               # Install apps on Kubernetes
 brew "kustomize"          # Change Kubernetes YAML without templates
+brew "kubeconform"        # Check Kubernetes YAML before you apply it
 brew "kubectx"            # Switch Kubernetes clusters and namespaces
 brew "stern"              # Follow logs from many pods at once
 
@@ -76,10 +81,25 @@ brew "yq"                 # Read and edit YAML
 brew "httpie"             # Simple HTTP requests
 
 # ----------------------------------------------------------------------------
+# Database clients
+# ----------------------------------------------------------------------------
+brew "mongosh"            # MongoDB shell
+brew "redis"              # Redis command line (redis-cli). The server is not started
+# usql (one SQL shell for PostgreSQL, MySQL, SQLite, Cassandra, ...) is not in Homebrew core.
+# install.sh installs it with mise instead, at a fixed version.
+
+# ----------------------------------------------------------------------------
+# Load testing & benchmarks
+# ----------------------------------------------------------------------------
+brew "k6"                 # Load test websites and APIs
+brew "hyperfine"          # Measure how fast a command runs
+
+# ----------------------------------------------------------------------------
 # Languages & environment
 # ----------------------------------------------------------------------------
 brew "mise"               # Install Node, Python, Go, ... per project
 brew "direnv"             # Load env variables per folder
+brew "just"               # Save and run project commands (like make)
 
 # ----------------------------------------------------------------------------
 # Shell & CLI utilities
@@ -90,10 +110,10 @@ brew "ripgrep"            # Fast text search in files (rg)
 brew "fd"                 # Fast file search
 brew "bat"                # cat with colors
 brew "eza"                # ls with colors and icons
-brew "tree"               # Show folders as a tree
 brew "tlrc"               # Short help with examples (tldr)
 brew "watch"              # Run a command every few seconds
 brew "wget"               # Download files
+brew "doggo"              # Look up DNS records
 brew "rsync"              # Copy and sync files (newer than the macOS one)
 
 # ----------------------------------------------------------------------------

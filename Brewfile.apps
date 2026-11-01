@@ -28,12 +28,9 @@ cask "claude"             # Claude desktop app
 cask "chatgpt"            # ChatGPT desktop app
 
 # ----------------------------------------------------------------------------
-# API & database clients
+# API clients
 # ----------------------------------------------------------------------------
 cask "postman"            # Test HTTP APIs
-cask "dbeaver-community"  # SQL database client (PostgreSQL, MySQL, ...)
-cask "mongodb-compass"    # MongoDB client
-cask "redis-insight"      # Redis client
 
 # ----------------------------------------------------------------------------
 # Chat

@@ -32,6 +32,8 @@ Before adding something, check all of these. If one fails, don't add it and tell
 
    Prefer `brew` or `cask` over `mas`. Use `mas` only when the app is not in Homebrew.
 
+   Don't add other taps (Homebrew makes you trust them, and they often build from source). A tool that is not in Homebrew core can come from `mise` instead, like `usql`: `mise registry | grep NAME`. Then pin its version in `install.sh` (like `USQL_VERSION`), and add it to the validator, the smoke test and the README (`usql` shows how).
+
 2. Add one line to `Brewfile` (a CLI tool, or something the terminal needs, like a font) or `Brewfile.apps` (an app with a window, or an App Store app), at the end of the right section (or next to a closely related tool, like `docker-buildx` after `docker`):
 
    ```ruby
