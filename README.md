@@ -84,7 +84,7 @@ Most settings you already have stay as they are. For the details, see [How it wo
 2. For icons in the terminal, pick the font **JetBrainsMono Nerd Font** (some apps list it as **JetBrainsMono NF**). In Terminal: Terminal > Settings > Profiles > Text > Font > Change. Then run `eza --icons`. The terminal does not switch fonts by itself.
 3. Open Xcode once to finish its setup (not with `--cli-only`).
 4. Open the apps and sign in to the ones you use.
-5. Sign in to the command-line tools you have an account for: `gh auth login`, `aws configure`, `doctl auth init`, `supabase login`, and `copilot` (it asks on its first start). Skip the ones you don't use.
+5. Sign in to the command-line tools you have an account for: `gh auth login`, `aws configure`, `doctl auth init`, `supabase login`, `gcloud auth login`, and `copilot` (it asks on its first start). Skip the ones you don't use.
 
 ## Check that everything works
 
@@ -119,7 +119,7 @@ Click a name to open its official website. You can also download it from there w
 | Version control | Save the history of your code, and work with GitHub | [git](https://git-scm.com), [gh](https://cli.github.com), [git-delta](https://dandavison.github.io/delta/), [git-lfs](https://git-lfs.com) |
 | Code quality & Git hooks | Find mistakes in scripts, Dockerfiles and GitHub workflows before you commit | [pre-commit](https://pre-commit.com), [shellcheck](https://www.shellcheck.net), [hadolint](https://github.com/hadolint/hadolint), [shfmt](https://github.com/mvdan/sh), [actionlint](https://rhysd.github.io/actionlint/) |
 | Security & secrets | Encrypt secrets, and find leaked passwords and security problems | [age](https://github.com/FiloSottile/age), [sops](https://getsops.io), [gitleaks](https://gitleaks.io), [trivy](https://trivy.dev) |
-| Cloud CLIs | Manage AWS, DigitalOcean and Supabase from the terminal | [awscli](https://aws.amazon.com/cli/), [doctl](https://docs.digitalocean.com/reference/doctl/), [supabase](https://supabase.com/docs/reference/cli/about) |
+| Cloud CLIs | Manage AWS, DigitalOcean, Supabase and Google Cloud from the terminal | [awscli](https://aws.amazon.com/cli/), [doctl](https://docs.digitalocean.com/reference/doctl/), [supabase](https://supabase.com/docs/reference/cli/about), [gcloud](https://cloud.google.com/cli) |
 | Infrastructure as Code & server setup | Create cloud servers from code, and set them up automatically | [opentofu](https://opentofu.org), [ansible](https://www.ansible.com), [ansible-lint](https://docs.ansible.com/projects/lint/) |
 | Containers | Run and build Docker containers, without Docker Desktop | [colima](https://github.com/abiosoft/colima), [docker](https://docs.docker.com/engine/install/binaries/), [docker-compose](https://github.com/docker/compose), [docker-buildx](https://github.com/docker/buildx), [docker-credential-helper](https://github.com/docker/docker-credential-helpers), [crane](https://github.com/google/go-containerregistry/blob/main/cmd/crane/README.md) |
 | Kubernetes | Manage Kubernetes clusters and the apps on them | [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-macos/), [helm](https://helm.sh), [kustomize](https://github.com/kubernetes-sigs/kustomize), [kubeconform](https://github.com/yannh/kubeconform), [kubectx](https://github.com/ahmetb/kubectx), [stern](https://github.com/stern/stern) |
