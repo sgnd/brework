@@ -3,37 +3,47 @@
 [![Validate](https://github.com/sgnd/brework/actions/workflows/validate.yml/badge.svg)](https://github.com/sgnd/brework/actions/workflows/validate.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-Set up a Mac for Dev & Ops work with one command.
+Set up a Mac for software development and IT operations (Dev & Ops) with one command.
 
 brework = brew + work: [Homebrew](https://brew.sh), ready for work.
 
-This repo has two [Homebrew](https://brew.sh) lists: `Brewfile` with the CLI tools, and `Brewfile.apps` with the GUI and App Store apps. You can install only the CLI tools.
+One command installs about 55 command-line tools (programs you use by typing in Terminal) and about 20 apps, sets them up, and checks that they all work. You can install only the command-line tools.
+
+New to these words? See [Words used here](#words-used-here).
+
+## Is it for me?
+
+- **Yes**, if you write code or run servers and want a new Mac ready for work, or the same tools on every Mac you use.
+- **Yes**, if you want a list to start from: [make it yours](#make-it-yours) and change it.
+- **No**, if your Mac has an Intel chip. See [Intel Macs](#intel-macs).
 
 ## What's inside
 
 Click a name to open its official website. You can also download it from there without Homebrew.
 
-### CLI tools (`Brewfile`)
+### Command-line tools (`Brewfile`)
 
-| Category | Packages |
-| --- | --- |
-| Version control | [git](https://git-scm.com), [gh](https://cli.github.com), [git-delta](https://dandavison.github.io/delta/), [git-lfs](https://git-lfs.com) |
-| Code quality & Git hooks | [pre-commit](https://pre-commit.com), [shellcheck](https://www.shellcheck.net), [hadolint](https://github.com/hadolint/hadolint), [shfmt](https://github.com/mvdan/sh), [actionlint](https://rhysd.github.io/actionlint/) |
-| Security & secrets | [age](https://github.com/FiloSottile/age), [sops](https://getsops.io), [gitleaks](https://gitleaks.io), [trivy](https://trivy.dev) |
-| Cloud CLIs | [awscli](https://aws.amazon.com/cli/), [doctl](https://docs.digitalocean.com/reference/doctl/), [supabase](https://supabase.com/docs/reference/cli/about) |
-| Infrastructure as Code & server setup | [opentofu](https://opentofu.org), [ansible](https://www.ansible.com), [ansible-lint](https://docs.ansible.com/projects/lint/) |
-| Containers | [colima](https://github.com/abiosoft/colima), [docker](https://docs.docker.com/engine/install/binaries/), [docker-compose](https://github.com/docker/compose), [docker-buildx](https://github.com/docker/buildx), [docker-credential-helper](https://github.com/docker/docker-credential-helpers), [crane](https://github.com/google/go-containerregistry/blob/main/cmd/crane/README.md) |
-| Kubernetes | [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-macos/), [helm](https://helm.sh), [kustomize](https://github.com/kubernetes-sigs/kustomize), [kubeconform](https://github.com/yannh/kubeconform), [kubectx](https://github.com/ahmetb/kubectx), [stern](https://github.com/stern/stern) |
-| JSON, YAML & HTTP | [jq](https://jqlang.github.io/jq/), [yq](https://github.com/mikefarah/yq), [httpie](https://httpie.io) |
-| Database clients | [mongosh](https://www.mongodb.com/docs/mongodb-shell/), [redis-cli](https://redis.io/docs/latest/develop/tools/cli/), [usql](https://github.com/xo/usql) |
-| Load testing & benchmarks | [k6](https://k6.io), [hyperfine](https://github.com/sharkdp/hyperfine) |
-| Languages & environment | [mise](https://mise.jdx.dev), [direnv](https://direnv.net), [just](https://just.systems) |
-| Shell & CLI utilities | [zoxide](https://github.com/ajeetdsouza/zoxide), [fzf](https://junegunn.github.io/fzf/), [ripgrep](https://github.com/BurntSushi/ripgrep), [fd](https://github.com/sharkdp/fd), [bat](https://github.com/sharkdp/bat), [eza](https://eza.rocks), [tlrc](https://tldr.sh/tlrc/), [watch](https://gitlab.com/procps-ng/procps), [wget](https://www.gnu.org/software/wget/), [doggo](https://doggo.mrkaran.dev/), [rsync](https://rsync.samba.org) |
-| System maintenance | [mole](https://mole.fit) |
-| AI in the terminal | [GitHub Copilot CLI](https://github.com/github/copilot-cli/releases) |
-| Fonts | [JetBrains Mono Nerd Font](https://www.nerdfonts.com/font-downloads) (for the icons in `eza`) |
+| Category | Used for | Tools |
+| --- | --- | --- |
+| Version control | Save the history of your code, and work with GitHub | [git](https://git-scm.com), [gh](https://cli.github.com), [git-delta](https://dandavison.github.io/delta/), [git-lfs](https://git-lfs.com) |
+| Code quality & Git hooks | Find mistakes in scripts, Dockerfiles and GitHub workflows before you commit | [pre-commit](https://pre-commit.com), [shellcheck](https://www.shellcheck.net), [hadolint](https://github.com/hadolint/hadolint), [shfmt](https://github.com/mvdan/sh), [actionlint](https://rhysd.github.io/actionlint/) |
+| Security & secrets | Encrypt secrets, and find leaked passwords and security problems | [age](https://github.com/FiloSottile/age), [sops](https://getsops.io), [gitleaks](https://gitleaks.io), [trivy](https://trivy.dev) |
+| Cloud CLIs | Manage AWS, DigitalOcean and Supabase from the terminal | [awscli](https://aws.amazon.com/cli/), [doctl](https://docs.digitalocean.com/reference/doctl/), [supabase](https://supabase.com/docs/reference/cli/about) |
+| Infrastructure as Code & server setup | Create cloud servers from code, and set them up automatically | [opentofu](https://opentofu.org), [ansible](https://www.ansible.com), [ansible-lint](https://docs.ansible.com/projects/lint/) |
+| Containers | Run and build Docker containers, without Docker Desktop | [colima](https://github.com/abiosoft/colima), [docker](https://docs.docker.com/engine/install/binaries/), [docker-compose](https://github.com/docker/compose), [docker-buildx](https://github.com/docker/buildx), [docker-credential-helper](https://github.com/docker/docker-credential-helpers), [crane](https://github.com/google/go-containerregistry/blob/main/cmd/crane/README.md) |
+| Kubernetes | Manage Kubernetes clusters and the apps on them | [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-macos/), [helm](https://helm.sh), [kustomize](https://github.com/kubernetes-sigs/kustomize), [kubeconform](https://github.com/yannh/kubeconform), [kubectx](https://github.com/ahmetb/kubectx), [stern](https://github.com/stern/stern) |
+| JSON, YAML & HTTP | Read and edit config files, and call web APIs | [jq](https://jqlang.github.io/jq/), [yq](https://github.com/mikefarah/yq), [httpie](https://httpie.io) |
+| Database clients | Connect to PostgreSQL, MySQL, SQLite, MongoDB, Redis and more | [mongosh](https://www.mongodb.com/docs/mongodb-shell/), [redis-cli](https://redis.io/docs/latest/develop/tools/cli/), [usql](https://github.com/xo/usql) |
+| Load testing & benchmarks | Check how fast a website, an API or a command is | [k6](https://k6.io), [hyperfine](https://github.com/sharkdp/hyperfine) |
+| Languages & environment | Install Node, Python, Go, ... per project, and save project commands | [mise](https://mise.jdx.dev), [direnv](https://direnv.net), [just](https://just.systems) |
+| Shell & CLI utilities | Find files and text fast, jump between folders, download files | [zoxide](https://github.com/ajeetdsouza/zoxide), [fzf](https://junegunn.github.io/fzf/), [ripgrep](https://github.com/BurntSushi/ripgrep), [fd](https://github.com/sharkdp/fd), [bat](https://github.com/sharkdp/bat), [eza](https://eza.rocks), [tlrc](https://tldr.sh/tlrc/), [watch](https://gitlab.com/procps-ng/procps), [wget](https://www.gnu.org/software/wget/), [doggo](https://doggo.mrkaran.dev/), [rsync](https://rsync.samba.org) |
+| System maintenance | Free up disk space | [mole](https://mole.fit) |
+| AI in the terminal | Ask an AI for help without leaving the terminal | [GitHub Copilot CLI](https://github.com/github/copilot-cli/releases) |
+| Fonts | Show icons in the terminal | [JetBrains Mono Nerd Font](https://www.nerdfonts.com/font-downloads) (for the icons in `eza`) |
 
 ### Apps (`Brewfile.apps`)
+
+Apps with a window, like VS Code and Slack.
 
 | Category | Apps |
 | --- | --- |
@@ -57,8 +67,8 @@ Programming languages (Node.js, Python, Go, ...) are not in this list. Install t
 
 ## Requirements
 
-- A Mac with Apple Silicon (M1 or newer). The Homebrew installer no longer works on Intel Macs (see [Intel Macs](#intel-macs)).
-- macOS 15 (Sequoia) or newer. Some App Store apps need more: Xcode needs macOS 26.6 or newer today, and WhatsApp 15.1. On an older macOS, everything else installs and the script ends with an error about those apps. With `--cli-only`, no App Store apps are installed.
+- A Mac with Apple Silicon (M1 or newer). To check: Apple menu > About This Mac. It says **Chip: Apple M1** (or M2, M3, ...). The Homebrew installer no longer works on Intel Macs (see [Intel Macs](#intel-macs)).
+- macOS 15 (Sequoia) or newer. About This Mac shows your version. Some App Store apps need more: Xcode needs macOS 26.6 or newer today, and WhatsApp 15.1. On an older macOS, everything else installs and the script ends with an error about those apps. With `--cli-only`, no App Store apps are installed.
 - An admin account (the installer asks for your password)
 - About 40 GB of free disk space (about 20 GB with `--cli-only`). Docker needs more as you add images.
 - An internet connection
@@ -74,34 +84,38 @@ On an Intel Mac, you can still use the lists as a shopping list: every name in [
 
 ## Install
 
-1. Sign in to the Mac App Store.
-2. Run:
+**Before you start:** sign in to the Mac App Store (not needed with `--cli-only`), and plug in your Mac. The install takes 30 to 60 minutes, depending on your internet.
+
+1. Open Terminal: press Cmd+Space, type `Terminal`, and press Return.
+2. Copy this line, paste it into Terminal (Cmd+V), and press Return:
 
    ```bash
    curl -fsSL https://raw.githubusercontent.com/sgnd/brework/main/install.sh | bash
    ```
 
-Only want the CLI tools, without the GUI and App Store apps? Skip step 1 and run:
+3. When it asks for your password, type your Mac login password and press Return. **You don't see anything while you type.** That is normal.
+4. Wait until it says `Done!`. Then open a new Terminal window (Cmd+N) and go on with [After you install](#after-you-install).
+
+If it stops with an error, read the last lines, then see [Troubleshooting](#troubleshooting). You can run the same line again at any time: it installs what is missing and updates what is out of date.
+
+Only want the command-line tools, without the apps? Use this line in step 2:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/sgnd/brework/main/install.sh | bash -s -- --cli-only
 ```
 
-This runs a script from the internet on your Mac. It is short and easy to read, so you can [read `install.sh`](install.sh) first.
+**Is this safe?** The line runs a script from the internet on your Mac. It is short and easy to read, so you can [read `install.sh`](install.sh) first.
 
-The script does this for you:
+**What does it change on my Mac?**
 
-1. Installs Homebrew, if you don't have it yet
-2. Adds Homebrew to your `PATH` for every shell: `~/.zshenv` (every zsh, also `ssh mac COMMAND`), `~/.zprofile` (a terminal, IDEs and AI agents) and `~/.bash_profile` (bash)
-3. Downloads this repo to `~/.brework` (a hidden folder: press Cmd+Shift+. in Finder to see it)
-4. Installs everything in the `Brewfile` and `Brewfile.apps` (only the `Brewfile` with `--cli-only`). It also installs `usql` and `mongosh` with `mise`, at fixed versions (`MISE_TOOLS` in `install.sh`): `usql` is not in Homebrew, and Homebrew's `mongosh` needs a second Node.js.
-5. Sets up `docker compose` and `docker buildx`
-6. Turns on `mise`, `direnv`, `zoxide` and `fzf` in `~/.zshrc`, and shows git diffs with `delta`. It also adds the `mise` tools to the same three files as Homebrew, so IDEs, AI agents and scripts find them too (they don't read `~/.zshrc`).
-7. Starts Docker (Colima) now and every time you log in
+- It installs Homebrew (an installer for developer tools) and everything in the lists.
+- It keeps a copy of this project in `~/.brework`, a hidden folder in your home folder (press Cmd+Shift+. in Finder to see it).
+- It adds a few lines to the files your terminal reads when it starts, so the tools work everywhere: in Terminal, in code editors and in AI agents. Each line ends with `# added by brework`.
+- It starts Docker (Colima) in the background, now and every time you log in.
 
-It keeps settings you already have: a tool that is already in your `~/.zshrc`, or a git pager you already picked, stays as it is. Two things it does change: it links `docker compose` and `docker buildx` into `~/.docker/cli-plugins` (replacing Docker Desktop's links), and Colima makes itself the active Docker context when it starts.
+Settings you already have stay as they are. For the details, see [How it works](#how-it-works).
 
-You can run it again at any time. It installs what is missing and updates what is out of date.
+### Install from a downloaded copy
 
 If you already downloaded this repo, run the script from there:
 
@@ -114,15 +128,6 @@ Or, for only the CLI tools:
 ```bash
 ./install.sh --cli-only
 ```
-
-To see what is missing or out of date, without installing anything:
-
-```bash
-cd ~/.brework
-brew bundle check --verbose
-```
-
-If you installed with `--cli-only`, use `HOMEBREW_BREWORK_CLI_ONLY=1 brew bundle check --verbose`, or it lists the apps as missing.
 
 ### Install without the script
 
@@ -202,7 +207,7 @@ Open a new terminal and run:
 
 Add `--cli-only` if you installed only the CLI tools. If you ran `./install.sh` from another folder, run `scripts/smoke-test.sh` from that folder.
 
-It gives every CLI tool one small real task (for example: `age` encrypts and decrypts a file, `gitleaks` finds a planted fake token, `docker` runs a container). It also checks that every command is found in a new terminal, by IDEs and AI agents (`zsh -l -c`), by scripts and ssh (`zsh -c`) and in bash, and that every app Homebrew puts in `/Applications` is signed and runs on Apple Silicon. Tools that need an account, like `gh` and `aws`, only show their version. The last line must say `0 failed`.
+It gives every CLI tool one small real task (for example: `age` encrypts and decrypts a file, `gitleaks` finds a planted fake token, `docker` runs a container). It also checks that every command is found, in Terminal and in editors, AI agents and scripts, and that every app is signed and made for Apple Silicon. Tools that need an account, like `gh` and `aws`, only show their version. The last line must say `0 failed`.
 
 ## Keep everything up to date
 
@@ -213,6 +218,15 @@ brew update && brew upgrade
 App Store apps update through the App Store, as usual.
 
 To get the newest list and install what was added to it, run the [install command](#install) again. This also updates everything in the list, App Store apps included.
+
+To see what is missing or out of date, without installing anything:
+
+```bash
+cd ~/.brework
+brew bundle check --verbose
+```
+
+If you installed with `--cli-only`, use `HOMEBREW_BREWORK_CLI_ONLY=1 brew bundle check --verbose`, or it lists the apps as missing.
 
 ## Change the list
 
@@ -251,9 +265,7 @@ App Store apps: drag them from `/Applications` to the Trash.
   brew bundle cleanup         # shows the list, then asks: press n to keep everything
   ```
 
-[GitHub Actions](.github/workflows/validate.yml) runs `validate-brewfile.sh` on every push to `main`, every pull request and every Monday. It also checks that the macOS versions in [Requirements](#requirements) still match the App Store, the shell scripts, and the links in this README. [Dependabot](.github/dependabot.yml) opens a pull request when a GitHub Action has a new version.
-
-When a pull request changes a Brewfile, `install.sh` or `smoke-test.sh`, [another check](.github/workflows/e2e.yml) removes Homebrew from a GitHub Mac and then runs `install.sh` for real, once with everything and once with `--cli-only`, and then runs `smoke-test.sh`. Some things are left out, because GitHub's Macs cannot do them: App Store apps (no Apple ID), starting Docker (Colima cannot start a VM there) and typing a password. The test also starts with this repo already in `~/.brework`, so it does not test the first download of the repo.
+GitHub checks every change to the list. See [CONTRIBUTING.md](CONTRIBUTING.md#how-github-checks-the-list).
 
 ## Make it yours
 
@@ -287,15 +299,67 @@ Xcode from the App Store needs a recent macOS (26.6 or newer today). Update macO
 **"This terminal runs in Rosetta (Intel mode)"**
 Your terminal is set to open using Rosetta. In Finder, open Applications (Terminal is in Applications > Utilities), select your terminal app, choose File > Get Info, and turn off "Open using Rosetta". Then open a new terminal.
 
+**`command not found` right after the install**
+Open a new Terminal window (Cmd+N). A window that was open during the install does not know the new tools yet. Still not found? Run the [check](#check-that-everything-works): it says what is wrong.
+
 **`docker: Cannot connect to the Docker daemon`**
 Docker is still starting (the first start takes a few minutes), or it is not running. Check with `colima status`. Start it with `brew services restart colima`.
 
 **`command not found` in a cron job or launchd agent**
-
 cron and launchd don't start a shell, so they don't read `~/.zshenv` or any other file, and their `PATH` has no Homebrew. Write the full path in the job, like `/opt/homebrew/bin/kubectl`, or `mise exec -- usql` with `/opt/homebrew/bin/mise`.
 
 **Why Colima and not Docker Desktop?**
 Colima is free, open source and runs from the terminal. It gives you the same `docker` commands.
+
+## How it works
+
+For the curious. You don't need this to use brework.
+
+`install.sh` does this:
+
+1. Installs Homebrew, if you don't have it yet
+2. Adds Homebrew to your `PATH` for every shell: `~/.zshenv` (every zsh, also `ssh mac COMMAND`), `~/.zprofile` (a terminal, IDEs and AI agents) and `~/.bash_profile` (bash)
+3. Downloads this repo to `~/.brework` (a hidden folder: press Cmd+Shift+. in Finder to see it)
+4. Installs everything in the `Brewfile` and `Brewfile.apps` (only the `Brewfile` with `--cli-only`). It also installs `usql` and `mongosh` with `mise`, at fixed versions (`MISE_TOOLS` in `install.sh`): `usql` is not in Homebrew, and Homebrew's `mongosh` needs a second Node.js.
+5. Sets up `docker compose` and `docker buildx`
+6. Turns on `mise`, `direnv`, `zoxide` and `fzf` in `~/.zshrc`, and shows git diffs with `delta`. It also adds the `mise` tools to the same three files as Homebrew, so IDEs, AI agents and scripts find them too (they don't read `~/.zshrc`).
+7. Starts Docker (Colima) now and every time you log in
+
+It keeps settings you already have: a tool that is already in your `~/.zshrc`, or a git pager you already picked, stays as it is. Two things it does change: it links `docker compose` and `docker buildx` into `~/.docker/cli-plugins` (replacing Docker Desktop's links), and Colima makes itself the active Docker context when it starts.
+
+### Why three shell files?
+
+A terminal, a code editor, an AI agent and a script each start the shell in a different way, and each way reads different files:
+
+| File | Read by |
+| --- | --- |
+| `~/.zshrc` | A Terminal window. brework turns on `mise`, `direnv`, `zoxide` and `fzf` here |
+| `~/.zshenv` | Every zsh: Terminal, editors, AI agents, scripts, `ssh mac COMMAND` |
+| `~/.zprofile` | A Terminal window, most editors and AI agents. Just before this file, macOS puts its own older tools (like `python3` 3.9) first again, so brework adds the same lines here |
+| `~/.bash_profile` | bash |
+
+brework adds Homebrew and the `mise` tools to the last three, so every shell finds the same tools. The [check](#check-that-everything-works) tests all of them.
+
+### The checks
+
+- `scripts/validate-brewfile.sh` checks that every package in the lists still exists.
+- `scripts/smoke-test.sh` gives every tool a small real task, on your Mac.
+- GitHub runs both for every change. See [CONTRIBUTING.md](CONTRIBUTING.md#how-github-checks-the-list).
+
+## Words used here
+
+| Word | What it means |
+| --- | --- |
+| Terminal | The Mac app where you type commands. Open it with Cmd+Space, then type `Terminal` |
+| Command-line tool (CLI) | A program you use by typing in Terminal, like `git` |
+| App (GUI) | A program with a window, like VS Code or Slack |
+| Homebrew | A free installer for developer tools and apps on a Mac. Its command is `brew` |
+| `Brewfile` | A list of what Homebrew should install |
+| Shell | The program inside Terminal that reads your commands. On a Mac it is zsh |
+| `PATH` | The list of folders where the shell looks for commands. If a tool's folder is not in it, you get `command not found` |
+| Docker, container | A way to run an app with everything it needs, separate from the rest of your Mac |
+| `mise` | A tool that installs a language, like Python, at the version a project needs |
+| AI agent | An AI that runs commands for you, like [Claude Code](https://claude.com/claude-code) |
 
 ## Project files
 

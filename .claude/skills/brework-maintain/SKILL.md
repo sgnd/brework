@@ -11,7 +11,7 @@ brework keeps its package list in these places, and they must match:
 - `Brewfile.apps`: the GUI and App Store apps. `install.sh --cli-only` skips this file.
 - `README.md`, section "What's inside": the same lists, as tables with links (one table per file)
 
-Keep it simple. Short lines, simple English, no new scripts or tools.
+Keep it simple. Short lines, simple English, no new scripts or tools. The README is for newcomers too: explain a new word in "Words used here", and put technical details in "How it works".
 
 ## Should it be in the list?
 
@@ -50,7 +50,7 @@ Before adding something, check all of these. If one fails, don't add it and tell
    - Link the name to its official website (or download page for apps, `apps.apple.com` page for App Store apps). If the tool has no website, link its GitHub repo.
    - Use the name people type or know (`kubectl`, not `kubernetes-cli`).
    - Keep the order the same as in the Brewfile.
-   - A new Brewfile section needs a new table row.
+   - A new Brewfile section needs a new table row. In the CLI table, fill in "Used for" too: what the tools in that row help you do, in a few simple words.
 
 4. Check it (see "Check your change" below).
 
