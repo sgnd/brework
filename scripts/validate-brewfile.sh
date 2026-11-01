@@ -62,15 +62,17 @@ for id in $app_store_ids; do
   fi
 done
 
-# 4. usql, which install.sh installs with mise at a fixed version.
-usql_version="$(sed -n 's/^USQL_VERSION="\([^"]*\)".*/\1/p' install.sh)"
-# mise downloads the official Apple Silicon build from GitHub, so that file must exist.
-if curl -fsSIL -o /dev/null "https://github.com/xo/usql/releases/download/v$usql_version/usql-$usql_version-darwin-arm64.tar.bz2"; then
-  echo "ok       usql $usql_version (mise)"
-else
-  echo "MISSING  usql $usql_version (no Apple Silicon build on GitHub)"
-  missing=$((missing + 1))
-fi
+# 4. The tools that install.sh installs with mise (MISE_TOOLS): each version must still exist.
+command -v mise >/dev/null || brew install --quiet mise
+mise_tools="$(sed -n 's/^MISE_TOOLS="\([^"]*\)".*/\1/p' install.sh)"
+for tool in $mise_tools; do
+  if mise ls-remote "${tool%@*}" 2>/dev/null | grep -qxF "${tool#*@}"; then
+    echo "ok       $tool (mise)"
+  else
+    echo "MISSING  $tool (mise cannot find this version)"
+    missing=$((missing + 1))
+  fi
+done
 
 echo
 echo "$missing missing"

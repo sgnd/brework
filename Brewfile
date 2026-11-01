@@ -83,10 +83,10 @@ brew "httpie"             # Simple HTTP requests
 # ----------------------------------------------------------------------------
 # Database clients
 # ----------------------------------------------------------------------------
-brew "mongosh"            # MongoDB shell
 brew "redis"              # Redis command line (redis-cli). The server is not started
-# usql (one SQL shell for PostgreSQL, MySQL, SQLite, Cassandra, ...) is not in Homebrew core.
-# install.sh installs it with mise instead, at a fixed version.
+# install.sh installs two more with mise, at fixed versions (MISE_TOOLS):
+#   usql:    one SQL shell for PostgreSQL, MySQL, SQLite, Cassandra, ... (not in Homebrew core)
+#   mongosh: MongoDB shell (Homebrew's needs its own Node.js, next to the one from mise)
 
 # ----------------------------------------------------------------------------
 # Load testing & benchmarks

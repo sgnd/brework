@@ -94,7 +94,7 @@ The script does this for you:
 1. Installs Homebrew, if you don't have it yet
 2. Adds Homebrew to your `PATH` (in `~/.zprofile`, for the zsh shell that macOS uses)
 3. Downloads this repo to `~/.brework` (a hidden folder: press Cmd+Shift+. in Finder to see it)
-4. Installs everything in the `Brewfile` and `Brewfile.apps` (only the `Brewfile` with `--cli-only`). It also installs `usql` with `mise`, at a fixed version, because `usql` is not in Homebrew.
+4. Installs everything in the `Brewfile` and `Brewfile.apps` (only the `Brewfile` with `--cli-only`). It also installs `usql` and `mongosh` with `mise`, at fixed versions (`MISE_TOOLS` in `install.sh`): `usql` is not in Homebrew, and Homebrew's `mongosh` needs a second Node.js.
 5. Sets up `docker compose` and `docker buildx`
 6. Turns on `mise`, `direnv`, `zoxide` and `fzf` in `~/.zshrc`, and shows git diffs with `delta`
 7. Starts Docker (Colima) now and every time you log in
@@ -140,7 +140,7 @@ If you installed with `--cli-only`, use `HOMEBREW_BREWORK_CLI_ONLY=1 brew bundle
    git clone https://github.com/sgnd/brework.git ~/.brework
    cd ~/.brework
    brew bundle install
-   mise use --global usql@0.21.6   # not in Homebrew
+   mise use --global usql@0.21.6 mongosh@2.14.1   # see MISE_TOOLS in install.sh
    ```
 
    For only the CLI tools, run `HOMEBREW_BREWORK_CLI_ONLY=1 brew bundle install` instead of the last line.

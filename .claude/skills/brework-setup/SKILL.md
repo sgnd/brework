@@ -48,6 +48,8 @@ curl -fsSL https://raw.githubusercontent.com/sgnd/brework/main/install.sh | bash
 
 If the repo is already on the Mac (for example in `~/.brework`), you can run `./install.sh` from that folder instead.
 
+Most tools come from Homebrew. A few come from `mise`, at fixed versions (`MISE_TOOLS` in `install.sh`, like `usql` and `mongosh`). `mise use --global` adds them to `~/.config/mise/config.toml`. Tell the user, because that file is theirs.
+
 A first install takes a long time: often 30 to 60 minutes, more on a slow connection. A quiet terminal is usually a download in progress, not a hang. Check with `ps -ax | grep curl` before you call it stuck.
 
 The script ends with `Done!`, or with `Error: Some packages did not install`.
@@ -63,6 +65,7 @@ Read the errors above the last line. Common ones:
 | An App Store app did not install | The user is not signed in to the App Store. Ask them to sign in, then run the installer again. |
 | Xcode did not install | macOS is older than Xcode needs. Tell the user: update macOS, or skip Xcode. |
 | `This terminal runs in Rosetta` | See step 1. |
+| `mise` fails on `usql` or `mongosh` (for example `rate limit` or a timeout) | mise downloads them from GitHub. Wait a bit and run the installer again, or run `mise use --global` with the tools from `MISE_TOOLS` in `install.sh`. |
 
 Run the installer again after each fix. It installs what is missing and leaves the rest alone.
 
@@ -88,7 +91,7 @@ The last line must say `0 failed`.
 
 For each `FAIL`, read the lines under it:
 
-- `command not found: NAME`: the command is not linked. For a cask (an app), `brew reinstall --cask THE-CASK` makes the links again. It closes the app, so ask the user first. For a CLI tool, `brew link NAME`.
+- `command not found: NAME`: the command is not linked. For a cask (an app), `brew reinstall --cask THE-CASK` makes the links again. It closes the app, so ask the user first. For a CLI tool, `brew link NAME`. For a tool from `MISE_TOOLS` (like `usql`), check that `mise activate` is in `~/.zshrc`, then run `mise use --global` with it.
 - Docker checks fail with `Cannot connect to the Docker daemon`: Docker is still starting. The first start takes a few minutes. Check `colima status`, wait, and run the smoke test again.
 - Anything else: show the user the output, and say what you think is wrong.
 
