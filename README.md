@@ -17,16 +17,18 @@ Click a name to open its official website. You can also download it from there w
 
 | Category | Packages |
 | --- | --- |
-| Version control | [git](https://git-scm.com), [gh](https://cli.github.com), [git-delta](https://dandavison.github.io/delta/) |
-| Code quality & Git hooks | [pre-commit](https://pre-commit.com), [shellcheck](https://www.shellcheck.net), [hadolint](https://github.com/hadolint/hadolint) |
+| Version control | [git](https://git-scm.com), [gh](https://cli.github.com), [git-delta](https://dandavison.github.io/delta/), [git-lfs](https://git-lfs.com) |
+| Code quality & Git hooks | [pre-commit](https://pre-commit.com), [shellcheck](https://www.shellcheck.net), [hadolint](https://github.com/hadolint/hadolint), [shfmt](https://github.com/mvdan/sh), [actionlint](https://rhysd.github.io/actionlint/) |
 | Security & secrets | [age](https://github.com/FiloSottile/age), [sops](https://getsops.io), [gitleaks](https://gitleaks.io), [trivy](https://trivy.dev) |
 | Cloud CLIs | [awscli](https://aws.amazon.com/cli/), [doctl](https://docs.digitalocean.com/reference/doctl/), [supabase](https://supabase.com/docs/reference/cli/about) |
 | Infrastructure as Code & server setup | [opentofu](https://opentofu.org), [ansible](https://www.ansible.com), [ansible-lint](https://docs.ansible.com/projects/lint/) |
-| Containers | [colima](https://github.com/abiosoft/colima), [docker](https://docs.docker.com/engine/install/binaries/), [docker-compose](https://github.com/docker/compose), [docker-buildx](https://github.com/docker/buildx), [docker-credential-helper](https://github.com/docker/docker-credential-helpers) |
-| Kubernetes | [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-macos/), [helm](https://helm.sh), [kustomize](https://github.com/kubernetes-sigs/kustomize), [kubectx](https://github.com/ahmetb/kubectx), [stern](https://github.com/stern/stern) |
+| Containers | [colima](https://github.com/abiosoft/colima), [docker](https://docs.docker.com/engine/install/binaries/), [docker-compose](https://github.com/docker/compose), [docker-buildx](https://github.com/docker/buildx), [docker-credential-helper](https://github.com/docker/docker-credential-helpers), [crane](https://github.com/google/go-containerregistry/blob/main/cmd/crane/README.md) |
+| Kubernetes | [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-macos/), [helm](https://helm.sh), [kustomize](https://github.com/kubernetes-sigs/kustomize), [kubeconform](https://github.com/yannh/kubeconform), [kubectx](https://github.com/ahmetb/kubectx), [stern](https://github.com/stern/stern) |
 | JSON, YAML & HTTP | [jq](https://jqlang.github.io/jq/), [yq](https://github.com/mikefarah/yq), [httpie](https://httpie.io) |
-| Languages & environment | [mise](https://mise.jdx.dev), [direnv](https://direnv.net) |
-| Shell & CLI utilities | [zoxide](https://github.com/ajeetdsouza/zoxide), [fzf](https://junegunn.github.io/fzf/), [ripgrep](https://github.com/BurntSushi/ripgrep), [fd](https://github.com/sharkdp/fd), [bat](https://github.com/sharkdp/bat), [eza](https://eza.rocks), [tree](https://oldmanprogrammer.net/source.php?dir=projects/tree), [tlrc](https://tldr.sh/tlrc/), [watch](https://gitlab.com/procps-ng/procps), [wget](https://www.gnu.org/software/wget/), [rsync](https://rsync.samba.org) |
+| Database clients | [mongosh](https://www.mongodb.com/docs/mongodb-shell/), [redis-cli](https://redis.io/docs/latest/develop/tools/cli/) |
+| Load testing & benchmarks | [k6](https://k6.io), [hyperfine](https://github.com/sharkdp/hyperfine) |
+| Languages & environment | [mise](https://mise.jdx.dev), [direnv](https://direnv.net), [just](https://just.systems) |
+| Shell & CLI utilities | [zoxide](https://github.com/ajeetdsouza/zoxide), [fzf](https://junegunn.github.io/fzf/), [ripgrep](https://github.com/BurntSushi/ripgrep), [fd](https://github.com/sharkdp/fd), [bat](https://github.com/sharkdp/bat), [eza](https://eza.rocks), [tree](https://oldmanprogrammer.net/source.php?dir=projects/tree), [tlrc](https://tldr.sh/tlrc/), [watch](https://gitlab.com/procps-ng/procps), [wget](https://www.gnu.org/software/wget/), [doggo](https://doggo.mrkaran.dev/), [rsync](https://rsync.samba.org) |
 | System maintenance | [mole](https://mole.fit) |
 | AI in the terminal | [GitHub Copilot CLI](https://github.com/github/copilot-cli/releases) |
 | Fonts | [JetBrains Mono Nerd Font](https://www.nerdfonts.com/font-downloads) (for the icons in `eza`) |

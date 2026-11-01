@@ -57,6 +57,12 @@ test_delta() {
   git diff --no-index a.txt b.txt | delta --no-gitconfig | grep -q new
 }
 
+test_git_lfs() {
+  export GIT_CONFIG_GLOBAL=/dev/null
+  git init -q repo && cd repo && git lfs track '*.bin' >/dev/null &&
+    grep -q 'filter=lfs' .gitattributes
+}
+
 # --- Code quality ----------------------------------------------------------
 
 test_pre_commit() {
@@ -72,6 +78,14 @@ test_shellcheck() { # must find the missing quotes
 test_hadolint() { # must find the :latest tag
   printf 'FROM ubuntu:latest\n' >Dockerfile
   hadolint Dockerfile | grep -q DL3007
+}
+
+test_shfmt() { printf 'if true\nthen\necho hi\nfi\n' | shfmt | grep -q 'if true; then'; }
+
+test_actionlint() { # must find the unknown property
+  # shellcheck disable=SC2016 # the ${{ }} is GitHub's syntax, not the shell's
+  printf 'on: push\njobs:\n  test:\n    runs-on: ubuntu-latest\n    steps:\n      - run: echo ${{ github.foo }}\n' >workflow.yml
+  actionlint workflow.yml | grep -q 'property "foo" is not defined'
 }
 
 # --- Security --------------------------------------------------------------
@@ -162,6 +176,13 @@ test_kustomize() {
     kustomize build . | grep -q 'name: dev-web'
 }
 
+test_kubeconform() { # must find "two" replicas (downloads the schema the first time)
+  kubectl create deployment web --image=nginx --replicas=2 --dry-run=client -o yaml >deployment.yaml &&
+    kubeconform deployment.yaml &&
+    sed 's/replicas: 2/replicas: two/' deployment.yaml >bad.yaml &&
+    ! kubeconform bad.yaml >/dev/null
+}
+
 test_kubectx() { # lists the clusters in a test kubeconfig
   printf 'apiVersion: v1\nkind: Config\nclusters: []\nusers: []\ncontexts:\n- name: dev\n  context: {}\n- name: prod\n  context: {}\ncurrent-context: dev\n' >kubeconfig
   KUBECONFIG=kubeconfig kubectx | grep -q prod
@@ -189,6 +210,38 @@ test_http_tools() {
   return $result
 }
 
+# --- Database clients ------------------------------------------------------
+
+test_mongosh() { [ "$(mongosh --nodb --quiet --eval 'print(6 * 7)')" = 42 ]; }
+
+# redis-cli saves and reads a value in a small local Redis server.
+test_redis() {
+  local port=8766
+  redis-server --port "$port" --bind 127.0.0.1 --save '' --appendonly no >/dev/null 2>&1 &
+  local server=$! _
+  for _ in 1 2 3 4 5 6 7 8 9 10; do # wait up to 10 seconds for the server
+    redis-cli -p "$port" ping >/dev/null 2>&1 && break
+    sleep 1
+  done
+  redis-cli -p "$port" set greeting hello-redis >/dev/null &&
+    [ "$(redis-cli -p "$port" get greeting)" = hello-redis ]
+  local result=$?
+  kill "$server"
+  return $result
+}
+
+# --- Load testing & benchmarks ---------------------------------------------
+
+test_k6() {
+  echo 'export default function () { console.log("hello-k6"); }' >script.js
+  k6 run --quiet --no-usage-report --iterations 1 script.js 2>&1 | grep -q hello-k6
+}
+
+test_hyperfine() {
+  hyperfine --runs 3 --export-json result.json 'sleep 0' >/dev/null &&
+    jq -e '.results[0].command == "sleep 0"' result.json >/dev/null
+}
+
 # --- Languages & environment -----------------------------------------------
 
 # shellcheck disable=SC2016 # the inner sh expands $GREETING
@@ -197,6 +250,8 @@ test_direnv() {
     XDG_DATA_HOME="$work" direnv allow project &&
     XDG_DATA_HOME="$work" direnv exec project sh -c 'echo $GREETING' | grep -q hello-direnv
 }
+
+test_just() { printf 'hello:\n    @echo hello-just\n' >justfile && [ "$(just hello)" = hello-just ]; }
 
 # --- Shell & CLI utilities -------------------------------------------------
 
@@ -213,6 +268,7 @@ test_bat() { make_files && bat --paging=never --color=never files/sub/hay.txt | 
 test_eza() { make_files && eza --tree files | grep -q hay.txt; }
 test_tree() { make_files && tree files | grep -q hay.txt; }
 test_tldr() { tldr tar | grep -qi archive; } # downloads the pages the first time
+test_doggo() { doggo --short github.com A | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$'; } # needs the internet
 
 test_rsync() {
   make_files && rsync -a files/ copy/ && [ -f copy/sub/hay.txt ] &&
@@ -284,9 +340,12 @@ check "every command is found in a new terminal" test_commands_found
 echo "== CLI tools do their job"
 check "git: make a commit" test_git
 check "delta: show a diff" test_delta
+check "git-lfs: track large files" test_git_lfs
 check "pre-commit: read a config" test_pre_commit
 check "shellcheck: find a bug" test_shellcheck
 check "hadolint: find a Dockerfile mistake" test_hadolint
+check "shfmt: format a script" test_shfmt
+check "actionlint: find a workflow mistake" test_actionlint
 check "age: encrypt and decrypt" test_age
 check "sops: encrypt and decrypt with age" test_sops
 check "gitleaks: find a leaked token" test_gitleaks
@@ -297,11 +356,17 @@ check "ansible-lint: find a playbook mistake" test_ansible_lint
 check "kubectl: make a deployment" test_kubectl
 check "helm: render a chart" test_helm
 check "kustomize: build" test_kustomize
+check "kubeconform: find a manifest mistake" test_kubeconform
 check "kubectx: list clusters" test_kubectx
 check "jq: read JSON" test_jq
 check "yq: read YAML" test_yq
 check "httpie and wget: download a file" test_http_tools
+check "mongosh: run a script" test_mongosh
+check "redis-cli: save and read a value" test_redis
+check "k6: run a load test" test_k6
+check "hyperfine: time a command" test_hyperfine
 check "direnv: load a folder's .envrc" test_direnv
+check "just: run a recipe" test_just
 check "zoxide: remember a folder" test_zoxide
 check "fzf: filter a list" test_fzf
 check "ripgrep: search text" test_ripgrep
@@ -310,10 +375,12 @@ check "bat: show a file" test_bat
 check "eza: list files" test_eza
 check "tree: show folders" test_tree
 check "tldr: show a help page" test_tldr
+check "doggo: look up a DNS record" test_doggo
 check "rsync: copy a folder (newer rsync)" test_rsync
 check "docker-credential-helper: runs" docker-credential-osxkeychain version
 check "mise: runs" mise --version
 check "stern: runs" stern --version
+check "crane: runs" crane version
 check "mole: runs" mo --version
 check "gh: runs (sign in with: gh auth login)" gh --version
 check "aws: runs (sign in with: aws configure)" aws --version
