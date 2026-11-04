@@ -3,12 +3,15 @@
 # Not tested here: App Store apps, starting Docker, typing a password,
 # and the first download of the repo (it starts with the repo in ~/.brework).
 # It runs when a pull request changes a Brewfile, install.sh or smoke-test.sh,
+# every Monday (a package or tool can break without any change here),
 # and when you press "Run workflow" on GitHub.
 name: End-to-end
 
 on:
   pull_request:
     paths: [Brewfile, Brewfile.apps, install.sh, scripts/smoke-test.sh, .github/workflows/e2e.yml]
+  schedule:
+    - cron: "0 4 * * 1" # every Monday at 04:00 UTC, an hour after Validate
   workflow_dispatch: # adds a "Run workflow" button on GitHub
 
 permissions:

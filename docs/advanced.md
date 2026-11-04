@@ -83,6 +83,8 @@ If you installed with `--cli-only`, use `HOMEBREW_BREWORK_CLI_ONLY=1 brew bundle
 
 Run the commands below in the brework folder (`~/.brework` if you used the install command).
 
+Changes you make in `~/.brework` can stop the install command from getting the newest list (it then says "Could not update"). To keep your own list, [make it yours](#make-it-yours).
+
 ### Add a tool or an app
 
 1. Open the [`Brewfile`](../Brewfile) for a command-line tool, or [`Brewfile.apps`](../Brewfile.apps) for an app (also App Store apps). The top of each file shows how to add one.
@@ -168,8 +170,8 @@ brework adds Homebrew and the `mise` tools to the last three, so every shell fin
 ### The checks
 
 - `scripts/validate-brewfile.sh` checks that every package in the lists still exists.
-- `scripts/smoke-test.sh` gives every tool a small real task on your Mac (for example: `age` encrypts and decrypts a file, `gitleaks` finds a planted fake token, `docker` runs a container). It also checks that every command is found in Terminal, code editors, AI agents and scripts, and that every app is signed and made for Apple Silicon. Tools that need an account, like `gh` and `aws`, only show their version.
-- GitHub runs both for every change. See [CONTRIBUTING.md](../CONTRIBUTING.md#how-github-checks-the-list).
+- `scripts/smoke-test.sh` gives every tool a small real task on your Mac (for example: `age` encrypts and decrypts a file, `gitleaks` finds a planted fake token, `docker` runs a container). It also checks that every command is found in Terminal, code editors, AI agents and scripts, and that every app Homebrew puts in `/Applications` is signed and made for Apple Silicon. The Docker checks always use the local Docker (Colima), and the Kubernetes checks never use your real clusters. Tools that need an account, like `gh` and `aws`, only show their version.
+- GitHub runs the first for every change, and the second when a pull request changes a Brewfile, `install.sh` or `smoke-test.sh`, and every Monday. See [CONTRIBUTING.md](../CONTRIBUTING.md#how-github-checks-the-list).
 
 ## `command not found` in a cron job or launchd agent
 

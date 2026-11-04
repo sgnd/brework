@@ -37,9 +37,13 @@ step() { printf '\n\033[1;32mStep %s of 7:\033[0m \033[1m%s\033[0m\n' "$1" "$2";
 fail() { printf '\033[1;31mError:\033[0m %s\n' "$*" >&2; exit 1; }
 
 # Add a line to a file, unless a line with this keyword is already there.
+# If the file does not end with a new line (some editors save it that way),
+# start one first, so our line is not glued to your last line.
 # Usage: add_line FILE KEYWORD LINE
 add_line() {
-  grep -qsF "$2" "$1" || echo "$3" >>"$1"
+  grep -qsF "$2" "$1" && return
+  [ ! -s "$1" ] || [ -z "$(tail -c 1 "$1")" ] || echo >>"$1"
+  echo "$3" >>"$1"
 }
 
 main() {
@@ -103,14 +107,16 @@ main() {
 
   # --- 3. Find the Brewfile ------------------------------------------------
 
+  update_failed=no
   step 3 "Get the list"
-  if [ -f "${BASH_SOURCE[0]:-}" ] && [ -f "$(dirname "${BASH_SOURCE[0]}")/Brewfile" ]; then
+  # With `curl | bash` there is no install.sh file, so this is skipped.
+  if [ "$(basename "${BASH_SOURCE[0]:-}")" = install.sh ] && [ -f "$(dirname "${BASH_SOURCE[0]}")/Brewfile" ]; then
     # You ran ./install.sh from a downloaded copy: use its Brewfile.
     REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
     say "Using the list in $REPO_DIR"
   elif [ -d "$REPO_DIR" ]; then
     say "Updating $REPO_DIR"
-    git -C "$REPO_DIR" pull --ff-only || say "Could not update. Using the copy you have."
+    git -C "$REPO_DIR" pull --ff-only || { say "Could not update. Using the copy you have."; update_failed=yes; }
   else
     say "Downloading brework to $REPO_DIR"
     # git needs Apple's Command Line Tools. A macOS update can remove them.
@@ -136,14 +142,16 @@ main() {
   fi
   # If one package fails, keep going: steps 5 to 7 still run and you get a clear message at the end.
   all_installed=yes
+  mise_failed=no
   brew bundle install --file="$REPO_DIR/Brewfile" || all_installed=no
 
   if command -v mise >/dev/null; then
     say "Installing $MISE_TOOLS with mise"
     # shellcheck disable=SC2086 # one argument per tool
-    mise use --global $MISE_TOOLS || all_installed=no
+    mise use --global $MISE_TOOLS || { all_installed=no; mise_failed=yes; }
   else
     all_installed=no
+    mise_failed=yes
   fi
 
   # --- 5. Set up docker compose and docker buildx --------------------------
@@ -202,12 +210,16 @@ main() {
     fi
   fi
 
+  if [ "$update_failed" = yes ]; then
+    say "Note: $REPO_DIR could not be updated, so this used an older list. See why with: git -C $REPO_DIR status"
+  fi
+
   if [ "$all_installed" = no ]; then
     echo
-    # Show only what is missing, so you don't have to look for it in the long output above.
-    say "Not installed:"
+    # Show only what is missing (or did not update), so you don't have to look for it in the long output above.
+    say "Not installed (or not updated):"
     brew bundle check --verbose --file="$REPO_DIR/Brewfile" 2>&1 | grep '→' || true # it prints to stderr
-    command -v mise >/dev/null || echo "→ mise, so also: $MISE_TOOLS"
+    [ "$mise_failed" = no ] || echo "→ $MISE_TOOLS (with mise: a download may have failed, run this script again)"
     fail "Some packages did not install. Fix them (see https://github.com/sgnd/brework#troubleshooting), then run this script again."
   fi
 
