@@ -6,7 +6,8 @@
 #   App Store app:  mas "Name", id: 123    the id is the number in the App Store link
 #
 # Put it in the right section below, with a short comment.
-# Use mas only when the app is not in Homebrew. mas apps need you to be signed in to the App Store.
+# Use mas when the app is not in Homebrew, or when you want the App Store version.
+# mas apps need you to be signed in to the App Store.
 # To remove something, delete its line.
 
 # ----------------------------------------------------------------------------
@@ -44,9 +45,9 @@ mas "WeChat", id: 836500024                      # Messaging app
 # ----------------------------------------------------------------------------
 # Video meetings
 # ----------------------------------------------------------------------------
-cask "microsoft-teams"    # Microsoft Teams
-cask "zoom"               # Zoom
-cask "voov-meeting"       # VooV Meeting (Tencent Meeting)
+cask "microsoft-teams"    # Video meetings and team chat
+cask "zoom"               # Video meetings
+cask "voov-meeting"       # Video meetings (Tencent Meeting outside China)
 
 # ----------------------------------------------------------------------------
 # Remote access
@@ -59,7 +60,7 @@ cask "anydesk"            # Remote desktop
 # Networking & VPN
 # ----------------------------------------------------------------------------
 cask "cloudflare-warp"    # Cloudflare VPN
-cask "openvpn-connect"    # OpenVPN
+cask "openvpn-connect"    # VPN client
 
 # ----------------------------------------------------------------------------
 # Virtual machines

@@ -22,7 +22,7 @@ New to these words? See [Words used here](#words-used-here). To see every tool a
 ## Requirements
 
 - A Mac with Apple Silicon (M1 or newer). To check: Apple menu > About This Mac. It says **Chip: Apple M1** (or M2, M3, ...). The Homebrew installer no longer works on Intel Macs (see [Intel Macs](#intel-macs)).
-- macOS 15 (Sequoia) or newer. About This Mac shows your version. Xcode and WhatsApp need a newer macOS: see [Troubleshooting](#troubleshooting).
+- macOS 15 (Sequoia) or newer. About This Mac shows your version. Xcode needs a newer macOS: see [Troubleshooting](#troubleshooting).
 - An admin account (the installer asks for your password). To check: System Settings > Users & Groups. Your name says **Admin**.
 - About 40 GB of free disk space (about 20 GB with `--cli-only`). Docker needs more as you add images. To check: System Settings > General > Storage.
 - An internet connection
@@ -62,13 +62,14 @@ On an Intel Mac, you can still use the lists as a shopping list: every name in [
 3. When it asks for your password, type your Mac login password and press Return. **You don't see anything while you type.** That is normal. It may ask for your password more than once (some apps ask again), and may ask you to press Return. Some apps open their own window that asks for your password or permission: allow it, then go back to Terminal. Look at Terminal every few minutes.
 4. Wait until it says `Done!`. Then open a new Terminal window (⌘N) and go on with [After you install](#after-you-install).
 
-If it ends with an error, read the last lines, then see [Troubleshooting](#troubleshooting). An error about only Xcode or WhatsApp is explained there too. You can run the same line again at any time: it installs what is missing and updates what is out of date.
+If it ends with an error, read the last lines, then see [Troubleshooting](#troubleshooting). An error about only Xcode is explained there too. You can run the same line again at any time: it installs what is missing and updates what is out of date.
 
 **What does it change on my Mac?**
 
 - It installs Homebrew (an installer for developer tools) and everything in the lists. Tools and apps you already have from Homebrew are updated.
 - It keeps a copy of this project in `~/.brework`, a hidden folder in your home folder (press ⌘ + Shift + . in Finder to see it).
 - It adds a few lines to the files your terminal reads when it starts, so the tools work everywhere: in Terminal, in code editors and in AI agents. Each line ends with `# added by brework`.
+- It shows git diffs in color with `delta`, unless you already chose a git pager.
 - It starts Docker (Colima) in the background, now and every time you log in. Docker runs in a small Linux VM that uses about 2 GB of memory. To turn that off, see [Docker (Colima)](docs/advanced.md#docker-colima).
 
 Most settings you already have stay as they are. For the details, see [How it works](docs/advanced.md#how-it-works).
@@ -124,7 +125,7 @@ Click a name to open its official website. You can also download it from there w
 | Containers | Run and build Docker containers, without Docker Desktop | [colima](https://github.com/abiosoft/colima), [docker](https://docs.docker.com/engine/install/binaries/), [docker-compose](https://github.com/docker/compose), [docker-buildx](https://github.com/docker/buildx), [docker-credential-helper](https://github.com/docker/docker-credential-helpers), [crane](https://github.com/google/go-containerregistry/blob/main/cmd/crane/README.md) |
 | Kubernetes | Manage Kubernetes clusters and the apps on them | [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-macos/), [helm](https://helm.sh), [kustomize](https://github.com/kubernetes-sigs/kustomize), [kubeconform](https://github.com/yannh/kubeconform), [kubectx](https://github.com/ahmetb/kubectx), [stern](https://github.com/stern/stern) |
 | JSON, YAML & HTTP | Read and edit config files, and call web APIs | [jq](https://jqlang.github.io/jq/), [yq](https://github.com/mikefarah/yq), [httpie](https://httpie.io) |
-| Database clients | Connect to PostgreSQL, MySQL, SQLite, MongoDB, Redis and more | [mongosh](https://www.mongodb.com/docs/mongodb-shell/), [redis-cli](https://redis.io/docs/latest/develop/tools/cli/), [usql](https://github.com/xo/usql) |
+| Database clients | Connect to PostgreSQL, MySQL, SQLite, MongoDB, Redis and more | [redis-cli](https://redis.io/docs/latest/develop/tools/cli/), [usql](https://github.com/xo/usql), [mongosh](https://www.mongodb.com/docs/mongodb-shell/) |
 | Load testing & benchmarks | Check how fast a website, an API or a command is | [k6](https://k6.io), [hyperfine](https://github.com/sharkdp/hyperfine) |
 | Languages & environment | Install Node, Python, Go, ... per project, and save project commands | [mise](https://mise.jdx.dev), [direnv](https://direnv.net), [just](https://just.systems) |
 | Shell & CLI utilities | Find files and text fast, jump between folders, download files | [zoxide](https://github.com/ajeetdsouza/zoxide), [fzf](https://junegunn.github.io/fzf/), [ripgrep](https://github.com/BurntSushi/ripgrep), [fd](https://github.com/sharkdp/fd), [bat](https://github.com/sharkdp/bat), [eza](https://eza.rocks), [tlrc](https://tldr.sh/tlrc/), [watch](https://gitlab.com/procps-ng/procps), [wget](https://www.gnu.org/software/wget/), [doggo](https://doggo.mrkaran.dev/), [rsync](https://rsync.samba.org) |
@@ -168,8 +169,8 @@ brew install --cask --adopt visual-studio-code
 **An App Store app did not install**
 Open the App Store, sign in, and run the [install command](#install) again.
 
-**Xcode or WhatsApp did not install**
-Your macOS is too old for them: Xcode needs macOS 26.6 or newer today, and WhatsApp needs macOS 15.1. Everything else is installed. Update macOS in System Settings > General > Software Update, then run the install command again. Or skip them if you don't need them. For an older Xcode, see [Apple's developer site](https://developer.apple.com/download/all/?q=xcode).
+**Xcode did not install**
+Your macOS is too old for it: Xcode needs macOS 26.6 or newer today. Everything else is installed, but the check also shows `FAIL` for `brew bundle check` and `App Store apps` (not installed: Xcode). Update macOS in System Settings > General > Software Update, then run the install command again. Don't need Xcode? Remove its line from your own copy of the list (see [Make it yours](docs/advanced.md#make-it-yours)). For an older Xcode, see [Apple's developer site](https://developer.apple.com/download/all/?q=xcode).
 
 **"This terminal runs in Rosetta (Intel mode)"**
 Your terminal app is set to open using Rosetta. In Finder, open Applications (Terminal is in Applications > Utilities), select your terminal app, choose File > Get Info, and turn off "Open using Rosetta". Then open a new Terminal window.
@@ -177,8 +178,8 @@ Your terminal app is set to open using Rosetta. In Finder, open Applications (Te
 **`command not found` right after the install**
 Open a new Terminal window (⌘N). A window that was open during the install does not know the new tools yet. Still not found? Run the [check](#check-that-everything-works): it says what is wrong.
 
-**`docker: Cannot connect to the Docker daemon`**
-Docker is still starting (the first start takes a few minutes), or it is not running. Check with `colima status`. Start it with `brew services restart colima`.
+**Docker is not running (or `Cannot connect to the Docker daemon`)**
+Docker is still starting (the first start takes a few minutes), or it is not running. Check with `colima status`. Start it with `brew services restart colima`, wait until `docker run --rm hello-world` works, then run the check again.
 
 **Why Colima and not Docker Desktop?**
 Colima is free, open source and runs from the terminal. It gives you the same `docker` commands.

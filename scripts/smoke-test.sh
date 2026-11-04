@@ -22,6 +22,7 @@ repo="$(pwd)"
 work="$(mktemp -d)" # every check works in here
 trap 'rm -rf "$work"' EXIT
 export HOMEBREW_NO_AUTO_UPDATE=1
+export KUBECONFIG="$work/kubeconfig" # an empty test config: never your real clusters
 
 failed=0
 
@@ -140,6 +141,7 @@ test_ansible_lint() { # must find the task without a name
 # Try up to 3 times, so one bad moment on the network is not a failed check.
 docker_pull() {
   local _
+  docker info >/dev/null 2>&1 || { echo "Docker is not running (yet). Check with: colima status"; return 1; }
   for _ in 1 2 3; do
     docker pull -q "$1" >/dev/null 2>&1 && return 0
     sleep 5
@@ -188,11 +190,11 @@ test_kustomize() {
     kustomize build . | grep -q 'name: dev-web'
 }
 
-test_kubeconform() { # must find "two" replicas (downloads the schema the first time)
+test_kubeconform() { # must find "two" replicas (needs the internet for the schema)
   kubectl create deployment web --image=nginx --replicas=2 --dry-run=client -o yaml >deployment.yaml &&
     kubeconform deployment.yaml &&
     sed 's/replicas: 2/replicas: two/' deployment.yaml >bad.yaml &&
-    ! kubeconform bad.yaml >/dev/null
+    kubeconform bad.yaml | grep -q '/spec/replicas'
 }
 
 test_kubectx() { # lists the clusters in a test kubeconfig
@@ -335,6 +337,7 @@ test_commands_found() {
   local commands mise_commands output missing
   commands="$(commands_from_list | sort -u | tr '\n' ' ')"
   mise_commands="$(commands_from_mise | sort -u | tr '\n' ' ')"
+  [ -n "$commands" ] || { echo "found no commands to look for: is brew on your PATH? Open a new Terminal window"; return 1; }
   # Your ~/.zshrc may print things too, so only read our own lines.
   # "all checked" at the end shows that the loops really ran.
   output="$(env -i HOME="$HOME" USER="$USER" LOGNAME="$LOGNAME" SHELL=/bin/zsh TERM=xterm-256color "$@" -c "
@@ -350,7 +353,6 @@ test_commands_found() {
     done
     echo all checked" </dev/null 2>/dev/null)"
   missing="$(echo "$output" | grep -E '^(command not found|not the one from mise):')"
-  echo "checked: $commands $mise_commands"
   echo "$output" | grep -q '^all checked$' || { echo "the shell did not finish"; return 1; }
   [ -z "$missing" ] || { echo "$missing"; return 1; }
 }
@@ -361,20 +363,22 @@ test_commands_found() {
 # (Apps that come as a .pkg, like Zoom, are checked by the macOS installer itself.)
 test_app() {
   local app="/Applications/$1"
-  [ -d "$app" ] || return 1
+  [ -d "$app" ] || { echo "not in /Applications (installed with --cli-only? Then run this check with --cli-only)"; return 1; }
   spctl --assess --type execute "$app" || return 1
   local exe
   exe="$(defaults read "$app/Contents/Info" CFBundleExecutable)"
-  lipo -archs "$app/Contents/MacOS/$exe" | grep -q arm64
+  lipo -archs "$app/Contents/MacOS/$exe" | grep -q arm64 || { echo "not made for Apple Silicon"; return 1; }
 }
 
 # Every App Store app in Brewfile.apps is installed.
 test_app_store_apps() {
-  local id ids
-  ids="$(grep '^mas ' "$repo/Brewfile.apps" | sed 's/.*id: *\([0-9]*\).*/\1/')"
-  for id in $ids; do
-    mas list | grep -q "^ *$id " || { echo "App Store id $id is not installed"; return 1; }
-  done
+  local line id missing=0
+  while IFS= read -r line; do # like: mas "Telegram", id: 747648890   # Chat
+    id="${line##*id: }"
+    id="${id%% *}"
+    mas list | grep -q "^ *$id " || { echo "not installed: $(echo "$line" | cut -d'"' -f2) (id $id)"; missing=1; }
+  done < <(grep '^mas ' "$repo/Brewfile.apps")
+  return $missing
 }
 
 # --- Run the checks --------------------------------------------------------
@@ -386,7 +390,8 @@ case "${1:-}" in
 esac
 
 echo "== Everything in the list is installed"
-check "brew bundle check" brew bundle check --file="$repo/Brewfile"
+# --no-upgrade: an update that is waiting is not a problem here. See docs/advanced.md for that.
+check "brew bundle check" brew bundle check --no-upgrade --verbose --file="$repo/Brewfile"
 check "every command is found in a new terminal" test_commands_found /bin/zsh -l -i
 # The shells that don't read ~/.zshrc:
 check "every command is found by IDEs and AI agents (zsh -l -c)" test_commands_found /bin/zsh -l
@@ -445,13 +450,16 @@ check "doctl: runs (sign in with: doctl auth init)" doctl version
 check "supabase: runs (sign in with: supabase login)" supabase --version
 check "gcloud: save a setting (sign in with: gcloud auth login)" test_gcloud
 check "copilot: runs (sign in on first start)" copilot --version
-test_font() { brew list --cask font-jetbrains-mono-nerd-font | grep -q 'JetBrainsMonoNerdFont-Regular.ttf'; }
+test_font() { [ -f "$HOME/Library/Fonts/JetBrainsMonoNerdFont-Regular.ttf" ]; }
 check "font: JetBrains Mono Nerd Font is installed" test_font
 
 echo "== Docker"
 if [ -n "${SKIP_DOCKER:-}" ]; then
   echo "skip  Docker checks (SKIP_DOCKER is set)"
 else
+  # Use the local Docker (Colima), even if your terminal points to another Docker host.
+  unset DOCKER_HOST
+  export DOCKER_CONTEXT=colima
   check "docker: run a container" test_docker
   check "docker compose: run a service" test_docker_compose
   check "docker buildx: build an image" test_docker_buildx

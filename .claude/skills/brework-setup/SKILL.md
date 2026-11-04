@@ -25,10 +25,10 @@ sw_vers -productVersion            # must be 15 or newer
 - **Some App Store apps need a newer macOS.** Look up the oldest macOS that Xcode accepts:
 
   ```bash
-  curl -s 'https://itunes.apple.com/lookup?id=497799835' | jq -r '.results[0].minimumOsVersion'
+  curl -s 'https://itunes.apple.com/lookup?id=497799835&entity=desktopSoftware' | jq -r '.results[0].minimumOsVersion'
   ```
 
-  If the Mac is older, everything installs except Xcode. Tell the user before you start. (WhatsApp needs 15.1.)
+  If the Mac is older, everything installs except Xcode. Tell the user before you start.
 
 Also check the free space with `df -h /`: about 40 GB for everything, about 20 GB with `--cli-only`.
 
@@ -50,20 +50,20 @@ If the repo is already on the Mac (for example in `~/.brework`), you can run `./
 
 Most tools come from Homebrew. A few come from `mise`, at fixed versions (`MISE_TOOLS` in `install.sh`, like `usql` and `mongosh`). `mise use --global` adds them to `~/.config/mise/config.toml`. The installer also adds lines to `~/.zshrc`, `~/.zshenv`, `~/.zprofile` and `~/.bash_profile` (each ends with `# added by brework`), so every shell finds the tools. Tell the user about these files, because they are theirs.
 
-A first install takes a long time: often 30 to 60 minutes, more on a slow connection. A quiet terminal is usually a download in progress, not a hang. Check with `ps -ax | grep curl` before you call it stuck.
+A first install takes a long time: often 30 to 60 minutes, more on a slow connection. A quiet terminal is usually a download in progress, not a hang. Check with `pgrep -l curl; pgrep -l mas` before you call it stuck: it prints nothing when no download is running.
 
-The script ends with `Done!`, or with `Error: Some packages did not install`.
+The script ends with `Done!`, or with `Error: Some packages did not install`. You cannot see the user's terminal: when it ends, ask them to paste the lines from `Not installed` to the end. For each package listed there, also ask for the lines just above `has failed` (they can find it with ⌘F in Terminal).
 
 ## 4. If something did not install
 
-Read the errors above the last line. Common ones:
+Read the lines the user pasted. If you run `brew` or `mise` yourself, run them through `/bin/zsh -l -c '...'`: your shell may have started before Homebrew was installed. Common errors:
 
 | Error | What to do |
 | --- | --- |
 | `Download failed` / `curl: (56)` / `unexpected eof` | The connection dropped. Run the installer again. Homebrew keeps the part it already downloaded and continues. For one big app, `brew fetch --cask NAME` a few times also works. |
 | `It seems there is already an App` | The app was installed without Homebrew. Ask the user, then run `brew install --cask --adopt NAME` (it asks for the password). |
 | An App Store app did not install | The user is not signed in to the App Store. Ask them to sign in, then run the installer again. |
-| Xcode did not install | macOS is older than Xcode needs. Tell the user: update macOS, or skip Xcode. |
+| Xcode did not install | macOS is older than Xcode needs. Tell the user: update macOS, or skip Xcode (then the check also shows `FAIL` for `brew bundle check` and `App Store apps`). |
 | `This terminal runs in Rosetta` | See step 1. |
 | `mise` fails on `usql` or `mongosh` (for example `rate limit` or a timeout) | mise downloads them from GitHub. Wait a bit and run the installer again, or run `mise use --global` with the tools from `MISE_TOOLS` in `install.sh`. |
 
@@ -73,10 +73,12 @@ Never delete user data or apps to make an install pass. Ask first.
 
 ## 5. Check that everything works
 
-Ask the user to open a **new** terminal window. The new tools and shell settings only load there. Then run:
+Ask the user to open a **new** terminal window. The new tools and shell settings only load there. First wait until `docker run --rm hello-world` works there: Docker (Colima) takes a few minutes on its first start.
+
+Your own shell may have started before Homebrew was installed, so it may not find `brew`, `mise` or the new tools. Run them, and this check, through a fresh login shell:
 
 ```bash
-~/.brework/scripts/smoke-test.sh              # add --cli-only if they installed only the CLI tools
+/bin/zsh -l -c '~/.brework/scripts/smoke-test.sh'              # add --cli-only inside the quotes if they installed only the CLI tools
 ```
 
 (If the repo is somewhere else, run `scripts/smoke-test.sh` from that folder.)
@@ -93,7 +95,7 @@ For each `FAIL`, read the lines under it:
 
 - `command not found: NAME`: the command is not linked. For a cask (an app), `brew reinstall --cask THE-CASK` makes the links again. It closes the app, so ask the user first. For a CLI tool, `brew link NAME`. For a tool from `MISE_TOOLS` (like `usql`), check that `mise activate` is in `~/.zshrc`, then run `mise use --global` with it.
 - Only in the checks for the shells that don't read `~/.zshrc` (`command not found: NAME`, or `not the one from mise: PATH`, like the macOS `/usr/bin/java`): `~/.zshenv`, `~/.zprofile` or `~/.bash_profile` is missing the Homebrew or mise line. Run `install.sh` again: it adds them.
-- Docker checks fail with `Cannot connect to the Docker daemon`: Docker is still starting. The first start takes a few minutes. Check `colima status`, wait, and run the smoke test again.
+- Docker checks fail with `Docker is not running (yet)`: Docker is still starting. The first start takes a few minutes. Check `colima status`, wait until `docker run --rm hello-world` works, and run the smoke test again.
 - Anything else: show the user the output, and say what you think is wrong.
 
 ## 6. Tell the user what is left
