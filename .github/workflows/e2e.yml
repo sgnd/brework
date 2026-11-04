@@ -76,7 +76,8 @@ jobs:
             if [ "$MODE" = cli-only ]; then
               export HOMEBREW_BREWORK_CLI_ONLY=1
             fi
-            brew bundle check --verbose --file ~/.brework/Brewfile
+            # --no-upgrade: a version that came out after the install is not a failure
+            brew bundle check --no-upgrade --verbose --file ~/.brework/Brewfile
             [ "$(command -v rsync)" = "$(brew --prefix)/bin/rsync" ]
             docker compose version
             docker buildx version
