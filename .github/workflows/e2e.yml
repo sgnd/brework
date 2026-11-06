@@ -1,5 +1,5 @@
-# Runs install.sh for real on an Apple Silicon Mac on GitHub:
-# once with everything, and once with --cli-only.
+# Runs install.sh for real on Apple Silicon Macs on GitHub,
+# on macOS 26 and macOS 27: once with everything, and once with --cli-only.
 # Not tested here: App Store apps, starting Docker, typing a password,
 # and the first download of the repo (it starts with the repo in ~/.brework).
 # It runs when a pull request changes a Brewfile, install.sh or smoke-test.sh,
@@ -19,12 +19,18 @@ permissions:
 
 jobs:
   install:
-    name: Install (${{ matrix.mode }})
+    name: Install (${{ matrix.macos }}, ${{ matrix.mode }})
     strategy:
       fail-fast: false
       matrix:
         mode: [everything, cli-only]
-    runs-on: macos-latest # Apple Silicon
+        macos: [macos-26, macos-27]
+        include:
+          - macos: macos-26
+            runner: macos-26 # Apple Silicon
+          - macos: macos-27
+            runner: xcode-27 # Apple Silicon, macOS 27 (GitHub calls it a preview, so it may wait in a queue)
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 60
     env:
       MODE: ${{ matrix.mode }}
