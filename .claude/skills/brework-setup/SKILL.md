@@ -67,7 +67,7 @@ Read the lines the user pasted. If you run `brew` or `mise` yourself, run them t
 | `This terminal runs in Rosetta` | See step 1. |
 | `mise` fails on `usql` or `mongosh` (for example `rate limit` or a timeout) | mise downloads them from GitHub. Wait a bit and run the installer again, or run `mise use --global` with the tools from `MISE_TOOLS` in `install.sh`. |
 
-Run the installer again after each fix. It installs what is missing and leaves the rest alone.
+Run the installer again after each fix. It installs what is missing and updates what is out of date.
 
 Never delete user data or apps to make an install pass. Ask first.
 
@@ -83,11 +83,13 @@ Your own shell may have started before Homebrew was installed, so it may not fin
 
 (If the repo is somewhere else, run `scripts/smoke-test.sh` from that folder.)
 
-It checks three things:
+It checks these things:
 
+- Everything in the list is installed (`brew bundle check`, and the App Store apps).
 - Every command from the list is found in a new terminal, and in the shells that don't read `~/.zshrc`: IDEs and AI agents (`zsh -l -c`), scripts and ssh (`zsh -c`), and bash.
 - Every CLI tool does one small real task.
 - Every app that Homebrew puts in /Applications is signed and runs on Apple Silicon.
+- Docker runs a container, and `docker compose` and `docker buildx` work.
 
 The last line must say `0 failed`.
 

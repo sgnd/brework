@@ -68,7 +68,7 @@ If it ends with an error, read the last lines, then see [Troubleshooting](#troub
 
 - It installs Homebrew (an installer for developer tools) and everything in the lists. Tools and apps you already have from Homebrew are updated.
 - It keeps a copy of this project in `~/.brework`, a hidden folder in your home folder (press ⌘ + Shift + . in Finder to see it).
-- It adds a few lines to the files your terminal reads when it starts, so the tools work everywhere: in Terminal, in code editors and in AI agents. Each line ends with `# added by brework`.
+- It adds a few lines to the files your terminal reads when it starts, so the tools work everywhere: in Terminal, in code editors and in AI agents. Each line has `# added by brework`.
 - It shows git diffs in color with `delta`, unless you already chose a git pager.
 - It starts Docker (Colima) in the background, now and every time you log in. Docker runs in a small Linux VM that uses about 2 GB of memory. To turn that off, see [Docker (Colima)](docs/advanced.md#docker-colima).
 
