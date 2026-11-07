@@ -14,8 +14,8 @@ body:
     id: brework
     attributes:
       label: brework version
-      description: Run `git -C ~/.brework log -1 --format='%h %cs'`
-      placeholder: "190e841 2026-11-05"
+      description: Run `git -C ~/.brework describe --tags --always` (or use the folder you installed from instead of `~/.brework`)
+      placeholder: "v1.5.4"
     validations:
       required: true
   - type: input
@@ -39,5 +39,5 @@ body:
     id: smoke
     attributes:
       label: Smoke test output (if you ran it)
-      description: The FAIL lines from `~/.brework/scripts/smoke-test.sh`
+      description: The FAIL lines from `~/.brework/scripts/smoke-test.sh` (or `scripts/smoke-test.sh` in the folder you installed from)
       render: text

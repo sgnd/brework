@@ -18,6 +18,19 @@ Or, for only the command-line tools:
 ./install.sh --cli-only
 ```
 
+The script then uses that folder instead of `~/.brework`, and does not update it. Where the docs say `~/.brework`, use your folder (for example `scripts/smoke-test.sh` in that folder). `./install.sh --help` shows the options.
+
+### Install a tagged release
+
+The install command always uses the newest list on `main`. To install a fixed version instead, download that release (see the [CHANGELOG](../CHANGELOG.md) or the [releases](https://github.com/sgnd/brework/releases)) and run it from there:
+
+```bash
+git clone --branch v1.5.4 https://github.com/sgnd/brework.git ~/.brework
+~/.brework/install.sh
+```
+
+Run `~/.brework/install.sh` again (not the `curl` command) to keep that version. The `curl` command would update `~/.brework` to `main`.
+
 ### Install without the script
 
 1. Install [Homebrew](https://brew.sh):
@@ -118,6 +131,8 @@ App Store apps: drag them from `/Applications` to the Trash.
   brew bundle cleanup         # shows the list, then asks: press n to keep everything
   ```
 
+  **Careful:** if you press `y`, it uninstalls everything in that list. Never add `--force`: it uninstalls without asking.
+
 GitHub checks every change to the list. See [CONTRIBUTING.md](../CONTRIBUTING.md#how-github-checks-the-list).
 
 ## Make it yours
@@ -179,7 +194,7 @@ cron and launchd don't start a shell, so they don't read `~/.zshenv` or any othe
 
 ## Remove brework
 
-This undoes what `install.sh` set up. The tools and apps stay installed.
+This undoes the settings `install.sh` made. The tools and apps stay installed.
 
 1. Stop Docker (Colima) from starting at login:
 
@@ -204,7 +219,15 @@ This undoes what `install.sh` set up. The tools and apps stay installed.
    git config --global --unset interactive.diffFilter
    ```
 
-4. Delete the brework folder:
+4. Remove the `docker compose` and `docker buildx` links that brework made (only links into Homebrew are removed):
+
+   ```bash
+   find ~/.docker/cli-plugins -lname "$(brew --prefix)/*" -delete
+   ```
+
+   If you use Docker Desktop, open it once afterwards, so it puts its own links back.
+
+5. Delete the brework folder (or the folder you installed from):
 
    ```bash
    rm -rf ~/.brework
@@ -224,7 +247,9 @@ To remove a tool or an app too, see [Remove a tool or an app](#remove-a-tool-or-
 | [`scripts/smoke-test.sh`](../scripts/smoke-test.sh) | Checks that every installed tool really works |
 | [`.github/workflows/validate.yml`](../.github/workflows/validate.yml) | Runs the checks on GitHub |
 | [`.github/workflows/e2e.yml`](../.github/workflows/e2e.yml) | Tests `install.sh` for real on a Mac on GitHub |
+| [`.github/actionlint.yaml`](../.github/actionlint.yaml) | Settings for the workflow check (actionlint) |
 | [`.github/dependabot.yml`](../.github/dependabot.yml) | Keeps the GitHub Actions up to date |
+| [`CHANGELOG.md`](../CHANGELOG.md) | What changed in each release |
 | [`CONTRIBUTING.md`](../CONTRIBUTING.md), [`SECURITY.md`](../SECURITY.md), [`CODE_OF_CONDUCT.md`](../CODE_OF_CONDUCT.md) | How to help, report a security problem, and behave |
 | [`.github/ISSUE_TEMPLATE`](../.github/ISSUE_TEMPLATE) | The forms for suggesting a tool and reporting a bug |
 | [`.claude/skills/brework-setup/SKILL.md`](../.claude/skills/brework-setup/SKILL.md) | Tells AI coding agents how to set up a Mac with brework and check it |
