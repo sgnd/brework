@@ -8,11 +8,13 @@ To update, run the [install command](README.md#install) again, unless a release 
 
 ### Fixed
 
+- **A commented-out Homebrew line no longer stops `install.sh`** from adding the real one: lines that start with `#` in your shell files are ignored when it checks what is already there.
 - **Homebrew is added to your `PATH` on a Mac moved over from an Intel Mac.** When a shell file already had a line for the Intel Homebrew (`/usr/local/bin/brew shellenv`, for example after Migration Assistant), `install.sh` did not add the Apple Silicon line, so login shells put `/usr/bin` first. Run the install command again to add it.
 - **The smoke test says when a test port is in use.** The `httpie`/`wget` and `redis-cli` checks start a small local server on port 8765 or 8766. When that port is taken, the check now says so, with the `lsof` command to see what uses it. `redis-cli` is only tested against its own server.
 
 ### Changed
 
+- **CI:** the "End-to-end result" check runs on every pull request and is required. It passes when the install on the Macs passed, or when the pull request does not change a Brewfile, `install.sh`, `smoke-test.sh` or `e2e.yml`.
 - **`install.sh` checks for macOS 15 or newer, an admin account and enough free disk** at the start, instead of failing later in the install. End-to-end CI also tests macOS 15.
 - **`install.sh` explains what to do when the Homebrew installer fails.**
 - **`install.sh --help` and `scripts/smoke-test.sh --help`** show the options (`-h` works too).

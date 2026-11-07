@@ -155,7 +155,7 @@ test_docker() {
   docker_pull hello-world && docker run --rm hello-world | grep -q 'Hello from Docker'
   local result=$?
   docker image rm hello-world >/dev/null 2>&1
-  return $result
+  return "$result"
 }
 
 test_docker_compose() {
@@ -163,7 +163,7 @@ test_docker_compose() {
   docker_pull busybox && docker compose run --rm hello | grep -q compose-works
   local result=$?
   docker compose down >/dev/null 2>&1 # removes the network it made
-  return $result
+  return "$result"
 }
 
 test_docker_buildx() {
@@ -172,7 +172,7 @@ test_docker_buildx() {
     [ "$(docker run --rm brework-smoke-test cat /built.txt)" = built ]
   local result=$?
   docker image rm brework-smoke-test >/dev/null 2>&1
-  return $result
+  return "$result"
 }
 
 # --- Kubernetes (no cluster needed) ----------------------------------------
@@ -224,7 +224,7 @@ test_http_tools() {
     wget -q -O - "http://127.0.0.1:$port/page.txt" | grep -q hello-http
   local result=$?
   kill "$server"
-  return $result
+  return "$result"
 }
 
 # --- Database clients ------------------------------------------------------
@@ -257,7 +257,7 @@ test_redis() {
     [ "$(redis-cli -p "$port" get greeting)" = hello-redis ]
   local result=$?
   kill "$server"
-  return $result
+  return "$result"
 }
 
 # --- Load testing & benchmarks ---------------------------------------------
@@ -389,7 +389,7 @@ test_app_store_apps() {
     id="$(echo "$line" | sed 's/.*id: *\([0-9]*\).*/\1/')" # the same as in validate-brewfile.sh
     mas list | grep -q "^ *$id " || { echo "not installed: $(echo "$line" | cut -d'"' -f2) (id $id)"; missing=1; }
   done < <(grep '^mas ' "$repo/Brewfile.apps")
-  return $missing
+  return "$missing"
 }
 
 # --- Run the checks --------------------------------------------------------

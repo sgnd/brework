@@ -59,7 +59,8 @@ EOF
 # start one first, so our line is not glued to your last line.
 # Usage: add_line FILE KEYWORD LINE
 add_line() {
-  grep -qsF "$2" "$1" && return
+  # Lines that are commented out (start with #) do not count.
+  grep -sv '^[[:space:]]*#' "$1" | grep -qF "$2" && return
   [ ! -s "$1" ] || [ -z "$(tail -c 1 "$1")" ] || echo >>"$1"
   echo "$3" >>"$1"
 }

@@ -40,7 +40,7 @@ Open an issue with the [Bug report](https://github.com/sgnd/brework/issues/new?t
 
 When a pull request changes a Brewfile, `install.sh` or `smoke-test.sh`, and every Monday, [another check](.github/workflows/e2e.yml) removes Homebrew from a GitHub Mac and then runs `install.sh` for real on macOS 15 (the oldest supported), 26 and 27, each once with everything and once with `--cli-only` (twice per run, to check that a second run changes nothing), and then runs `smoke-test.sh`. Some things are left out, because GitHub's Macs cannot do them: App Store apps (no Apple ID), starting Docker (Colima cannot start a VM there) and typing a password. The test also starts with this repo already in `~/.brework`, so it does not test the first download of the repo.
 
-The end-to-end check only runs when one of those files changes, so GitHub cannot make it a required check. When it runs on a pull request, it must be green before the pull request is merged.
+The Macs only run when one of those files changes. The "End-to-end result" check runs on every pull request and is required: it is green when the Macs passed, or when none of those files changed.
 
 ## Writing
 
