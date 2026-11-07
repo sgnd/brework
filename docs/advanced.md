@@ -147,7 +147,7 @@ Need a local Kubernetes cluster? Run `colima stop`, then `colima start --kuberne
 1. Installs Homebrew, if you don't have it yet
 2. Adds Homebrew to your `PATH` for every shell: `~/.zshenv` (every zsh, also `ssh mac COMMAND`), `~/.zprofile` (a terminal, code editors and AI agents) and `~/.bash_profile` (bash)
 3. Downloads this repo to `~/.brework` (a hidden folder: press ⌘ + Shift + . in Finder to see it)
-4. Installs everything in the `Brewfile` and `Brewfile.apps` (only the `Brewfile` with `--cli-only`). It also installs `usql` and `mongosh` with `mise`, at fixed versions (`MISE_TOOLS` in `install.sh`): `usql` is not in Homebrew, and Homebrew's `mongosh` needs a second Node.js.
+4. Installs everything in the `Brewfile` and `Brewfile.apps` (only the `Brewfile` with `--cli-only`). It also installs `usql` and `mongosh` with `mise`, at fixed versions (`MISE_TOOLS` in `install.sh`): `usql` is not in Homebrew core, and Homebrew's `mongosh` needs a second Node.js.
 5. Sets up `docker compose` and `docker buildx`
 6. Turns on `mise`, `direnv`, `zoxide` and `fzf` in `~/.zshrc`, and shows git diffs with `delta`. It also adds the `mise` tools to the same three files as Homebrew, so code editors, AI agents and scripts find them too (they don't read `~/.zshrc`).
 7. Starts Docker (Colima) now and every time you log in
@@ -187,7 +187,7 @@ This undoes what `install.sh` set up. The tools and apps stay installed.
    brew services stop colima
    ```
 
-2. Remove the lines brework added to your shell files (each ends with `# added by brework`):
+2. Remove the lines brework added to your shell files (each has `# added by brework`):
 
    ```bash
    for file in ~/.zshrc ~/.zshenv ~/.zprofile ~/.bash_profile; do
@@ -220,7 +220,7 @@ To remove a tool or an app too, see [Remove a tool or an app](#remove-a-tool-or-
 | [`Brewfile.apps`](../Brewfile.apps) | The list of apps, App Store apps included |
 | [`install.sh`](../install.sh) | Sets up a Mac in one command |
 | [`docs/advanced.md`](advanced.md) | This page |
-| [`scripts/validate-brewfile.sh`](../scripts/validate-brewfile.sh) | Checks that every package in the list still exists, and that the macOS versions in the README are current |
+| [`scripts/validate-brewfile.sh`](../scripts/validate-brewfile.sh) | Checks that every package in the lists and every `MISE_TOOLS` version still exists, and that the README names the macOS version each App Store app needs |
 | [`scripts/smoke-test.sh`](../scripts/smoke-test.sh) | Checks that every installed tool really works |
 | [`.github/workflows/validate.yml`](../.github/workflows/validate.yml) | Runs the checks on GitHub |
 | [`.github/workflows/e2e.yml`](../.github/workflows/e2e.yml) | Tests `install.sh` for real on a Mac on GitHub |
