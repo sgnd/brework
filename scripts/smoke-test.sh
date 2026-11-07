@@ -340,7 +340,8 @@ test_commands_found() {
   [ -n "$commands" ] || { echo "found no commands to look for: is brew on your PATH? Open a new Terminal window"; return 1; }
   # Your ~/.zshrc may print things too, so only read our own lines.
   # "all checked" at the end shows that the loops really ran.
-  output="$(env -i HOME="$HOME" USER="$USER" LOGNAME="$LOGNAME" SHELL=/bin/zsh TERM=xterm-256color "$@" -c "
+  # cron, launchd and sudo may not set USER or LOGNAME: ask macOS for the name.
+  output="$(env -i HOME="$HOME" USER="${USER:-$(id -un)}" LOGNAME="${LOGNAME:-$(id -un)}" SHELL=/bin/zsh TERM=xterm-256color "$@" -c "
     path_of() { whence -p \$1 2>/dev/null || type -P \$1 2>/dev/null; } # zsh || bash
     for c in $commands; do path_of \$c >/dev/null || echo \"command not found: \$c\"; done
     for c in $mise_commands; do
@@ -374,8 +375,8 @@ test_app() {
 test_app_store_apps() {
   local line id missing=0
   while IFS= read -r line; do # like: mas "Telegram", id: 747648890   # Chat
-    id="${line##*id: }"
-    id="${id%% *}"
+    # shellcheck disable=SC2001 # the same sed as validate-brewfile.sh, so both read the id the same way
+    id="$(echo "$line" | sed 's/.*id: *\([0-9]*\).*/\1/')" # the same as in validate-brewfile.sh
     mas list | grep -q "^ *$id " || { echo "not installed: $(echo "$line" | cut -d'"' -f2) (id $id)"; missing=1; }
   done < <(grep '^mas ' "$repo/Brewfile.apps")
   return $missing

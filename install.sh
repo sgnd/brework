@@ -97,9 +97,15 @@ main() {
   # A login shell (a terminal, most IDEs and agents) then lets macOS put /usr/bin first again,
   # so ~/.zprofile needs the same line. bash reads ~/.bash_profile (and then skips ~/.profile).
   say "Adding Homebrew to your PATH in ~/.zshenv, ~/.zprofile and ~/.bash_profile"
-  if [ ! -f "$HOME/.bash_profile" ] && [ -f "$HOME/.profile" ]; then
-    # shellcheck disable=SC2016 # this line runs later, in bash
-    echo '. "$HOME/.profile" # added by brework, so bash still reads ~/.profile' >"$HOME/.bash_profile"
+  # bash reads only the first of ~/.bash_profile, ~/.bash_login and ~/.profile.
+  # A new ~/.bash_profile loads the one bash read before.
+  if [ ! -f "$HOME/.bash_profile" ]; then
+    for old in .bash_login .profile; do
+      if [ -f "$HOME/$old" ]; then
+        echo ". \"\$HOME/$old\" # added by brework, so bash still reads ~/$old" >"$HOME/.bash_profile"
+        break
+      fi
+    done
   fi
   add_line "$HOME/.zshenv" "brew shellenv" "eval \"\$($BREW shellenv)\" # added by brework"
   add_line "$HOME/.zprofile" "brew shellenv" "eval \"\$($BREW shellenv)\" # added by brework"
@@ -201,7 +207,8 @@ main() {
   step 7 "Start Docker (Colima)"
   # Colima starts now in the background, and again every time you log in.
   # A Colima you already started yourself is left alone, so your containers keep running.
-  if command -v colima >/dev/null && ! brew services list | grep -q "^colima *started"; then
+  # Not `brew services list | grep -q`: grep stops early, brew gets a broken pipe, and pipefail fails it.
+  if command -v colima >/dev/null && ! grep -q "^colima *started" <<<"$(brew services list)"; then
     if colima status >/dev/null 2>&1; then
       say "Docker (Colima) is already running. To also start it at every login, run: colima stop && brew services start colima"
     else

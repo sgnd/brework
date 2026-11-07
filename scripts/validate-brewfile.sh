@@ -47,7 +47,12 @@ done
 # entity=desktopSoftware: for an app on both iPhone and Mac (like WhatsApp), get the Mac
 # version. Without it, Apple returns the iPhone app and its iOS version.
 for id in $app_store_ids; do
-  app="$(curl -fsS "https://itunes.apple.com/lookup?id=$id&entity=desktopSoftware" | jq '.results[0] // {}')"
+  # One failed lookup is counted, and the other checks still run.
+  if ! app="$(curl -fsS "https://itunes.apple.com/lookup?id=$id&entity=desktopSoftware" | jq '.results[0] // {}')"; then
+    echo "MISSING  App Store id $id (could not reach Apple's lookup API: run again later)"
+    missing=$((missing + 1))
+    continue
+  fi
   if ! echo "$app" | jq -e '.kind == "mac-software" or (.supportedDevices // [] | any(startswith("MacDesktop")))' >/dev/null; then
     echo "MISSING  App Store id $id (no Mac app with this id)"
     missing=$((missing + 1))
@@ -56,7 +61,7 @@ for id in $app_store_ids; do
   name="$(echo "$app" | jq -r '.trackName')"
   min_macos="$(echo "$app" | jq -r '.minimumOsVersion')"
   if awk -v v="$min_macos" 'BEGIN { split(v, a, "."); exit !(a[1] > 15 || (a[1] == 15 && a[2] + a[3] > 0)) }' &&
-    ! grep -qwF "$min_macos" README.md; then
+    ! grep -qwF "macOS $min_macos" README.md; then
     echo "MISSING  macOS $min_macos in README.md ($name needs it now: update Troubleshooting)"
     missing=$((missing + 1))
   else
@@ -68,10 +73,11 @@ done
 command -v mise >/dev/null || brew install --quiet mise
 mise_tools="$(sed -n 's/^MISE_TOOLS="\([^"]*\)".*/\1/p' install.sh)"
 for tool in $mise_tools; do
-  if mise ls-remote "${tool%@*}" 2>/dev/null | grep -qxF "${tool#*@}"; then
+  # Not `mise ls-remote | grep -q`: grep stops early, mise gets a broken pipe, and pipefail fails the check.
+  if grep -qxF "${tool#*@}" <<<"$(mise ls-remote "${tool%@*}" 2>/dev/null)"; then
     echo "ok       $tool (mise)"
     # A newer version does not fail the check. On GitHub it shows as a warning on the run.
-    latest="$(mise latest "${tool%@*}" 2>/dev/null)"
+    latest="$(mise latest "${tool%@*}" 2>/dev/null || true)" # a failed lookup is no warning, not an error
     if [ -n "$latest" ] && [ "$latest" != "${tool#*@}" ]; then
       echo "NEWER    ${tool%@*} $latest is out. Update MISE_TOOLS in install.sh"
       if [ -n "${GITHUB_ACTIONS:-}" ]; then
