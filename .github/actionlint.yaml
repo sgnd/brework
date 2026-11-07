@@ -1,0 +1,5 @@
+# actionlint settings: https://github.com/rhysd/actionlint/blob/main/docs/config.md
+self-hosted-runner:
+  # GitHub's macOS 27 preview runner (used in e2e.yml). actionlint does not know this label yet.
+  labels:
+    - xcode-27
