@@ -29,7 +29,7 @@ git clone --branch v1.5.4 https://github.com/sgnd/brework.git ~/.brework
 ~/.brework/install.sh
 ```
 
-Run `~/.brework/install.sh` again (not the `curl` command) to keep that version. The `curl` command would update `~/.brework` to `main`.
+Run `~/.brework/install.sh` again (not the `curl` command) to keep that version. The `curl` command cannot update a tagged copy: it runs the newest `install.sh` with the older list, and says `~/.brework` could not be updated. To go back to `main`, run `git -C ~/.brework switch main`, then the install command.
 
 ### Install without the script
 
