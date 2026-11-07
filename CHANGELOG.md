@@ -13,7 +13,7 @@ To update, run the [install command](README.md#install) again, unless a release 
 
 ### Changed
 
-- **`install.sh` checks for macOS 15 or newer** at the start, instead of failing later in the install.
+- **`install.sh` checks for macOS 15 or newer, an admin account and enough free disk** at the start, instead of failing later in the install. End-to-end CI also tests macOS 15.
 - **`install.sh` explains what to do when the Homebrew installer fails.**
 - **`install.sh --help` and `scripts/smoke-test.sh --help`** show the options (`-h` works too).
 - **Docs:** how to install a tagged release, a warning that `brew bundle cleanup` uninstalls everything it lists when you press `y`, a step in "Remove brework" for the `docker compose` and `docker buildx` links, and what to use instead of `~/.brework` when you installed from a downloaded copy.

@@ -88,11 +88,26 @@ main() {
     fail "This terminal runs in Rosetta (Intel mode). Open a normal terminal and try again."
   fi
 
-  # The tools and apps in the lists need macOS 15 or newer (see the README).
-  macos_major="$(sw_vers -productVersion | cut -d. -f1)"
-  [ "$macos_major" -ge 15 ] 2>/dev/null || fail "brework needs macOS 15 or newer. Update macOS in System Settings > General > Software Update."
-
   BREW=/opt/homebrew/bin/brew # where Homebrew lives on Apple Silicon
+
+  # macOS 15 or newer: older versions are not tested, and many apps in the list need a newer one.
+  macos="$(sw_vers -productVersion 2>/dev/null || echo 0)"
+  if [ "${macos%%.*}" -lt 15 ] 2>/dev/null; then
+    fail "brework needs macOS 15 (Sequoia) or newer. This Mac has macOS $macos. Update it in System Settings > General > Software Update."
+  fi
+
+  # Installing Homebrew the first time needs an admin account. Once it is there, it is not needed.
+  if [ ! -x "$BREW" ] && ! id -Gn | tr ' ' '\n' | grep -qx admin; then
+    fail "Your account is not an admin, and installing Homebrew needs one. Log in as an admin, or ask one to make your account an admin (System Settings > Users & Groups)."
+  fi
+
+  # Free disk space: only a warning, because a second run needs much less than a first one.
+  need_gb=40
+  [ -z "${HOMEBREW_BREWORK_CLI_ONLY:-}" ] || need_gb=20
+  free_gb="$(df -g "$HOME" 2>/dev/null | awk 'NR == 2 { print $4 }')"
+  if [ -n "$free_gb" ] && [ "$free_gb" -lt "$need_gb" ] 2>/dev/null; then
+    say "Warning: only $free_gb GB of free disk space. A first install needs about $need_gb GB. It may stop halfway: free up space if it does (System Settings > General > Storage), then run it again."
+  fi
 
   # --- 1. Install Homebrew -------------------------------------------------
 
