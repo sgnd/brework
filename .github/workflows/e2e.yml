@@ -1,5 +1,5 @@
 # Runs install.sh for real on Apple Silicon Macs on GitHub,
-# on macOS 26 and macOS 27: once with everything, and once with --cli-only.
+# on macOS 15 (the oldest the README supports), 26 and 27: once with everything, and once with --cli-only.
 # Not tested here: App Store apps, starting Docker, typing a password,
 # and the first download of the repo (it starts with the repo in ~/.brework).
 # It runs when a pull request changes a Brewfile, install.sh or smoke-test.sh,
@@ -24,8 +24,10 @@ jobs:
       fail-fast: false
       matrix:
         mode: [everything, cli-only]
-        macos: [macos-26, macos-27]
+        macos: [macos-15, macos-26, macos-27]
         include:
+          - macos: macos-15
+            runner: macos-15 # Apple Silicon, the oldest macOS the README supports
           - macos: macos-26
             runner: macos-26 # Apple Silicon
           - macos: macos-27
