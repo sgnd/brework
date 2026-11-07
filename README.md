@@ -95,7 +95,7 @@ First wait until `docker run --rm hello-world` works (see above). Then, in a new
 ~/.brework/scripts/smoke-test.sh
 ```
 
-Add `--cli-only` if you installed only the command-line tools.
+Add `--cli-only` if you installed only the command-line tools. Installed from a downloaded copy? Run `scripts/smoke-test.sh` in that folder instead.
 
 It tries every tool. The last line must say `0 failed`. If it doesn't, read the lines under each `FAIL`, then see [Troubleshooting](#troubleshooting) or [open an issue](https://github.com/sgnd/brework/issues/new?template=bug-report.yml).
 
@@ -107,7 +107,7 @@ brew update && brew upgrade
 
 App Store apps update through the App Store, as usual.
 
-To get the newest list and install what was added to it, run the [install command](#install) again. This also updates everything in the list, App Store apps included.
+To get the newest list and install what was added to it, run the [install command](#install) again. This also updates everything in the list, App Store apps included. The [CHANGELOG](CHANGELOG.md) says what changed in each release.
 
 ## What's inside
 

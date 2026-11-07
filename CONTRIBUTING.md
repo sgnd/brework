@@ -26,17 +26,21 @@ Open an issue with the [Bug report](https://github.com/sgnd/brework/issues/new?t
    ```bash
    scripts/validate-brewfile.sh        # the last line must say: 0 missing
    shellcheck install.sh scripts/*.sh  # if you changed a script
+   actionlint                          # if you changed a workflow in .github/workflows
    ```
 
    The first one runs `brew update`, and installs `mise` if you don't have it yet.
 
 3. Open the pull request. GitHub runs the same checks. See [How GitHub checks the list](#how-github-checks-the-list).
+4. If your change is something users notice, add a line under `Unreleased` in [CHANGELOG.md](CHANGELOG.md).
 
 ## How GitHub checks the list
 
-[GitHub Actions](.github/workflows/validate.yml) runs `scripts/validate-brewfile.sh` on every push to `main`, every pull request and every Monday. It also checks that the README names the macOS version each App Store app needs (in [Troubleshooting](README.md#troubleshooting)), the shell scripts, and the links (and `#section` links) in the README, docs/advanced.md, this file and SECURITY.md. [Dependabot](.github/dependabot.yml) opens a pull request when a GitHub Action has a new version.
+[GitHub Actions](.github/workflows/validate.yml) runs `scripts/validate-brewfile.sh` on every push to `main`, every pull request and every Monday. It also checks that the README names the macOS version each App Store app needs (in [Troubleshooting](README.md#troubleshooting)), the shell scripts, the workflows (with actionlint), and the links (and `#section` links) in the README, docs/advanced.md, this file and SECURITY.md. [Dependabot](.github/dependabot.yml) opens a pull request when a GitHub Action has a new version.
 
 When a pull request changes a Brewfile, `install.sh` or `smoke-test.sh`, and every Monday, [another check](.github/workflows/e2e.yml) removes Homebrew from a GitHub Mac and then runs `install.sh` for real on macOS 15 (the oldest supported), 26 and 27, each once with everything and once with `--cli-only` (twice per run, to check that a second run changes nothing), and then runs `smoke-test.sh`. Some things are left out, because GitHub's Macs cannot do them: App Store apps (no Apple ID), starting Docker (Colima cannot start a VM there) and typing a password. The test also starts with this repo already in `~/.brework`, so it does not test the first download of the repo.
+
+The Macs only run when one of those files changes. The "End-to-end result" check runs on every pull request and is required: it is green when the Macs passed, or when none of those files changed.
 
 ## Writing
 

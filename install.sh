@@ -21,6 +21,8 @@
 #   curl -fsSL https://raw.githubusercontent.com/sgnd/brework/main/install.sh | bash -s -- --cli-only
 #   ./install.sh --cli-only
 #
+# Show the help: ./install.sh --help
+#
 # You can run it again at any time. It installs what is missing and updates what is out of date.
 
 set -euo pipefail # stop at the first error
@@ -36,12 +38,31 @@ say() { printf '\033[1;34m==>\033[0m %s\n' "$*"; }
 step() { printf '\n\033[1;32mStep %s of 7:\033[0m \033[1m%s\033[0m\n' "$1" "$2"; } # a header, so you can see how far it is
 fail() { printf '\033[1;31mError:\033[0m %s\n' "$*" >&2; exit 1; }
 
+# Not read from this file's header: with `curl | bash` there is no file.
+usage() {
+  cat <<'EOF'
+brework installer: sets up this Mac with the tools in the Brewfile and the apps in Brewfile.apps.
+
+Usage:
+  curl -fsSL https://raw.githubusercontent.com/sgnd/brework/main/install.sh | bash
+  ./install.sh               # tools and apps
+  ./install.sh --cli-only    # only the command-line tools, without the apps
+  ./install.sh --help        # show this help
+
+You can run it again at any time. It installs what is missing and updates what is out of date.
+More: https://github.com/sgnd/brework
+EOF
+}
+
 # Add a line to a file, unless a line with this keyword is already there.
 # If the file does not end with a new line (some editors save it that way),
 # start one first, so our line is not glued to your last line.
 # Usage: add_line FILE KEYWORD LINE
 add_line() {
-  grep -qsF "$2" "$1" && return
+  # Lines that are commented out (start with #) do not count.
+  # One awk, not `grep -v | grep -q`: with pipefail, the first grep can get SIGPIPE when the
+  # second one stops at a match, and a big file would then look as if it had no such line.
+  awk -v k="$2" '!/^[[:space:]]*#/ && index($0, k) { f = 1; exit } END { exit !f }' "$1" 2>/dev/null && return
   [ ! -s "$1" ] || [ -z "$(tail -c 1 "$1")" ] || echo >>"$1"
   echo "$3" >>"$1"
 }
@@ -50,11 +71,12 @@ main() {
   # --- 0. Read the option and check this Mac -------------------------------
 
   # --cli-only skips Brewfile.apps. The Brewfile reads this setting.
-  [ $# -le 1 ] || fail "Too many options. The only option is --cli-only."
+  [ $# -le 1 ] || fail "Too many options. Use --cli-only, or none. See: install.sh --help"
   case "${1:-}" in
     "") ;;
     --cli-only) export HOMEBREW_BREWORK_CLI_ONLY=1 ;;
-    *) fail "Unknown option: $1. The only option is --cli-only." ;;
+    -h | --help) usage; exit 0 ;;
+    *) fail "Unknown option: $1. Use --cli-only, or none. See: install.sh --help" ;;
   esac
 
   [ "$(uname -s)" = "Darwin" ] || fail "brework only works on macOS."
@@ -97,13 +119,14 @@ main() {
     say "Homebrew is already installed."
   else
     say "Installing Homebrew..."
-    installer="$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    homebrew_failed="Homebrew did not install. Read the lines above, then run this script again from a Terminal window."
+    installer="$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || fail "$homebrew_failed"
     # With `curl | bash` the keyboard is not connected to this script.
     # Connect the Homebrew installer to the terminal so it can ask for your password.
     if (: </dev/tty) 2>/dev/null; then
-      /bin/bash -c "$installer" </dev/tty
+      /bin/bash -c "$installer" </dev/tty || fail "$homebrew_failed"
     else
-      NONINTERACTIVE=1 /bin/bash -c "$installer"
+      NONINTERACTIVE=1 /bin/bash -c "$installer" || fail "$homebrew_failed"
     fi
   fi
 
@@ -126,9 +149,11 @@ main() {
       fi
     done
   fi
-  add_line "$HOME/.zshenv" "brew shellenv" "eval \"\$($BREW shellenv)\" # added by brework"
-  add_line "$HOME/.zprofile" "brew shellenv" "eval \"\$($BREW shellenv)\" # added by brework"
-  add_line "$HOME/.bash_profile" "brew shellenv" "eval \"\$($BREW shellenv bash)\" # added by brework"
+  # The keyword is the full Apple Silicon path: an old line for an Intel Homebrew
+  # (/usr/local/bin/brew, for example after Migration Assistant) must not stop this one.
+  add_line "$HOME/.zshenv" "$BREW shellenv" "eval \"\$($BREW shellenv)\" # added by brework"
+  add_line "$HOME/.zprofile" "$BREW shellenv" "eval \"\$($BREW shellenv)\" # added by brework"
+  add_line "$HOME/.bash_profile" "$BREW shellenv" "eval \"\$($BREW shellenv bash)\" # added by brework"
 
   # --- 3. Find the Brewfile ------------------------------------------------
 

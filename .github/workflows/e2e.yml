@@ -2,14 +2,15 @@
 # on macOS 15 (the oldest the README supports), 26 and 27: once with everything, and once with --cli-only.
 # Not tested here: App Store apps, starting Docker, typing a password,
 # and the first download of the repo (it starts with the repo in ~/.brework).
-# It runs when a pull request changes a Brewfile, install.sh or smoke-test.sh,
+# The Macs run when a pull request changes a Brewfile, install.sh or smoke-test.sh,
 # every Monday (a package or tool can break without any change here),
 # and when you press "Run workflow" on GitHub.
+# "End-to-end result" runs on every pull request and is a required check: it passes when
+# the Macs passed, or when the pull request changes none of those files.
 name: End-to-end
 
 on:
   pull_request:
-    paths: [Brewfile, Brewfile.apps, install.sh, scripts/smoke-test.sh, .github/workflows/e2e.yml]
   schedule:
     - cron: "0 4 * * 1" # every Monday at 04:00 UTC, an hour after Validate
   workflow_dispatch: # adds a "Run workflow" button on GitHub
@@ -18,8 +19,34 @@ permissions:
   contents: read
 
 jobs:
+  changes:
+    name: Changed files
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      install: ${{ steps.diff.outputs.install }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - id: diff
+        env:
+          EVENT: ${{ github.event_name }}
+          BASE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          if [ "$EVENT" != pull_request ]; then
+            echo install=true >>"$GITHUB_OUTPUT"
+          elif git diff --name-only "$BASE...HEAD" | grep -qxE 'Brewfile|Brewfile\.apps|install\.sh|scripts/smoke-test\.sh|\.github/workflows/e2e\.yml'; then
+            echo install=true >>"$GITHUB_OUTPUT"
+          else
+            echo "No Brewfile, install.sh, smoke-test.sh or e2e.yml change: the Macs are skipped."
+            echo install=false >>"$GITHUB_OUTPUT"
+          fi
+
   install:
     name: Install (${{ matrix.macos }}, ${{ matrix.mode }})
+    needs: changes
+    if: needs.changes.outputs.install == 'true'
     strategy:
       fail-fast: false
       matrix:
@@ -134,3 +161,21 @@ jobs:
 
       # Not tested here: App Store apps (no Apple ID on GitHub's Macs)
       # and `colima start` (GitHub's Macs cannot start a VM inside their own VM).
+
+  result:
+    name: End-to-end result
+    needs: [changes, install]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - env:
+          CHANGES: ${{ needs.changes.result }}
+          INSTALL: ${{ needs.install.result }}
+        run: |
+          echo "Changed files: $CHANGES. Install on the Macs: $INSTALL."
+          [ "$CHANGES" = success ] || { echo "Error: the changed-files check did not finish."; exit 1; }
+          case "$INSTALL" in
+            success | skipped) ;;
+            *) echo "Error: the install on the Macs did not pass. Open the Install jobs above to see why."; exit 1 ;;
+          esac

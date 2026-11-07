@@ -109,6 +109,8 @@ If you changed a script, also run:
 shellcheck install.sh scripts/*.sh
 ```
 
+If you changed a workflow in `.github/workflows`, also run `actionlint`.
+
 If `brew` is not installed (for example, on Linux or in a cloud sandbox), you cannot run the validator. Say so to the user. GitHub Actions runs all these checks on the pull request.
 
 Do not run `brew bundle install` unless the user asks. It installs software on their Mac.
