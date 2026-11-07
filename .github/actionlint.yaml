@@ -1,0 +1,5 @@
+# Settings for actionlint, which checks the GitHub workflows (see validate.yml).
+self-hosted-runner:
+  # GitHub's macOS 27 runner (a preview) is not in actionlint's list of runner labels yet.
+  labels:
+    - xcode-27

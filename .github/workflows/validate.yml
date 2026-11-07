@@ -18,19 +18,24 @@ jobs:
   brewfile:
     name: Brewfile
     runs-on: macos-latest # Apple Silicon
+    timeout-minutes: 20 # it usually takes a few minutes
     steps:
       - uses: actions/checkout@v7
       - run: scripts/validate-brewfile.sh
         env:
           GITHUB_TOKEN: ${{ github.token }} # mise looks up versions on GitHub (more requests with a token)
 
-  # 2. The shell scripts have no common bugs.
+  # 2. The shell scripts and the GitHub workflows have no common bugs.
   shellcheck:
     name: ShellCheck
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
       - run: shellcheck install.sh scripts/*.sh
+      - name: actionlint (checks the workflows, settings in .github/actionlint.yaml)
+        uses: docker://rhysd/actionlint:1.7.12
+        with:
+          args: -color
 
   # 3. Every link (and #section link) in the docs still works.
   links:
@@ -38,7 +43,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: lycheeverse/lychee-action@v2
+      - uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
         with:
           # Some websites block bots (403, 429) or answer slowly.
           # Only real errors, like 404 Not Found, fail this check.
