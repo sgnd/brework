@@ -60,7 +60,9 @@ EOF
 # Usage: add_line FILE KEYWORD LINE
 add_line() {
   # Lines that are commented out (start with #) do not count.
-  grep -sv '^[[:space:]]*#' "$1" | grep -qF "$2" && return
+  # One awk, not `grep -v | grep -q`: with pipefail, the first grep can get SIGPIPE when the
+  # second one stops at a match, and a big file would then look as if it had no such line.
+  awk -v k="$2" '!/^[[:space:]]*#/ && index($0, k) { f = 1; exit } END { exit !f }' "$1" 2>/dev/null && return
   [ ! -s "$1" ] || [ -z "$(tail -c 1 "$1")" ] || echo >>"$1"
   echo "$3" >>"$1"
 }
