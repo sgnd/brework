@@ -11,6 +11,7 @@
 #   scripts/smoke-test.sh              # CLI tools and apps
 #   scripts/smoke-test.sh --cli-only   # only the CLI tools
 #   SKIP_DOCKER=1 scripts/smoke-test.sh   # when Docker cannot run (like on GitHub)
+#   scripts/smoke-test.sh --help       # show this help
 
 # No -e: keep going after a failed check.
 # No pipefail: some tools exit with an error on purpose (they found the bug we planted),
@@ -214,9 +215,11 @@ test_http_tools() {
   python3 -m http.server "$port" --bind 127.0.0.1 >/dev/null 2>&1 &
   local server=$! _
   for _ in 1 2 3 4 5 6 7 8 9 10; do # wait up to 10 seconds for the server
-    curl -s "127.0.0.1:$port/page.txt" >/dev/null && break
+    kill -0 "$server" 2>/dev/null || break # it stopped: the port is in use
+    curl -fs "127.0.0.1:$port/page.txt" >/dev/null && break
     sleep 1
   done
+  kill -0 "$server" 2>/dev/null || { echo "the test web server did not start. Is port $port in use? See: lsof -i :$port"; return 1; }
   http --ignore-stdin --print=b GET "127.0.0.1:$port/page.txt" | grep -q hello-http &&
     wget -q -O - "http://127.0.0.1:$port/page.txt" | grep -q hello-http
   local result=$?
@@ -238,11 +241,18 @@ test_usql() { # installed with mise
 test_redis() {
   local port=8766
   redis-server --port "$port" --bind 127.0.0.1 --save '' --appendonly no >/dev/null 2>&1 &
-  local server=$! _
+  local server=$! ours=no _
   for _ in 1 2 3 4 5 6 7 8 9 10; do # wait up to 10 seconds for the server
-    redis-cli -p "$port" ping >/dev/null 2>&1 && break
+    kill -0 "$server" 2>/dev/null || break # it stopped: the port is in use
+    # Our server, not another Redis on the same port:
+    redis-cli -p "$port" info server 2>/dev/null | grep -q "^process_id:${server}[^0-9]" && { ours=yes; break; }
     sleep 1
   done
+  if [ "$ours" = no ]; then
+    kill "$server" 2>/dev/null
+    echo "the test Redis server did not start. Is port $port in use? See: lsof -i :$port"
+    return 1
+  fi
   redis-cli -p "$port" set greeting hello-redis >/dev/null &&
     [ "$(redis-cli -p "$port" get greeting)" = hello-redis ]
   local result=$?
@@ -387,7 +397,8 @@ test_app_store_apps() {
 case "${1:-}" in
   "") unset HOMEBREW_BREWORK_CLI_ONLY ;;
   --cli-only) export HOMEBREW_BREWORK_CLI_ONLY=1 ;;
-  *) echo "Unknown option: $1. The only option is --cli-only." >&2; exit 1 ;;
+  -h | --help) awk '/^# Usage:/ { f = 1 } f && /^$/ { exit } f { sub(/^# ?/, ""); print }' "$repo/scripts/$(basename "$0")"; exit 0 ;; # the Usage lines at the top
+  *) echo "Unknown option: $1. Use --cli-only, or none. See: $0 --help" >&2; exit 1 ;;
 esac
 
 echo "== Everything in the list is installed"
