@@ -6,6 +6,8 @@ To update, run the [install command](README.md#install) of the newest release, u
 
 ## Unreleased
 
+## v1.6.0 (2026-11-08)
+
 ### Security
 
 - **The install command installs one release, not `main`.** The command names its version (`.../sgnd/brework/v1.6.0/install.sh`), and `install.sh` downloads exactly that release to `~/.brework` after it checks it: the downloaded `install.sh` must name the same version, and a release your Mac already has must not have changed on GitHub. Before, every run installed whatever was on `main` at that moment. Running the same command again keeps the same list: to update, run the newest release's command (the README shows it). A `~/.brework` from an older install moves from `main` to the release. To install `main` anyway, set `BREWORK_REF=main` (see [Which version you get](docs/advanced.md#which-version-you-get)).
