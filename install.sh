@@ -12,21 +12,29 @@
 #      and add the mise tools to your PATH, for every shell
 #   7. Start Docker (Colima) now and every time you log in
 #
-# Run it with:
-#   curl -fsSL https://raw.githubusercontent.com/sgnd/brework/main/install.sh | bash
+# Run it with (the address names the release, the same as BREWORK_VERSION below):
+#   curl -fsSL https://raw.githubusercontent.com/sgnd/brework/v1.6.0/install.sh | bash
 # or from a downloaded copy of this repo:
 #   ./install.sh
 #
 # Only the CLI tools, without the GUI and App Store apps (Brewfile.apps):
-#   curl -fsSL https://raw.githubusercontent.com/sgnd/brework/main/install.sh | bash -s -- --cli-only
+#   curl -fsSL https://raw.githubusercontent.com/sgnd/brework/v1.6.0/install.sh | bash -s -- --cli-only
 #   ./install.sh --cli-only
+#
+# Also TeamViewer and AnyDesk (remote desktop apps, not installed unless you ask):
+#   ./install.sh --remote-desktop
 #
 # Show the help: ./install.sh --help
 #
 # You can run it again at any time. It installs what is missing and updates what is out of date.
+# It keeps the list of the release it is from: a change on GitHub does not reach your Mac by itself.
 
 set -euo pipefail # stop at the first error
 
+# The release this script installs: `curl | bash` puts exactly this tag in REPO_DIR, after a check.
+# Each release changes it (see "Make a release" in CONTRIBUTING.md).
+# To install a branch or another tag instead, set BREWORK_REF (see docs/advanced.md).
+BREWORK_VERSION="v1.6.0"
 # Forked this repo? Put your fork's address here, so the script installs your list.
 REPO_URL="https://github.com/sgnd/brework.git"
 REPO_DIR="$HOME/.brework" # where `curl | bash` downloads this repo
@@ -40,16 +48,19 @@ fail() { printf '\033[1;31mError:\033[0m %s\n' "$*" >&2; exit 1; }
 
 # Not read from this file's header: with `curl | bash` there is no file.
 usage() {
-  cat <<'EOF'
+  cat <<EOF
 brework installer: sets up this Mac with the tools in the Brewfile and the apps in Brewfile.apps.
 
 Usage:
-  curl -fsSL https://raw.githubusercontent.com/sgnd/brework/main/install.sh | bash
-  ./install.sh               # tools and apps
-  ./install.sh --cli-only    # only the command-line tools, without the apps
-  ./install.sh --help        # show this help
+  curl -fsSL https://raw.githubusercontent.com/sgnd/brework/$BREWORK_VERSION/install.sh | bash
+  ./install.sh                    # tools and apps
+  ./install.sh --cli-only         # only the command-line tools, without the apps
+  ./install.sh --remote-desktop   # also TeamViewer and AnyDesk (remote desktop apps)
+  ./install.sh --help             # show this help
 
-You can run it again at any time. It installs what is missing and updates what is out of date.
+This script installs brework $BREWORK_VERSION. You can run it again at any time:
+it installs what is missing and updates what is out of date.
+To install the main branch instead of a release: BREWORK_REF=main (see the docs first).
 More: https://github.com/sgnd/brework
 EOF
 }
@@ -67,16 +78,75 @@ add_line() {
   echo "$3" >>"$1"
 }
 
-main() {
-  # --- 0. Read the option and check this Mac -------------------------------
+# Put brework REF (the release in BREWORK_VERSION, or what BREWORK_REF names) in DIR,
+# a git copy of this repo, and check it first. Your own changes in DIR are never overwritten.
+# Usage: get_brework DIR REF
+get_brework() {
+  local dir="$1" ref="$2" branch new old got
+  # Changed files may be your own list. Stop: don't overwrite them, and don't install a list nobody released.
+  if [ -n "$(git -C "$dir" status --porcelain --untracked-files=no)" ]; then
+    git -C "$dir" status --short --untracked-files=no
+    fail "$dir has changes (above), so it was not updated and nothing from the list was installed. To keep your own list, make it yours: https://github.com/sgnd/brework/blob/main/docs/advanced.md#make-it-yours. To throw the changes away, delete that folder and run this again."
+  fi
+  # A copy from before v1.6.0 is on the main branch. It moves to the release, unless the branch has commits of yours.
+  if git -C "$dir" rev-parse --verify --quiet HEAD >/dev/null && branch="$(git -C "$dir" symbolic-ref --quiet --short HEAD)"; then
+    # Empty (not 0) when the branch does not come from GitHub at all.
+    if [ "$(git -C "$dir" rev-list --count '@{upstream}..HEAD' 2>/dev/null)" != 0 ]; then
+      fail "$dir is on the branch $branch, with commits that are not on GitHub, so it was not updated and nothing from the list was installed. To keep your own list, make it yours: https://github.com/sgnd/brework/blob/main/docs/advanced.md#make-it-yours"
+    fi
+    say "Moving $dir from the $branch branch to brework $ref"
+  fi
 
-  # --cli-only skips Brewfile.apps. The Brewfile reads this setting.
-  [ $# -le 1 ] || fail "Too many options. Use --cli-only, or none. See: install.sh --help"
-  case "${1:-}" in
-    "") ;;
-    --cli-only) export HOMEBREW_BREWORK_CLI_ONLY=1 ;;
-    -h | --help) usage; exit 0 ;;
-    *) fail "Unknown option: $1. Use --cli-only, or none. See: install.sh --help" ;;
+  # A release is a tag. Anything else (BREWORK_REF) can be a branch or a tag.
+  local refspec="$ref"
+  [ "$ref" != "$BREWORK_VERSION" ] || refspec="refs/tags/$ref"
+  if ! git -C "$dir" fetch --depth 1 --no-tags origin "$refspec"; then
+    git -C "$dir" rev-parse --verify --quiet HEAD >/dev/null || fail "Could not download brework $ref (see the lines above). Check your internet connection, then run this again."
+    say "Could not download brework $ref. Using the copy you have: $(git -C "$dir" describe --tags --always)"
+    update_failed=yes
+    return 0
+  fi
+  new="$(git -C "$dir" rev-parse 'FETCH_HEAD^{commit}')"
+
+  if [ "$ref" = "$BREWORK_VERSION" ]; then
+    # A release never changes. If this Mac already has the tag, GitHub must still have the same one.
+    old="$(git -C "$dir" rev-parse --verify --quiet "refs/tags/$ref^{commit}" || true)"
+    if [ -n "$old" ] && [ "$old" != "$new" ]; then
+      fail "The tag $ref on GitHub is not the $ref this Mac got before (commit $new, not $old). A release never changes, so nothing from the list was installed. Please report it: https://github.com/sgnd/brework/security"
+    fi
+    # The release is the one this script is from: its install.sh names the same version.
+    got="$(git -C "$dir" show "$new:install.sh" 2>/dev/null | sed -n 's/^BREWORK_VERSION="\([^"]*\)".*/\1/p')"
+    if [ "$got" != "$ref" ]; then
+      fail "The tag $ref on GitHub does not have the install.sh of brework $ref (it says: ${got:-no version}). Nothing from the list was installed. Please report it: https://github.com/sgnd/brework/security"
+    fi
+    git -C "$dir" update-ref "refs/tags/$ref" FETCH_HEAD # so the check above works next time, and `git describe` shows the version
+  fi
+
+  git -C "$dir" checkout --quiet --detach "$new" || fail "Could not switch $dir to brework $ref (see the lines above). Delete that folder and run this again."
+  say "Using brework $ref (commit $(git -C "$dir" rev-parse --short HEAD))"
+}
+
+main() {
+  # --- 0. Read the options and check this Mac ------------------------------
+
+  # --cli-only skips Brewfile.apps. --remote-desktop adds TeamViewer and AnyDesk to it.
+  # The Brewfile and Brewfile.apps read these settings.
+  for option in "$@"; do
+    case "$option" in
+      --cli-only) export HOMEBREW_BREWORK_CLI_ONLY=1 ;;
+      --remote-desktop) export HOMEBREW_BREWORK_REMOTE_DESKTOP=1 ;;
+      -h | --help) usage; exit 0 ;;
+      *) fail "Unknown option: $option. Use --cli-only, --remote-desktop, or none. See: install.sh --help" ;;
+    esac
+  done
+  if [ "${HOMEBREW_BREWORK_CLI_ONLY:-}" = 1 ] && [ "${HOMEBREW_BREWORK_REMOTE_DESKTOP:-}" = 1 ]; then
+    fail "--remote-desktop adds two apps, and --cli-only skips all apps. Use one of them. See: install.sh --help"
+  fi
+
+  # Which brework to download: the release above, unless you set BREWORK_REF (a branch or a tag).
+  ref="${BREWORK_REF:-$BREWORK_VERSION}"
+  case "$ref" in
+    -* | *[!A-Za-z0-9._/-]*) fail "BREWORK_REF must be a branch or a tag, like main or $BREWORK_VERSION. It is: $ref" ;;
   esac
 
   [ "$(uname -s)" = "Darwin" ] || fail "brework only works on macOS."
@@ -161,24 +231,32 @@ main() {
   step 3 "Get the list"
   # With `curl | bash` there is no install.sh file, so this is skipped.
   if [ "$(basename "${BASH_SOURCE[0]:-}")" = install.sh ] && [ -f "$(dirname "${BASH_SOURCE[0]}")/Brewfile" ]; then
-    # You ran ./install.sh from a downloaded copy: use its Brewfile.
+    # You ran ./install.sh from a downloaded copy: use its Brewfile, as it is.
     REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
     say "Using the list in $REPO_DIR"
-  elif [ -d "$REPO_DIR" ]; then
-    say "Updating $REPO_DIR"
-    git -C "$REPO_DIR" pull --ff-only || { say "Could not update. Using the copy you have."; update_failed=yes; }
+    [ -z "${BREWORK_REF:-}" ] || say "BREWORK_REF is ignored here: ./install.sh does not download or update anything."
   else
-    say "Downloading brework to $REPO_DIR"
-    # git needs Apple's Command Line Tools. A macOS update can remove them.
-    xcode-select -p >/dev/null 2>&1 || fail "Install Apple's Command Line Tools with: xcode-select --install. Then run this script again."
-    git clone "$REPO_URL" "$REPO_DIR"
+    if [ "$ref" != "$BREWORK_VERSION" ]; then
+      say "Warning: BREWORK_REF=$ref. This installs $ref instead of the release $BREWORK_VERSION. Only releases are checked, and a branch changes with every merge."
+    fi
+    if [ -d "$REPO_DIR" ]; then
+      say "Updating $REPO_DIR to brework $ref"
+      [ -e "$REPO_DIR/.git" ] || fail "$REPO_DIR is not a git copy of brework. Delete that folder and run again."
+    else
+      say "Downloading brework $ref to $REPO_DIR"
+      # git needs Apple's Command Line Tools. A macOS update can remove them.
+      xcode-select -p >/dev/null 2>&1 || fail "Install Apple's Command Line Tools with: xcode-select --install. Then run this script again."
+      git init --quiet "$REPO_DIR"
+      git -C "$REPO_DIR" remote add origin "$REPO_URL"
+    fi
+    get_brework "$REPO_DIR" "$ref"
   fi
 
   [ -f "$REPO_DIR/Brewfile" ] || fail "No Brewfile in $REPO_DIR. Delete that folder and run again."
 
   # An old Brewfile (from before Brewfile.apps) would install the apps anyway.
   if [ "${HOMEBREW_BREWORK_CLI_ONLY:-}" = 1 ] && ! grep -q HOMEBREW_BREWORK_CLI_ONLY "$REPO_DIR/Brewfile"; then
-    fail "The Brewfile in $REPO_DIR does not support --cli-only. Update it with: git -C $REPO_DIR pull"
+    fail "The Brewfile in $REPO_DIR is too old for --cli-only. Use a newer brework: see https://github.com/sgnd/brework#install"
   fi
 
   # --- 4. Install everything in the Brewfile -------------------------------
@@ -189,6 +267,7 @@ main() {
     say "Only the CLI tools: the apps in Brewfile.apps are skipped."
   else
     say "App Store apps need you to be signed in to the App Store."
+    [ "${HOMEBREW_BREWORK_REMOTE_DESKTOP:-}" != 1 ] || say "With the remote desktop apps: TeamViewer and AnyDesk."
   fi
   # If one package fails, keep going: steps 5 to 7 still run and you get a clear message at the end.
   all_installed=yes
@@ -262,7 +341,7 @@ main() {
   fi
 
   if [ "$update_failed" = yes ]; then
-    say "Note: $REPO_DIR could not be updated, so this used an older list. See why with: git -C $REPO_DIR status"
+    say "Note: brework $ref could not be downloaded, so this used the list you already had ($(git -C "$REPO_DIR" describe --tags --always)). Run this again when you are online."
   fi
 
   if [ "$all_installed" = no ]; then

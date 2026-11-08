@@ -10,7 +10,8 @@ set -euo pipefail # stop at the first error
 
 cd "$(dirname "$0")/.." # go to the repo root, where the Brewfile is
 brew update --quiet     # get Homebrew's newest package list
-unset HOMEBREW_BREWORK_CLI_ONLY # always check both lists
+unset HOMEBREW_BREWORK_CLI_ONLY # always check both lists,
+export HOMEBREW_BREWORK_REMOTE_DESKTOP=1 # and the apps that only install.sh --remote-desktop installs
 
 missing=0
 

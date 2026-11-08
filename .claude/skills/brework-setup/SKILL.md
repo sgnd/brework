@@ -37,14 +37,18 @@ Also check the free space with `df -h /`: about 40 GB for everything, about 20 G
 - **Everything, or only the CLI tools?** Only the CLI tools means `--cli-only`: no GUI apps, no App Store apps, and no App Store sign-in.
 - **For everything:** are they signed in to the Mac App Store? If not, ask them to open the App Store and sign in first.
 
+The remote desktop apps (TeamViewer and AnyDesk) are not installed by default: they let someone else control the Mac, and TeamViewer runs a service as root. Add `--remote-desktop` only when the user asks for them (it does not work with `--cli-only`).
+
 ## 3. Run the installer
 
 The installer asks for the user's password (sudo) several times. Some apps use a `.pkg` installer, and the App Store apps need it too. You cannot type it. So run the installer where the user can see it and type: in their terminal, or in a terminal tab they can open. Tell them to watch for `Password:`.
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/sgnd/brework/main/install.sh | bash                   # everything
-curl -fsSL https://raw.githubusercontent.com/sgnd/brework/main/install.sh | bash -s -- --cli-only  # CLI tools only
+curl -fsSL https://raw.githubusercontent.com/sgnd/brework/v1.6.0/install.sh | bash                   # everything
+curl -fsSL https://raw.githubusercontent.com/sgnd/brework/v1.6.0/install.sh | bash -s -- --cli-only  # CLI tools only
 ```
+
+These install brework v1.6.0, a release: the script downloads exactly that version to `~/.brework` and checks it. Use these lines as they are. Don't switch to the `main` branch or set `BREWORK_REF` unless the user asks for it.
 
 If the repo is already on the Mac (for example in `~/.brework`), you can run `./install.sh` from that folder instead.
 
@@ -65,6 +69,8 @@ Read the lines the user pasted. If you run `brew` or `mise` yourself, run them t
 | An App Store app did not install | The user is not signed in to the App Store. Ask them to sign in, then run the installer again. |
 | Xcode did not install | macOS is older than Xcode needs. Tell the user: update macOS, or skip Xcode (then the check also shows `FAIL` for `brew bundle check` and `App Store apps`). |
 | `This terminal runs in Rosetta` | See step 1. |
+| `~/.brework has changes` or `with commits that are not on GitHub` | The user changed the list in `~/.brework`. Show them `git -C ~/.brework status`. Never delete the folder or throw the changes away without asking. To keep their own list, point them to "Make it yours" in `docs/advanced.md`. |
+| `The tag ... on GitHub is not` or `does not have the install.sh of brework` | Stop. A release changed on GitHub, which should never happen. Don't work around it: ask the user to report it at https://github.com/sgnd/brework/security. |
 | `mise` fails on `usql` or `mongosh` (for example `rate limit` or a timeout) | mise downloads them from GitHub. Wait a bit and run the installer again, or run `mise use --global` with the tools from `MISE_TOOLS` in `install.sh`. |
 
 Run the installer again after each fix. It installs what is missing and updates what is out of date.
@@ -102,12 +108,15 @@ For each `FAIL`, read the lines under it:
 
 ## 6. Tell the user what is left
 
-If this skill is a downloaded copy in `~/.claude/skills/brework-setup` (not a link), offer to swap it for a link to `~/.brework`, so it stays up to date. Ask first:
+Keep this skill a copy in `~/.claude/skills/brework-setup`. Never replace it with a link to `~/.brework`: then the instructions you follow would change every time `~/.brework` changes, without the user choosing it.
+
+If `~/.claude/skills/brework-setup` is a link (older docs said to make one), offer to replace it with a copy of the release that is now in `~/.brework`. Ask first:
 
 ```bash
-rm -rf ~/.claude/skills/brework-setup
-ln -s ~/.brework/.claude/skills/brework-setup ~/.claude/skills/brework-setup
+[ -L ~/.claude/skills/brework-setup ] && rm ~/.claude/skills/brework-setup && cp -R ~/.brework/.claude/skills/brework-setup ~/.claude/skills/brework-setup
 ```
+
+Tell the user how to update the skill later, on purpose: see "Install with an AI agent" in `docs/advanced.md`.
 
 Report what you did, the smoke test result, and these manual steps (brework cannot do them):
 

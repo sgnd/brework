@@ -24,6 +24,8 @@ Before adding something, check all of these. If one fails, don't add it and tell
 - It is not a programming language or runtime (Node, Python, Go, Java, ...). Those are installed per project with `mise`.
 - It is not already in the list, under another name. For example, `kubectl` is `brew "kubernetes-cli"`.
 
+An app that lets someone else control the Mac, or that installs a background service running as root, is not installed by default. A remote desktop app goes in the `--remote-desktop` block of `Brewfile.apps` (the `if ENV["HOMEBREW_BREWORK_REMOTE_DESKTOP"] == "1"` lines) and in the README row "Remote desktop (only with `--remote-desktop`)". For any other app like that, ask the user before you add it.
+
 ## Add a package
 
 1. Find the exact name:

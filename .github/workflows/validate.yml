@@ -1,10 +1,11 @@
-# Checks that run on GitHub after every push to main, every pull request,
+# Checks that run on GitHub after every push to main, every pull request, every release tag,
 # and every Monday (to catch packages that were removed or disabled).
 name: Validate
 
 on:
   push:
     branches: [main]
+    tags: ["v*"] # a new release: the "Release version" check below
   pull_request:
   schedule:
     - cron: "0 3 * * 1" # every Monday at 03:00 UTC
@@ -49,3 +50,33 @@ jobs:
           # Only real errors, like 404 Not Found, fail this check.
           args: --no-progress --accept 200..=299,403,429 --accept-timeouts --max-retries 3 --include-fragments README.md docs/advanced.md CONTRIBUTING.md SECURITY.md
           fail: true
+
+  # 4. Every install command in the docs names the release in install.sh (BREWORK_VERSION),
+  #    and a pushed release tag is that release: install.sh refuses a tag whose install.sh names another one.
+  release:
+    name: Release version
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - env:
+          REF_TYPE: ${{ github.ref_type }}
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          version="$(sed -n 's/^BREWORK_VERSION="\([^"]*\)".*/\1/p' install.sh)"
+          echo "BREWORK_VERSION in install.sh: ${version:-none}"
+          [ -n "$version" ] || { echo "::error::install.sh has no BREWORK_VERSION line."; exit 1; }
+          # An install command (or a git clone --branch) with another version. CHANGELOG.md keeps the old ones.
+          stale="$(git grep -nE '(sgnd/brework/|--branch )v[0-9]+\.[0-9]+\.[0-9]+' -- ':!CHANGELOG.md' | grep -vF "$version" || true)"
+          # A link to main is only for BREWORK_REF=main (see docs/advanced.md).
+          main="$(git grep -n 'raw.githubusercontent.com/sgnd/brework/main/' | grep -v 'BREWORK_REF=main' || true)"
+          if [ -n "$stale$main" ]; then
+            printf '%s\n' "$stale" "$main" | sed '/^$/d'
+            echo "::error::These lines must name $version, the version in install.sh (BREWORK_VERSION)."
+            exit 1
+          fi
+          if [ "$REF_TYPE" = tag ] && [ "$REF_NAME" != "$version" ]; then
+            echo "::error::The tag $REF_NAME is not the version in install.sh ($version), so install.sh refuses it. Make a new tag on a commit where BREWORK_VERSION is the tag."
+            exit 1
+          fi
+          echo "ok: every install command names $version"
