@@ -1,5 +1,6 @@
 # Brewfile.apps: GUI and App Store apps for a Dev & Ops Mac
 # The Brewfile loads this file. Skip these apps with: install.sh --cli-only
+# The remote desktop apps (near the end) are only installed with: install.sh --remote-desktop
 #
 # How to add something:
 #   App:            cask "name"            find the name with: brew search --cask name
@@ -53,8 +54,17 @@ cask "voov-meeting"       # Video meetings (Tencent Meeting outside China)
 # Remote access
 # ----------------------------------------------------------------------------
 mas "Termius", id: 1176074088                    # SSH client
-cask "teamviewer"         # Remote desktop
-cask "anydesk"            # Remote desktop
+
+# ----------------------------------------------------------------------------
+# Remote desktop: only with install.sh --remote-desktop
+# These apps let someone else control this Mac. TeamViewer runs a background
+# service as root, and Homebrew does not check the AnyDesk download against a
+# fixed checksum. So they are only installed when you ask for them.
+# ----------------------------------------------------------------------------
+if ENV["HOMEBREW_BREWORK_REMOTE_DESKTOP"] == "1"
+  cask "teamviewer"       # Remote desktop
+  cask "anydesk"          # Remote desktop
+end
 
 # ----------------------------------------------------------------------------
 # Networking & VPN

@@ -4,6 +4,30 @@ You don't need this page to use brework. The [README](../README.md) has everythi
 
 ## Other ways to install
 
+### Which version you get
+
+The install command installs one release of brework: the version in its address, like `v1.6.0` in `.../sgnd/brework/v1.6.0/install.sh`. The script names the same version in `BREWORK_VERSION`. It downloads exactly that release (a git tag) to `~/.brework`, and checks it first:
+
+- The downloaded `install.sh` must name the same version as the script you ran.
+- A release never changes. Once your Mac has a release, GitHub must still have the same one, or the script stops and asks you to report it.
+- If you changed files in `~/.brework` (or made commits there), the script stops instead of overwriting them. To keep your own list, [make it yours](#make-it-yours).
+
+When a check fails, nothing from the list is installed.
+
+Running the same command again keeps that release. To update, run the command of a newer release: the [README](../README.md#install) and [Releases](https://github.com/sgnd/brework/releases/latest) show it. To see which release you have: `git -C ~/.brework describe --tags --always`.
+
+Installed before v1.6.0? Then `~/.brework` follows `main`. A newer install command moves it to its release, unless you changed it.
+
+### Install main instead of a release
+
+`main` gets every change as soon as it is merged, before it is released. Only use it to try out changes to brework. Set `BREWORK_REF` to the branch (or tag) you want:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/sgnd/brework/main/install.sh | BREWORK_REF=main bash
+```
+
+The script then installs `main` instead of its own release. The release checks above do not apply to a branch, and `main` can change between two runs. Set `BREWORK_REF=main` every time: without it, the install command moves `~/.brework` back to its release.
+
 ### Install from a downloaded copy
 
 If you already downloaded this repo, run the script from there:
@@ -18,18 +42,7 @@ Or, for only the command-line tools:
 ./install.sh --cli-only
 ```
 
-The script then uses that folder instead of `~/.brework`, and does not update it. Where the docs say `~/.brework`, use your folder (for example `scripts/smoke-test.sh` in that folder). `./install.sh --help` shows the options.
-
-### Install a tagged release
-
-The install command always uses the newest list on `main`. To install a fixed version instead, download that release (see the [CHANGELOG](../CHANGELOG.md) or the [releases](https://github.com/sgnd/brework/releases)) and run it from there:
-
-```bash
-git clone --branch v1.5.4 https://github.com/sgnd/brework.git ~/.brework
-~/.brework/install.sh
-```
-
-Run `~/.brework/install.sh` again (not the `curl` command) to keep that version. The `curl` command cannot update a tagged copy: it runs the newest `install.sh` with the older list, and says `~/.brework` could not be updated. To go back to `main`, run `git -C ~/.brework switch main`, then the install command.
+The script then uses that folder as it is, instead of `~/.brework`, and does not update it. Where the docs say `~/.brework`, use your folder (for example `scripts/smoke-test.sh` in that folder). `./install.sh --help` shows the options.
 
 ### Install without the script
 
@@ -41,16 +54,16 @@ Run `~/.brework/install.sh` again (not the `curl` command) to keep that version.
 
    At the end, Homebrew shows "Next steps". Run those commands, so your terminal can find `brew`.
 
-2. Download this repo and install everything:
+2. Download the newest release (see [Releases](https://github.com/sgnd/brework/releases/latest)) and install everything:
 
    ```bash
-   git clone https://github.com/sgnd/brework.git ~/.brework
+   git clone --depth 1 --branch v1.6.0 https://github.com/sgnd/brework.git ~/.brework
    cd ~/.brework
    brew bundle install
    mise use --global $(grep '^MISE_TOOLS=' install.sh | cut -d'"' -f2)   # the versions in MISE_TOOLS
    ```
 
-   For only the command-line tools, replace `brew bundle install` with `HOMEBREW_BREWORK_CLI_ONLY=1 brew bundle install`.
+   For only the command-line tools, replace `brew bundle install` with `HOMEBREW_BREWORK_CLI_ONLY=1 brew bundle install`. For the remote desktop apps too, use `HOMEBREW_BREWORK_REMOTE_DESKTOP=1 brew bundle install`.
 
 3. Set up `docker compose` and `docker buildx`:
 
@@ -67,17 +80,20 @@ This repo has an [agent skill](../.claude/skills/brework-setup/SKILL.md) that te
 
 ```bash
 mkdir -p ~/.claude/skills/brework-setup
-curl -fsSL https://raw.githubusercontent.com/sgnd/brework/main/.claude/skills/brework-setup/SKILL.md -o ~/.claude/skills/brework-setup/SKILL.md
+curl -fsSL https://raw.githubusercontent.com/sgnd/brework/v1.6.0/.claude/skills/brework-setup/SKILL.md -o ~/.claude/skills/brework-setup/SKILL.md
 ```
 
 Then start Claude Code in any folder and ask: "Set up my Mac with brework". You still type your password yourself when the installer asks for it.
 
-After the install, swap that copy for a link to `~/.brework`. Then the skill updates every time you run the install command again:
+Keep the skill a copy. Don't make it a link to `~/.brework`: the agent follows these instructions and can run commands on your Mac, so they should only change when you choose to. To update the skill, first install a newer release, then see what changed and copy it:
 
 ```bash
+diff -ru ~/.claude/skills/brework-setup ~/.brework/.claude/skills/brework-setup   # read what changed
 rm -rf ~/.claude/skills/brework-setup
-ln -s ~/.brework/.claude/skills/brework-setup ~/.claude/skills/brework-setup
+cp -R ~/.brework/.claude/skills/brework-setup ~/.claude/skills/brework-setup
 ```
+
+Made it a link before v1.6.0? The last two lines replace the link with a copy.
 
 Other agents that support agent skills can use the same `SKILL.md`. Put it in their skills folder.
 
@@ -96,7 +112,7 @@ If you installed with `--cli-only`, use `HOMEBREW_BREWORK_CLI_ONLY=1 brew bundle
 
 Run the commands below in the brework folder (`~/.brework` if you used the install command).
 
-Changes you make in `~/.brework` can stop the install command from getting the newest list (it then says "Could not update"). To keep your own list, [make it yours](#make-it-yours).
+When `~/.brework` has changes, the install command stops and shows them, instead of overwriting them (see [Which version you get](#which-version-you-get)). To keep your own list, [make it yours](#make-it-yours).
 
 ### Add a tool or an app
 
@@ -131,7 +147,7 @@ App Store apps: drag them from `/Applications` to the Trash.
   brew bundle cleanup         # shows the list, then asks: press n to keep everything
   ```
 
-  **Careful:** if you press `y`, it uninstalls everything in that list. Never add `--force`: it uninstalls without asking.
+  **Careful:** if you press `y`, it uninstalls everything in that list. Never add `--force`: it uninstalls without asking. Installed with `--remote-desktop`? Put `HOMEBREW_BREWORK_REMOTE_DESKTOP=1` in front, or TeamViewer and AnyDesk are in that list too.
 
 GitHub checks every change to the list. See [CONTRIBUTING.md](../CONTRIBUTING.md#how-github-checks-the-list).
 
@@ -143,11 +159,13 @@ This list is one person's setup. To make your own:
 2. Edit the `Brewfile` and `Brewfile.apps`: remove what you don't need (for example the chat apps) and add your own tools.
 3. In `install.sh`, change `REPO_URL` to your fork's address.
 4. If you already have a `~/.brework` folder from this repo, delete it: `rm -rf ~/.brework`.
-5. Install with your fork's link:
+5. Install from your fork's `main`. `BREWORK_REF=main` is needed: the release in `BREWORK_VERSION` is a release of this repo, without your changes.
 
    ```bash
-   curl -fsSL https://raw.githubusercontent.com/YOUR-NAME/brework/main/install.sh | bash
+   curl -fsSL https://raw.githubusercontent.com/YOUR-NAME/brework/main/install.sh | BREWORK_REF=main bash
    ```
+
+   Or make your own releases: set `BREWORK_VERSION` to a new tag name (like `mine-1`) and commit, then tag that commit and push the tag (`git tag mine-1 && git push origin mine-1`). Use the tag instead of `main` in the address, without `BREWORK_REF`.
 
 ## Docker (Colima)
 
@@ -161,8 +179,8 @@ Need a local Kubernetes cluster? Run `colima stop`, then `colima start --kuberne
 
 1. Installs Homebrew, if you don't have it yet
 2. Adds Homebrew to your `PATH` for every shell: `~/.zshenv` (every zsh, also `ssh mac COMMAND`), `~/.zprofile` (a terminal, code editors and AI agents) and `~/.bash_profile` (bash)
-3. Downloads this repo to `~/.brework` (a hidden folder: press ⌘ + Shift + . in Finder to see it)
-4. Installs everything in the `Brewfile` and `Brewfile.apps` (only the `Brewfile` with `--cli-only`). It also installs `usql` and `mongosh` with `mise`, at fixed versions (`MISE_TOOLS` in `install.sh`): `usql` is not in Homebrew core, and Homebrew's `mongosh` needs a second Node.js.
+3. Downloads the release in `BREWORK_VERSION` to `~/.brework` (a hidden folder: press ⌘ + Shift + . in Finder to see it), after it checks that release. It stops if you changed files there. See [Which version you get](#which-version-you-get).
+4. Installs everything in the `Brewfile` and `Brewfile.apps` (only the `Brewfile` with `--cli-only`, and TeamViewer and AnyDesk only with `--remote-desktop`). It also installs `usql` and `mongosh` with `mise`, at fixed versions (`MISE_TOOLS` in `install.sh`): `usql` is not in Homebrew core, and Homebrew's `mongosh` needs a second Node.js.
 5. Sets up `docker compose` and `docker buildx`
 6. Turns on `mise`, `direnv`, `zoxide` and `fzf` in `~/.zshrc`, and shows git diffs with `delta`. It also adds the `mise` tools to the same three files as Homebrew, so code editors, AI agents and scripts find them too (they don't read `~/.zshrc`).
 7. Starts Docker (Colima) now and every time you log in

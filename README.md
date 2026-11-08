@@ -40,34 +40,34 @@ On an Intel Mac, you can still use the lists as a shopping list: every name in [
 
 - Sign in to the Mac App Store (not needed with `--cli-only`).
 - Plug in your Mac and keep the lid open. The install takes 30 to 60 minutes, depending on your internet.
-- Choose what to install: **everything** (tools and apps), or **only the command-line tools** (`--cli-only`, no apps).
+- Choose what to install: **everything** (tools and apps), or **only the command-line tools** (`--cli-only`, no apps). The remote desktop apps (TeamViewer, AnyDesk) are only installed when you ask for them: see [What's inside](#whats-inside).
 
-**Is this safe?** The command runs a script from the internet on your Mac. The script only installs what is in these lists and sets it up. Your password goes to macOS, not to brework. You can [read `install.sh`](install.sh) first.
+**Is this safe?** The command runs a script from the internet on your Mac. The script only installs what is in these lists and sets it up. Your password goes to macOS, not to brework. The command installs one release of brework: the version in its address (like `v1.6.0`). A later change on GitHub does not reach your Mac until you run the command of a newer release. To read the code first, find that version under [Releases](https://github.com/sgnd/brework/releases), click its tag to see the files, and read `install.sh`, `Brewfile` and `Brewfile.apps` (Homebrew runs these two lists as code).
 
 1. Open Terminal: press Command (⌘) + Space, type `Terminal`, and press Return.
-2. Copy one of these lines (on GitHub, click the copy icon at the right of the box), paste it into Terminal (⌘V), and press Return.
+2. Copy one of these lines (on GitHub, click the copy icon at the right of the box), paste it into Terminal (⌘V), and press Return. They install v1.6.0, the newest release. [Releases](https://github.com/sgnd/brework/releases/latest) always shows the newest one.
 
    Everything:
 
    ```bash
-   curl -fsSL https://raw.githubusercontent.com/sgnd/brework/main/install.sh | bash
+   curl -fsSL https://raw.githubusercontent.com/sgnd/brework/v1.6.0/install.sh | bash
    ```
 
    Only the command-line tools:
 
    ```bash
-   curl -fsSL https://raw.githubusercontent.com/sgnd/brework/main/install.sh | bash -s -- --cli-only
+   curl -fsSL https://raw.githubusercontent.com/sgnd/brework/v1.6.0/install.sh | bash -s -- --cli-only
    ```
 
 3. When it asks for your password, type your Mac login password and press Return. **You don't see anything while you type.** That is normal. It may ask for your password more than once (some apps ask again), and may ask you to press Return. Some apps open their own window that asks for your password or permission: allow it, then go back to Terminal. Look at Terminal every few minutes.
 4. Wait until it says `Done!`. Then open a new Terminal window (⌘N) and go on with [After you install](#after-you-install).
 
-If it ends with an error, read the last lines, then see [Troubleshooting](#troubleshooting). An error about only Xcode is explained there too. You can run the same line again at any time: it installs what is missing and updates what is out of date.
+If it ends with an error, read the last lines, then see [Troubleshooting](#troubleshooting). An error about only Xcode is explained there too. You can run the same line again at any time: it installs what is missing and updates what is out of date. It keeps the list of its release: for a newer list, see [Keep everything up to date](#keep-everything-up-to-date).
 
 **What does it change on my Mac?**
 
 - It installs Homebrew (an installer for developer tools) and everything in the lists. Tools and apps you already have from Homebrew are updated.
-- It keeps a copy of this project in `~/.brework`, a hidden folder in your home folder (press ⌘ + Shift + . in Finder to see it).
+- It keeps a copy of that release of brework in `~/.brework`, a hidden folder in your home folder (press ⌘ + Shift + . in Finder to see it). If you change files there, the install command stops instead of overwriting them.
 - It adds a few lines to the files your terminal reads when it starts, so the tools work everywhere: in Terminal, in code editors and in AI agents. Each line has `# added by brework`.
 - It shows git diffs in color with `delta`, unless you already chose a git pager.
 - It starts Docker (Colima) in the background, now and every time you log in. Docker runs in a small Linux VM that uses about 2 GB of memory. To turn that off, see [Docker (Colima)](docs/advanced.md#docker-colima).
@@ -107,7 +107,7 @@ brew update && brew upgrade
 
 App Store apps update through the App Store, as usual.
 
-To get the newest list and install what was added to it, run the [install command](#install) again. This also updates everything in the list, App Store apps included. The [CHANGELOG](CHANGELOG.md) says what changed in each release.
+To get the newest list and install what was added to it, run the install command of the newest release. Copy it from [Install](#install), or from the newest release under [Releases](https://github.com/sgnd/brework/releases/latest). The command names its version, so running an older command again does not get a newer list. It also updates everything in the list, App Store apps included. The [CHANGELOG](CHANGELOG.md) says what changed in each release.
 
 ## What's inside
 
@@ -145,13 +145,22 @@ Apps with a window, like VS Code and Slack.
 | API clients | [Postman](https://www.postman.com/downloads/) |
 | Chat | [Slack](https://slack.com/downloads/mac), [Discord](https://discord.com/download), [Telegram](https://apps.apple.com/app/id747648890), [WhatsApp](https://apps.apple.com/app/id310633997), [WeChat](https://apps.apple.com/app/id836500024) |
 | Video meetings | [Microsoft Teams](https://www.microsoft.com/microsoft-teams/download-app), [Zoom](https://zoom.us/download), [VooV Meeting](https://voovmeeting.com/download-center.html) |
-| Remote access | [Termius](https://apps.apple.com/app/id1176074088), [TeamViewer](https://www.teamviewer.com/en/download/macos/), [AnyDesk](https://anydesk.com/en/downloads/mac-os) |
+| Remote access | [Termius](https://apps.apple.com/app/id1176074088) |
+| Remote desktop (only with `--remote-desktop`) | [TeamViewer](https://www.teamviewer.com/en/download/macos/), [AnyDesk](https://anydesk.com/en/downloads/mac-os) |
 | Networking & VPN | [Cloudflare WARP](https://one.one.one.one), [OpenVPN Connect](https://openvpn.net/client/) |
 | Virtual machines | [UTM](https://mac.getutm.app) |
 | Browsers | [Google Chrome](https://www.google.com/chrome/) |
 | Apple developer tools | [Xcode](https://apps.apple.com/app/id497799835) |
 
 Telegram, WhatsApp, WeChat, Termius and Xcode come from the Mac App Store.
+
+TeamViewer and AnyDesk are only installed when you ask for them. They let someone else control your Mac, and TeamViewer runs a background service with full admin rights. To install them too, add `--remote-desktop` to the install command:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/sgnd/brework/v1.6.0/install.sh | bash -s -- --remote-desktop
+```
+
+Add it every time you run the install command, or it does not update them (`brew upgrade` still does).
 
 See the [`Brewfile`](Brewfile) and [`Brewfile.apps`](Brewfile.apps) for a short description of each one.
 
@@ -207,7 +216,7 @@ Colima is free, open source and runs from the terminal. It gives you the same `d
 
 For people who want to go further, see [docs/advanced.md](docs/advanced.md):
 
-- [Other ways to install](docs/advanced.md#other-ways-to-install): from a downloaded copy, without the script, or with an AI agent
+- [Other ways to install](docs/advanced.md#other-ways-to-install): which version you get, from a downloaded copy, without the script, or with an AI agent
 - [Change the list](docs/advanced.md#change-the-list) and [make it yours](docs/advanced.md#make-it-yours)
 - [Docker (Colima)](docs/advanced.md#docker-colima): stop it from starting at login, or run Kubernetes
 - [How it works](docs/advanced.md#how-it-works): what the script changes, and why

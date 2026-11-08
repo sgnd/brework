@@ -2,9 +2,16 @@
 
 What changed in each release. The [GitHub releases](https://github.com/sgnd/brework/releases) have the full notes, with how each release was tested.
 
-To update, run the [install command](README.md#install) again, unless a release says otherwise.
+To update, run the [install command](README.md#install) of the newest release, unless a release says otherwise. Up to v1.5.4, the install command always installed `main`.
 
 ## Unreleased
+
+### Security
+
+- **The install command installs one release, not `main`.** The command names its version (`.../sgnd/brework/v1.6.0/install.sh`), and `install.sh` downloads exactly that release to `~/.brework` after it checks it: the downloaded `install.sh` must name the same version, and a release your Mac already has must not have changed on GitHub. Before, every run installed whatever was on `main` at that moment. Running the same command again keeps the same list: to update, run the newest release's command (the README shows it). A `~/.brework` from an older install moves from `main` to the release. To install `main` anyway, set `BREWORK_REF=main` (see [Which version you get](docs/advanced.md#which-version-you-get)).
+- **`install.sh` stops when `~/.brework` has changes or commits of yours,** instead of running a changed list or saying only "Could not update". Nothing from the list is installed then.
+- **Keep the `brework-setup` agent skill a copy, not a link to `~/.brework`.** With a link, the instructions your AI agent follows changed every time `~/.brework` changed. Made the link? Replace it with a copy: `rm ~/.claude/skills/brework-setup && cp -R ~/.brework/.claude/skills/brework-setup ~/.claude/skills/brework-setup`.
+- **TeamViewer and AnyDesk are no longer installed by default.** They let someone else control your Mac, TeamViewer runs a background service with full admin rights (root), and Homebrew does not check the AnyDesk download against a fixed checksum. Add `--remote-desktop` to the install command to get them. Already installed? They stay. To remove them: `brew uninstall --cask teamviewer anydesk`.
 
 ### Fixed
 
@@ -14,6 +21,7 @@ To update, run the [install command](README.md#install) again, unless a release 
 
 ### Changed
 
+- **CI:** a "Release version" check: every install command in the docs names the version in `install.sh` (`BREWORK_VERSION`), and a pushed tag must be that version. The end-to-end test installs the pull request through the same release check, and checks that TeamViewer and AnyDesk are not installed by default.
 - **CI:** the "End-to-end result" check runs on every pull request and is required. It passes when the install on the Macs passed, or when the pull request does not change a Brewfile, `install.sh`, `smoke-test.sh` or `e2e.yml`.
 - **`install.sh` checks for macOS 15 or newer, an admin account and enough free disk** at the start, instead of failing later in the install. End-to-end CI also tests macOS 15.
 - **`install.sh` explains what to do when the Homebrew installer fails.**

@@ -20,4 +20,4 @@ A security problem in one of the tools themselves (like `docker` or `gh`) belong
 
 ## Supported versions
 
-Only the newest release and `main` get fixes. The install command always uses `main`. To install a fixed release instead, see [Install a tagged release](docs/advanced.md#install-a-tagged-release).
+Only the newest release gets fixes. A fix is on `main` first, and reaches your Mac when you run the install command of the release that has it: each install command installs the one release named in its address. See [Which version you get](docs/advanced.md#which-version-you-get).
